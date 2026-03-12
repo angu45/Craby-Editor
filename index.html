@@ -82,9 +82,7 @@ u<!DOCTYPE html>
     <h3 style="color: var(--accent); display: flex; justify-content: space-between;">
         IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
     </h3>
-    <br><h4> Font size</h4><br>
-   <input type="range" id="font-size-bar" min="5" max="50" value="16" oninput="updateThemeAndFont()"><br>
- 
+    <br>
     <div class="s-group">
         <label>Show/Hide Editors</label>
         <div style="display: flex; gap: 10px; font-size: 12px;">
@@ -105,6 +103,8 @@ u<!DOCTYPE html>
         </select>
     </div>
 
+   <input type="range" id="font-size-bar" min="5" max="50" value="16" oninput="updateThemeAndFont()"><br>
+ 
     <div class="s-group">
         <label>Editor Theme</label>
       <select id="theme-sel" onchange="updateThemeAndFont()">
