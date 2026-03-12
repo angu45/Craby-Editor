@@ -73,6 +73,8 @@ js: [
 
 };
 
+
+// Suggestion Box Element Create Karne
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
@@ -80,23 +82,21 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. CORE EDITOR LOGIC ---
+// --- 2. MAIN EDITOR EVENTS ---
 document.querySelectorAll('textarea').forEach(txt => {
+    // Typing chya veles
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const val = txt.value;
         const char = e.data;
         currentLang = txt.id.split('-')[0]; 
 
-        // A. AUTO-CLOSE & SYMBOL COMPLETION
+        // A. AUTO-CLOSE BRACKETS & TAGS
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
-        
-        // 1. Basic Pairs
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
         } 
-        // 2. HTML Auto End Tag
         else if (char === '>') {
             const lastPart = val.substring(0, pos);
             const match = lastPart.match(/<(\w+)>$/);
@@ -110,16 +110,17 @@ document.querySelectorAll('textarea').forEach(txt => {
             }
         }
 
-        // B. RECOMMENDATION SHOW
+        // B. RECOMMENDATION DISPLAY
         showSuggestions(txt);
     });
 
+    // Keyboard Navigation (Arrows & Enter)
     txt.addEventListener('keydown', (e) => {
         handleNav(e, txt);
     });
 });
 
-// Recommendation Box Function
+// --- 3. SUGGESTION SYSTEM ---
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
@@ -136,13 +137,15 @@ function showSuggestions(txt) {
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 30}px`;
-        sBox.style.left = `${rect.left + 30}px`;
+        
+        // BOX POSITION: Thoda khali aani side la जेणेकरून typing disturb honar nahi
+        sBox.style.top = `${rect.top + 40}px`; 
+        sBox.style.left = `${rect.left + 50}px`;
         sBox.style.display = 'block';
 
         sBox.innerHTML = matches.map((m, i) => 
             `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
-                ${m} <small style="float:right; opacity:0.5;">${currentLang}</small>
+                <span>${m}</span> <small>${currentLang}</small>
             </div>`
         ).join('');
     } else {
@@ -150,7 +153,6 @@ function showSuggestions(txt) {
     }
 }
 
-// Word Insert Logic (With Auto Symbols)
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
@@ -161,28 +163,27 @@ function insertWord(word, id) {
 
     let wordToInsert = word;
 
-    // logic for HTML attributes (class, href, etc.)
+    // 1. HTML Attributes Auto-Completion (class="")
     if (currentLang === 'html') {
         const attributes = ['class', 'id', 'href', 'src', 'type', 'value', 'placeholder', 'style', 'rel', 'alt'];
         if (attributes.includes(word)) {
             wordToInsert = word + '=""';
         }
     }
-    // logic for CSS properties (color, margin, etc.)
+    // 2. CSS Properties Auto-Completion (color: ;)
     else if (currentLang === 'css') {
-        const cssProps = dictionary.css;
-        if (cssProps.includes(word)) {
+        if (dictionary.css.includes(word)) {
             wordToInsert = word + ': ;';
         }
     }
 
     txt.value = text.substring(0, startPos) + wordToInsert + text.substring(pos);
     
-    // Position cursor correctly
+    // Cursor Position Set Karne
     if (wordToInsert.endsWith('=""')) {
-        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // inside ""
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // Quotes chya aat
     } else if (wordToInsert.endsWith(': ;')) {
-        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // after :
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // Colon chya nantar
     } else {
         txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
     }
@@ -215,7 +216,7 @@ function updateActive(items) {
     items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
 }
 
-// --- 3. OTHER TOOLS ---
+// --- 4. NAVIGATION & TOOL FUNCTIONS ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
@@ -247,9 +248,10 @@ function updateEditorStyles() {
     document.querySelectorAll('textarea').forEach(t => t.style.fontSize = fs);
 }
 
+// Global Click Listener
 document.addEventListener('mousedown', (e) => {
     const p = document.getElementById('settingsPanel');
     const b = document.querySelector('.fa-sliders-h')?.parentElement;
-    if (p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
-    if (!sBox.contains(e.target)) sBox.style.display = 'none';
+    if (p && p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
 });
