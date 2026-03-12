@@ -120,17 +120,30 @@ header {
     align-items: center;
 }
 
-textarea { 
-    flex: 1; 
-    background: transparent; 
-    border: none; 
-    color: #9cdcfe; 
-    font-family: 'Fira Code', monospace; 
-    padding: 15px; 
-    resize: none; 
-    outline: none; 
-    font-size: 14px; 
-    line-height: 1.6; 
+textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--editor-text); /* Theme nusar badalel */
+    font-family: 'Fira Code', monospace;
+    padding: 20px;
+    resize: none;
+    outline: none;
+    font-size: 14px;
+    line-height: 1.6;
+    tab-size: 4; /* Tab space barobar disel */
+    caret-color: var(--accent); /* Cursor cha color */
+    letter-spacing: 0.5px;
+}
+
+/* Recommendation Box madhe pan colors add karu */
+.suggestion-item span {
+    color: var(--accent);
+    font-weight: 600;
+}
+.suggestion-item small {
+    color: #888;
+    margin-left: 10px;
 }
 
 /* --- 4. PREVIEW OVERLAY (FLOW SCREEN) --- */
