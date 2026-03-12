@@ -4,17 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Craby Editor - Free Online HTML, CSS, JS Editor |Edit free and safe with Craby HTML Editor</title>
-    <meta name="description" content="Craby Editor is a powerful and lightweight online HTML editor by Anguworkshop. Write, preview, and export HTML, CSS, and JS code instantly.">
-    <meta name="keywords" content="free online html editor,html editor,Html compiler,free html editor,Craby Editor, Craby HTML Editor, Anguworkshop, Online HTML Editor, Live Preview Editor, Web Development Tool">
+    <title>Craby Editor - Free Online HTML, CSS, JS Editor | Live Preview</title>
+    <meta name="description" content="Craby Editor is a powerful and lightweight online HTML editor by Anguworkshop. Write, preview, and export HTML, CSS, and JS code instantly with live preview.">
+    <meta name="keywords" content="free online html editor, html compiler, Craby Editor, Anguworkshop, online code editor, live preview editor, web development tool">
     <meta name="author" content="Anguworkshop">
-   <link rel="icon" type="image/png" href="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
+    <link rel="canonical" href="https://craby-editor.vercel.app/">
 
-<link rel="apple-touch-icon" href="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
+
+    <meta property="og:title" content="Craby Editor - Free Online Code Editor">
+    <meta property="og:description" content="Edit, preview, and build web projects instantly with Craby Editor.">
+    <meta property="og:image" content="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
+    <meta property="og:url" content="https://craby-editor.vercel.app/">
 
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H');
+    </script>
+
     <script type="application/ld+json">
     {
       "@context" : "https://schema.org",
@@ -24,22 +39,12 @@
     }
     </script>
 </head>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-Z0BGJ1913H');
-</script>
-    
-</head>
 <body>
 
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
-      </div>
+        <h1 style="display:none;">Craby Editor - Best Online HTML Editor</h1> </div>
     <div class="nav-actions">
         <button class="icon-btn" onclick="beautifyCode()" title="Format Code"><i class="fas fa-magic"></i></button>
         <button class="icon-btn" onclick="exportCode()" title="Download File"><i class="fas fa-download"></i></button>
@@ -141,38 +146,36 @@ h1 {
     <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
 </div>
 
-<script src="Script.js"></script> <script>
-// --- Navin Function HTML madhe add kele ---
+<script src="Script.js"></script> 
+
+<script>
 function updateThemeAndFont() {
     const themeKey = document.getElementById('theme-sel').value;
     const font = document.getElementById('font-family-sel').value;
-    
-    // 1. Seek bar kadhun value ghene
     const fontSize = document.getElementById('font-size-bar').value;
     document.getElementById('fs-display').innerText = fontSize + "px"; 
 
     // Themes object 'Script.js' madhe asne garjeche aahe
-    const theme = themes[themeKey] || themes.dark;
+    const theme = (typeof themes !== 'undefined') ? (themes[themeKey] || themes.dark) : null;
 
-    // 2. CSS variables update karne
-    document.documentElement.style.setProperty('--bg', theme.bg);
-    document.documentElement.style.setProperty('--panel', theme.panel);
-    document.documentElement.style.setProperty('--accent', theme.accent);
-    
-    // 3. Textarea madhe font size aani style apply karne
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px"; 
-        tx.style.color = theme.text;
-        tx.style.background = theme.bg;
-        if(theme.border) tx.closest('.editor-box').style.borderColor = theme.border;
-    });
+    if (theme) {
+        document.documentElement.style.setProperty('--bg', theme.bg);
+        document.documentElement.style.setProperty('--panel', theme.panel);
+        document.documentElement.style.setProperty('--accent', theme.accent);
+        
+        document.querySelectorAll('textarea').forEach(tx => {
+            tx.style.fontFamily = font;
+            tx.style.fontSize = fontSize + "px"; 
+            tx.style.color = theme.text;
+            tx.style.background = theme.bg;
+            if(theme.border) tx.closest('.editor-box').style.borderColor = theme.border;
+        });
 
-    // 4. Labels aani icons update karne
-    document.querySelectorAll('.label, .icon-btn i').forEach(el => {
-        if(el.classList.contains('label')) el.style.background = theme.panel;
-        el.style.color = theme.accent;
-    });
+        document.querySelectorAll('.label, .icon-btn i').forEach(el => {
+            if(el.classList.contains('label')) el.style.background = theme.panel;
+            el.style.color = theme.accent;
+        });
+    }
 }
 </script>
 
