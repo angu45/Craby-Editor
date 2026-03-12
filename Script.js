@@ -1,8 +1,14 @@
 // --- 1. CONFIGURATION & ALL 12 THEMES ---
 const themes = {
     // Light Theme (Updated for better visibility)
-    light: { bg: '#ffffff', panel: '#f1f5f9', accent: '#2563eb', text: '#0f172a' },
-    
+    light: { 
+    bg: '#ffffff',          // Main background
+    panel: '#f1f5f9',       // Editor panels
+    accent: '#2563eb',      // Blue highlight (icons / buttons)
+    text: '#0f172a',        // Main text color
+    border: '#d1d5db',      // Border color
+    label: 'rgba(37, 99, 235, 0.08)' // Soft highlight background
+}
     // Baki Themes
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2' },
