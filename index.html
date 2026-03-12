@@ -1,100 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <title>Craby Editor - Free Online HTML, CSS, JS Editor | Anguworkshop</title>
-<meta name="description" content="Craby Editor is a powerful and lightweight online HTML editor by Anguworkshop. Write, preview, and export HTML, CSS, and JS code instantly.">
-<meta name="keywords" content="Craby Editor, Craby HTML Editor, Anguworkshop, Online HTML Editor, Live Preview Editor, Web Development Tool">
-<meta name="author" content="Anguworkshop">
-
-<meta property="og:type" content="website">
-<meta property="og:title" content="Craby Editor - Online Code Playground">
-<meta property="og:description" content="Write and test your web code instantly with Craby Editor.">
-<meta property="og:image" content="link-to-your-logo.png">
-
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:title" content="Craby Editor | Anguworkshop">
-<meta property="twitter:description" content="Best lightweight online HTML editor with live preview.">
- <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craby Editor | Anguworkshop</title>
+    <meta name="description" content="Free online HTML, CSS, JS editor by Anguworkshop.">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body data-theme="dark">
 
 <header>
-    <div class="logo"><img src="logo.png" ></div>
+    <div class="logo"><i class="fas fa-crab"></i><span>CRABY</span></div>
     <div class="nav-actions">
-        <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
-        <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
-        <button class="icon-btn" onclick="exportCode()"><i class="fas fa-download"></i></button>
+        <button class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i></button>
         <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
-        <button class="icon-btn run-btn" onclick="runCode()"><b>RUN</b></button>
     </div>
 </header>
 
+<div class="mobile-tabs">
+    <button class="tab-btn active" onclick="switchTab('html')">HTML</button>
+    <button class="tab-btn" onclick="switchTab('css')">CSS</button>
+    <button class="tab-btn" onclick="switchTab('js')">JS</button>
+    <button class="tab-btn preview-tab" onclick="switchTab('preview')">OUTPUT</button>
+</div>
+
 <div class="main-container">
-    <div class="editor-section">
+    <div class="editor-section" id="editor-sec">
         <div class="editor-box" id="html-box">
             <div class="label">HTML</div>
-            <div class="editor-wrapper">
-                <div class="line-numbers" id="html-lines">1</div>
-                <textarea id="html-code" oninput="handleInput(this, 'html')" onblur="autoFormat(this, 'html')" onkeydown="handleNav(event)" spellcheck="false"><h1>Hello World</h1></textarea>
-            </div>
+            <textarea id="html-code" oninput="handleInput(this, 'html')" spellcheck="false"><h1>Hello World</h1></textarea>
         </div>
         <div class="editor-box" id="css-box">
             <div class="label">CSS</div>
-            <div class="editor-wrapper">
-                <div class="line-numbers" id="css-lines">1</div>
-                <textarea id="css-code" oninput="handleInput(this, 'css')" onblur="autoFormat(this, 'css')" onkeydown="handleNav(event)" spellcheck="false">h1 { color: #ffb400; text-align: center; }</textarea>
-            </div>
+            <textarea id="css-code" oninput="handleInput(this, 'css')" spellcheck="false">h1 { color: orange; text-align: center; }</textarea>
         </div>
         <div class="editor-box" id="js-box">
-            <div class="label">JAVASCRIPT</div>
-            <div class="editor-wrapper">
-                <div class="line-numbers" id="js-lines">1</div>
-                <textarea id="js-code" oninput="handleInput(this, 'js')" onblur="autoFormat(this, 'js')" onkeydown="handleNav(event)" spellcheck="false">console.log('Editor Ready');</textarea>
-            </div>
-        </div>
-        <div id="suggestion-box"></div>
-    </div>
-
-    <div class="preview-section">
-        <div id="preview-frame" class="iframe-container">
-            <iframe id="output"></iframe>
+            <div class="label">JS</div>
+            <textarea id="js-code" oninput="handleInput(this, 'js')" spellcheck="false">console.log('Ready');</textarea>
         </div>
     </div>
 
-    <div class="settings-panel" id="settingsPanel">
-        <h3>Settings</h3>
-        <div class="s-group">
-            <label>Theme</label>
-            <select onchange="document.body.setAttribute('data-theme', this.value)">
-                <option value="dark">Dark Default</option>
-                <option value="light">Bright Light</option>
-                <option value="forest">Deep Forest</option>
-                <option value="ocean">Oceanic Blue</option>
-                <option value="cyber">Cyberpunk</option>
-                <option value="dracula">Dracula</option>
-                <option value="nord">Nordic</option>
-                <option value="matrix">Matrix</option>
-            </select>
-        </div>
-        <div class="s-group">
-            <label>Font Family</label>
-            <select id="font-family" onchange="updateFont()">
-                <option value="'Fira Code', monospace">Fira Code</option>
-                <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
-                <option value="'Roboto Mono', monospace">Roboto Mono</option>
-            </select>
-        </div>
-        <div class="s-group">
-            <label>Font Size (px)</label>
-            <input type="number" id="font-size" value="14" min="10" max="30" onchange="updateFont()">
-        </div>
-        <div class="s-group">
-            <label><input type="checkbox" id="live-toggle" checked> Live Preview</label>
-        </div>
-        <button class="icon-btn" style="width:100%; background:var(--accent); color:#000;" onclick="toggleSettings()">Apply</button>
+    <div class="preview-section" id="preview-sec">
+        <iframe id="output"></iframe>
     </div>
+</div>
+
+<div class="settings-panel" id="settingsPanel">
+    <h3>Settings</h3>
+    <div class="s-group">
+        <label>Theme</label>
+        <select onchange="document.body.setAttribute('data-theme', this.value)">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="cyber">Cyberpunk</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Font Size</label>
+        <input type="number" id="font-size" value="14" onchange="updateFont()">
+    </div>
+    <button class="icon-btn" style="width:100%" onclick="toggleSettings()">Close</button>
 </div>
 
 <script src="script.js"></script>
