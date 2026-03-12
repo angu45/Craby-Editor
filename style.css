@@ -9,27 +9,31 @@ header {
     background: var(--header); padding: 10px 20px; display: flex; 
     justify-content: space-between; align-items: center; 
     border-bottom: 2px solid var(--accent); z-index: 1000; 
-}/* Recommendation Box Styling */
-#suggestion-box {
-    position: absolute;
-    background: #1c2128;
-    border: 1px solid var(--accent);
-    color: white;
-    z-index: 9999;
+}#suggestion-box {
+    position: fixed;
+    background: #161b22;
+    border: 1px solid #ffb400;
+    color: #c9d1d9;
+    z-index: 2000000;
     display: none;
-    border-radius: 4px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    min-width: 150px;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    min-width: 180px;
+    max-height: 200px;
+    overflow-y: auto;
 }
+
 .suggestion-item {
-    padding: 8px 12px;
+    padding: 10px 15px;
     cursor: pointer;
     font-size: 13px;
     font-family: 'Fira Code', monospace;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.suggestion-item:hover {
-    background: var(--accent);
-    color: black;
+
+.suggestion-item:hover, .suggestion-item.active {
+    background: #ffb400;
+    color: #000;
 }
 
 .logo-container { display: flex; align-items: center; gap: 12px; }
