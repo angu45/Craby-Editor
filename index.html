@@ -25,27 +25,17 @@
 <body>
 
 <header>
-    <div id="preview-overlay" class="preview-overlay">
-    <div class="overlay-header">
-        <div class="logo">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 30px;">
-            <span>LIVE PREVIEW</span>
-        </div>
-        <button class="close-overlay" onclick="closePreview()"><i class="fas fa-times"></i></button>
+    <div class="logo">
+        <a href="https://ibb.co/NgdbB0sm" target="_blank">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
+        </a>
+        <span>CRABY ULTRA</span>
     </div>
-    <div class="overlay-body">
-        <div id="wrapper" class="iframe-wrapper">
-            <iframe id="output"></iframe>
-        </div>
-    </div>
-</div>
-<div class="nav-actions">
-        <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
-        <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
+    <div class="nav-actions">
         <button class="icon-btn" onclick="beautifyCode()"><i class="fas fa-magic"></i></button>
         <button class="icon-btn" onclick="exportCode()"><i class="fas fa-download"></i></button>
         <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-sliders-h"></i></button>
-        <button class="icon-btn run-btn" onclick="runCode()"><b>RUN</b></button>
+        <button class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play"></i> RUN</b></button>
     </div>
 </header>
 
@@ -57,7 +47,7 @@
         </div>
         <div class="editor-box" id="css-box">
             <div class="label">CSS <i class="fab fa-css3-alt"></i></div>
-            <textarea id="css-code" oninput="handleInput(this, 'css')" onkeydown="handleNav(event)" spellcheck="false">h1 { color: #ffb400; text-align: center; }</textarea>
+            <textarea id="css-code" oninput="handleInput(this, 'css')" onkeydown="handleNav(event)" spellcheck="false">h1 { color: #ffb400; text-align: center; font-family: sans-serif; }</textarea>
         </div>
         <div class="editor-box" id="js-box">
             <div class="label">JAVASCRIPT <i class="fab fa-js"></i></div>
@@ -65,40 +55,24 @@
         </div>
         <div id="suggestion-box"></div>
     </div>
+</div>
 
-    <div class="preview-section">
-        <div id="wrapper" class="iframe-wrapper"><iframe id="output"></iframe></div>
+<div id="preview-overlay" class="preview-overlay">
+    <div class="overlay-header">
+        <div class="overlay-logo">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
+            <span>PREVIEW MODE</span>
+        </div>
+        <div class="device-toggles">
+            <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
+            <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
+        </div>
+        <button class="close-btn" onclick="closePreview()"><i class="fas fa-times"></i> Close</button>
     </div>
-
-    <div class="settings-panel" id="settingsPanel">
-        <h3>IDE Settings</h3>
-        <div class="s-group">
-            <label class="checkbox-group"><input type="checkbox" id="live-toggle" checked> Live Preview (Auto-run)</label>
+    <div class="overlay-body">
+        <div id="wrapper" class="iframe-wrapper">
+            <iframe id="output"></iframe>
         </div>
-        <div class="s-group">
-            <label>Font Size</label>
-            <select id="font-size-sel" onchange="updateEditorStyles()">
-                <option value="12px">12px</option>
-                <option value="14px" selected>14px</option>
-                <option value="16px">16px</option>
-                <option value="18px">18px</option>
-            </select>
-        </div>
-        <div class="s-group">
-            <label>Font Family</label>
-            <select id="font-family-sel" onchange="updateEditorStyles()">
-                <option value="'Fira Code', monospace">Fira Code</option>
-                <option value="monospace">System Mono</option>
-                <option value="'Courier New', Courier">Courier New</option>
-            </select>
-        </div>
-        <div class="s-group">
-            <label>Visible Editors</label>
-            <label class="checkbox-group"><input type="checkbox" checked onchange="toggleBox('html-box', this.checked)"> Show HTML</label>
-            <label class="checkbox-group"><input type="checkbox" checked onchange="toggleBox('css-box', this.checked)"> Show CSS</label>
-            <label class="checkbox-group"><input type="checkbox" checked onchange="toggleBox('js-box', this.checked)"> Show JS</label>
-        </div>
-        <button class="icon-btn" style="width:100%; margin-top:20px; background: var(--accent); color: #000;" onclick="toggleSettings()"><b>Save & Close</b></button>
     </div>
 </div>
 
