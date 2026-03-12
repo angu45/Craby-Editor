@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My PinSpace | Home</title>
+    <link rel="stylesheet" href="styles_1.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="brand-name">My <span>PinSpace</span></a>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#">Settings</a>
+    </div>
+</nav>
+
+    <main class="container">
+        <section class="hero-mini">
+            <div class="hero-content">
+                <h1>Welcome to <span>My PinSpace</span></h1>
+                <p>Premium Wallpapers for your Digital World</p>
+            </div>
+        </section>
+
+        <section class="features" id="categories">
+            <div class="section-title">
+                <h2>Categories</h2>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="item-img nature-bg"></div>
+                    <div class="item-content">
+                        <h3>Abstract & Artistic</h3>
+                        <a href="Nature-and-landscepe.html" class="learn-more">View All</a>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="item-img abstract-bg"></div>
+                    <div class="item-content">
+                        <h3>Abstract & Artistic</h3>
+                        <a href="analytics.html" class="learn-more">View All</a>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="item-img space-bg"></div>
+                    <div class="item-content">
+                        <h3>Space & Astronomy</h3>
+                        <a href="space.html" class="learn-more">View All</a>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="item-img animal-bg"></div>
+                    <div class="item-content">
+                        <h3>Animals & Wildlife</h3>
+                        <a href="animal.html.html" class="learn-more">View All</a>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="item-img city-bg"></div>
+                    <div class="item-content">
+                        <h3>City & Architecture</h3>
+                        <a href="city.html" class="learn-more">View All</a>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="item-img anime-bg"></div>
+                    <div class="item-content">
+                        <h3>Anime & Movies</h3>
+                        <a href="anime-movies.html" class="learn-more">View All</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main><section class="feed-section">
+        <div class="section-title">
+            <h2>Explore All Wallpapers</h2>
+        </div>
+        <div class="gallery" id="global-feed">
+            </div>
+        <div id="feed-loader" style="text-align: center; padding: 40px; color: #888;">
+            Scrolling for more inspiration...
+        </div>
+    </section>
+    
+    <script>
+        const feedGrid = document.getElementById('global-feed');
+        const feedLoader = document.getElementById('feed-loader');
+        let feedImgCount = 1;
+    
+        // List of all your categories and their specific keywords
+        const categoryConfigs = [
+            { name: "Nature & Landscape", tags: "nature,landscape,mountains" },
+            { name: "Abstract & Artistic", tags: "abstract,art,texture" },
+            { name: "Space & Astronomy", tags: "space,galaxy,stars" },
+            { name: "Animals & Wildlife", tags: "animals,wildlife,lion" },
+            { name: "City & Architecture", tags: "city,architecture,urban" },
+            { name: "Anime & Movies", tags: "anime,cyberpunk,cinema" }
+        ];
+    
+        function createFeedCard() {
+            // 1. Pick a random category for this specific card
+            const config = categoryConfigs[Math.floor(Math.random() * categoryConfigs.length)];
+            
+            // 2. Setup image details
+            const id = feedImgCount++;
+            const height = Math.floor(Math.random() * (1000 - 600 + 1)) + 600;
+            const imgUrl = `https://loremflickr.com/600/${height}/${config.tags}?sig=${id}`;
+    
+            // 3. Create the HTML structure
+            const item = document.createElement('div');
+            item.className = 'item'; // Uses the same styling as your category pages
+            item.style.marginBottom = "15px";
+            item.style.breakInside = "avoid";
+    
+            item.innerHTML = `
+                <form action="downloader.html" method="GET">
+                    <input type="hidden" name="title" value="Premium Wallpaper #${id}">
+                    <input type="hidden" name="category" value="${config.name}">
+                    <input type="hidden" name="imageUrl" value="${imgUrl}">
+                    <button type="submit" class="image-button" style="border:none; background:none; padding:0; width:100%; cursor:pointer;">
+                        <img src="${imgUrl}" alt="Wallpaper" style="width:100%; display:block; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div class="info-panel" style="padding:10px; text-align:left;">
+                            <h6 style="margin:0; font-size:0.85rem; color:#333;">Wallpaper #${id}</h6>
+                            <p style="margin:4px 0 0; font-size:0.7rem; color:#999; text-transform:uppercase;">${config.name}</p>
+                        </div>
+                    </button>
+                </form>
+            `;
+            return item;
+        }
+    
+        // Infinite Scroll Logic for the Homepage
+        const feedObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+               
+                for (let i = 0; i < 12; i++) {
+                    feedGrid.appendChild(createFeedCard());
+                }
+            }
+        }, { threshold: 0.1 });
+    
+        feedObserver.observe(feedLoader);
+    
+        // Initial Load
+        for (let i = 0; i < 10; i++) {
+            feedGrid.appendChild(createFeedCard());
+        }
+    </script>
+    
+    <style>
+        /* Ensure the homepage feed uses the Pinterest layout from your styles_2.css */
+        .gallery {
+            column-count: 5;
+            column-gap: 15px;
+            padding: 20px 5%;
+        }
+        
+        @media (max-width: 1100px) { .gallery { column-count: 4; } }
+        @media (max-width: 800px) { .gallery { column-count: 3; } }
+        @media (max-width: 500px) { .gallery { column-count: 2; } }
+        
+        .section-title {
+            padding-left: 5%;
+            margin-top: 40px;
+        }
+    </style>
+
+    <footer class="footer">
+        <p>&copy; 2026 My PinSpace. All Rights Reserved.</p>
+    </footer>
+    <script src="common.js"></script>
+
+</body>
+</html>

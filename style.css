@@ -1,0 +1,198 @@
+:root {
+  --accent: #40916c;
+  --dark: #1a1a1a;
+  --light: #f8f9fa;
+  --shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
+  scroll-behavior: smooth;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 8%;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.brand-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--dark);
+}
+
+.brand-name span { color: var(--accent); }
+
+.nav-links a {
+  text-decoration: none;
+  color: #666;
+  margin-left: 30px;
+  font-weight: 600;
+}
+
+/* Hero Section */
+.hero {
+  height: 60vh;
+  background: url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.hero-overlay {
+  background: rgba(0,0,0,0.4);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 20px;
+} 
+/* Ensure the homepage feed uses the Pinterest layout from your styles_2.css */
+.gallery {
+    column-count: 5;
+    column-gap: 15px;
+    padding: 20px 5%;
+}
+
+@media (max-width: 1100px) { .gallery { column-count: 4; } }
+@media (max-width: 800px) { .gallery { column-count: 3; } }
+@media (max-width: 500px) { .gallery { column-count: 2; } }
+
+.section-title {
+    padding-left: 5%;
+    margin-top: 40px;
+}
+
+
+.hero h1 { font-size: 3.5rem; margin: 0; }
+.hero h1 span { color: #b7e4c7; }
+.hero p { font-size: 1.2rem; opacity: 0.9; }
+
+.cta-button {
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  width: fit-content;
+  align-self: center;
+  transition: 0.3s;
+}
+/* Header Background & Alignment */
+.hero-mini {
+  margin-top: 60px; /* Space for the fixed navbar */
+  height: 300px; /* Compact but impactful height */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers horizontally */
+  justify-content: center; /* Centers vertically */
+  text-align: center; /* Centers text lines */
+  
+  /* Background Image Setup */
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+}
+
+.hero-content {
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.hero-content h1 span {
+  color: #b7e4c7; /* Matching the Nature theme accent */
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  margin-top: 10px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Decorative line under centered text */
+.header-line {
+  width: 80px;
+  height: 4px;
+  background: #b7e4c7;
+  margin: 20px auto 0;
+  border-radius: 2px;
+}
+.cta-button:hover { background: #2d6a4f; transform: translateY(-3px); }
+
+/* Features Section */
+.features { padding: 80px 8%; }
+.section-title { text-align: center; margin-bottom: 50px; }
+.underline { width: 60px; height: 4px; background: var(--accent); margin: 10px auto; }
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.feature-item {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: 0.3s;
+}
+
+.feature-item:hover { transform: translateY(-10px); }
+
+.item-img { height: 180px; background-size: cover; background-position: center; }
+
+/* Category Backgrounds */
+.nature-bg { background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500'); }
+.abstract-bg { background-image: url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=500'); }
+.space-bg { background-image: url('https://i.pinimg.com/736x/85/bf/c9/85bfc9aa8040843da51b79e9363fc55c.jpg'); }
+.animal-bg { background-image: url('https://images.unsplash.com/photo-1543946207-39bd91e70ca7?w=500'); }
+.city-bg { background-image: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=500'); }
+.anime-bg { background-image: url('https://i.pinimg.com/1200x/2b/91/8d/2b918d8fce3d6edbe5123f946682ae17.jpg'); }
+
+.item-content { padding: 25px; }
+.item-content h3 { margin: 0 0 10px 0; font-size: 1.3rem; }
+.item-content p { color: #777; font-size: 0.95rem; margin-bottom: 20px; }
+
+.learn-more {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 2px solid var(--accent);
+  padding: 8px 20px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.learn-more:hover { background: var(--accent); color: white; }
+
+.footer { text-align: center; padding: 40px; color: #999; font-size: 0.9rem; }
