@@ -130,6 +130,109 @@ function exportCode() {
     a.download = "index.html";
     a.click();
 }
+// --- CONFIGURATION ---
+const VERCEL_PROJECT_ID = "prj_meM3Eo45r76ByCNXL5PHnEJrMZV8";
 
-// Close suggestion box on click outside
-document.addEventListener('click', (e) => { if(!e.target.classList.contains('suggestion-item')) sBox.style.display = 'none'; });
+// --- CORE FUNCTIONALITIES ---
+
+// 1. RUN BUTTON FIX
+function runCode() {
+    console.log("Running code..."); // Debugging sathi
+    const overlay = document.getElementById('preview-overlay');
+    if (!overlay) {
+        alert("Error: Preview overlay not found in HTML!");
+        return;
+    }
+    
+    overlay.style.display = 'flex'; 
+
+    const html = document.getElementById('html-code').value;
+    const css = `<style>${document.getElementById('css-code').value}</style>`;
+    const js = `<script>${document.getElementById('js-code').value}<\/script>`;
+    
+    const outputFrame = document.getElementById('output');
+    const out = outputFrame.contentWindow.document;
+    
+    out.open();
+    out.write(html + css + js);
+    out.close();
+}
+
+// 2. CLOSE PREVIEW FIX
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+}
+
+// 3. SETTINGS TOGGLE FIX
+function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    if (panel) {
+        panel.classList.toggle('open');
+    } else {
+        console.error("Settings panel not found!");
+    }
+}
+
+// 4. BEAUTIFY BUTTON FIX
+function beautifyCode() {
+    try {
+        const h = document.getElementById('html-code');
+        // Simple regex-based formatter
+        h.value = h.value
+            .replace(/>\s+</g, '><')
+            .replace(/(<[^>]+>)/g, '$1\n')
+            .trim();
+        alert("HTML Formatted!");
+    } catch (e) {
+        console.error("Beautify error:", e);
+    }
+}
+
+// 5. EXPORT BUTTON FIX
+function exportCode() {
+    const code = `<!DOCTYPE html>
+<html>
+<head>
+    <style>${document.getElementById('css-code').value}</style>
+</head>
+<body>
+    ${document.getElementById('html-code').value}
+    <script>${document.getElementById('js-code').value}<\/script>
+</body>
+</html>`;
+    
+    const blob = new Blob([code], {type: "text/html"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "craby-export.html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// 6. DEVICE TOGGLE
+function setDevice(mode) {
+    const wrapper = document.getElementById('wrapper');
+    if (wrapper) {
+        wrapper.className = 'iframe-wrapper ' + (mode === 'mobile' ? 'mobile' : '');
+    }
+}
+
+// --- EDITOR LOGIC (Autocomplete & Input) ---
+
+function handleInput(el, lang) {
+    // Live preview feature (if checkbox exists)
+    const liveToggle = document.getElementById('live-toggle');
+    if (liveToggle && liveToggle.checked) {
+        runCode();
+    }
+    // Show suggestions (from previous code)
+    if (typeof showSuggest === "function") {
+        showSuggest(el, lang);
+    }
+}
+
+// Window load handle
+window.onload = function() {
+    console.log("Craby Editor Ultra Ready!");
+};
