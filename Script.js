@@ -1,25 +1,22 @@
 // --- 1. CONFIGURATION & ALL 12 THEMES ---
 const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' },
-   
-    light: { 
-        bg: '#ffffff', 
-        panel: '#f8fafc', 
-        accent: '#1e40af', // Deep Blue for Symbols/Icons
-        text: '#0f172a', 
-        border: '#cbd5e1'  // Clear Border
-    },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
-    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
-    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
-    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
-    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
-    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
-    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
+    // Light Theme (Updated for better visibility)
+    light: { bg: '#ffffff', panel: '#f1f5f9', accent: '#2563eb', text: '#0f172a' },
+    
+    // Baki Themes
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9' }
 };
+
 const dictionary = {
 
 html: [
@@ -93,7 +90,6 @@ js: [
 
 };
 
-
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
@@ -101,11 +97,15 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. THEME & VISIBILITY LOGIC ---
+// --- 2. THEME & VISIBILITY ---
 function updateVisibility() {
-    document.getElementById('html-code').closest('.editor-box').style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
-    document.getElementById('css-code').closest('.editor-box').style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
-    document.getElementById('js-code').closest('.editor-box').style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+    const htmlBox = document.getElementById('html-code').closest('.editor-box');
+    const cssBox = document.getElementById('css-code').closest('.editor-box');
+    const jsBox = document.getElementById('js-code').closest('.editor-box');
+
+    htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
 }
 
 function updateThemeAndFont() {
@@ -113,32 +113,25 @@ function updateThemeAndFont() {
     const font = document.getElementById('font-family-sel').value;
     const theme = themes[themeKey] || themes.light;
 
-    // Apply Colors to CSS Variables
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
-    document.documentElement.style.setProperty('--border-color', theme.border);
     
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
-        // Apply Border Color
-        tx.closest('.editor-box').style.borderColor = theme.border;
+        // Shadow kadhun takla light mode madhe text clean disnya sathi
+        tx.style.textShadow = themeKey === 'light' ? 'none' : `0 0 1px ${theme.accent}44`;
     });
 
-    // Update Label and Icon Colors
     document.querySelectorAll('.label').forEach(label => {
         label.style.background = theme.panel;
         label.style.color = theme.accent;
     });
-
-    document.querySelectorAll('.icon-btn i').forEach(icon => {
-        icon.style.color = theme.accent;
-    });
 }
 
-// --- 3. EDITOR CORE LOGIC ---
+// --- 3. CORE LOGIC ---
 document.querySelectorAll('textarea').forEach(txt => {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
@@ -181,14 +174,15 @@ function showSuggestions(txt) {
         sBox.style.display = 'block';
 
         sBox.innerHTML = matches.map((m, i) => {
+            // Light mode madhe recommendation colors pan thode dark kele
             const themeKey = document.getElementById('theme-sel').value;
-            let color = themeKey === 'light' ? "#1e40af" : "#79c0ff"; 
-            if (currentLang === 'html') color = themeKey === 'light' ? "#b91c1c" : "#ff7b72"; 
-            if (currentLang === 'css') color = themeKey === 'light' ? "#7e22ce" : "#d2a8ff";  
+            let color = themeKey === 'light' ? "#0056b3" : "#79c0ff"; 
+            if (currentLang === 'html') color = themeKey === 'light' ? "#d32f2f" : "#ff7b72"; 
+            if (currentLang === 'css') color = themeKey === 'light' ? "#7b1fa2" : "#d2a8ff";  
 
             return `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
                 <span style="color: ${color}; font-weight: bold;">${m}</span> 
-                <small style="color: #64748b; margin-left:10px;">${currentLang}</small>
+                <small style="color: #888; margin-left:10px;">${currentLang}</small>
             </div>`;
         }).join('');
     } else { sBox.style.display = 'none'; }
@@ -227,7 +221,7 @@ function handleNav(e, txt) {
 
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
-// --- 4. TOOLBAR ACTIONS ---
+// --- 4. ACTIONS ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
