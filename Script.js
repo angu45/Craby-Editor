@@ -2,8 +2,13 @@
 // --- 1. CONFIGURATION & ALL 12 THEMES ---
 const themes = {
     // Light Theme (Ata Default kela aahe)
-    light: { bg: '#ffffff', panel: '#f1f5f9', accent: '#2563eb', text: '#1e293b' },
-    
+    light: { 
+    bg: '#ffffff',      // Pure White Background
+    panel: '#e2e8f0',   // Light Grey Panel
+    accent: '#1a56db',  // Strong Blue Accent
+    text: '#0f172a'     // Deep Dark Navy (Ata ekdum clear disel)
+},
+
     // Aadhichya Themes
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2' },
