@@ -1,12 +1,11 @@
 // --- 1. CONFIGURATION & ALL 8 THEMES ---
 // --- 1. CONFIGURATION & ALL 12 THEMES ---
-const themes = {
-    // Light Theme (Ata Default kela aahe)
-    light: { 
+light: { 
     bg: '#ffffff',      // Pure White Background
-    panel: '#e2e8f0',   // Light Grey Panel
-    accent: '#1a56db',  // Strong Blue Accent
-    text: '#0f172a'     // Deep Dark Navy (Ata ekdum clear disel)
+    panel: '#f8fafc',   // Very Light Grey (Buttons/Panel sathi)
+    accent: '#1e40af',  // Bold Blue (Icons, Symbols aani Active elements sathi)
+    text: '#0f172a',    // Deep Navy (Purna black peksha professional disto)
+    border: '#cbd5e1'   // Solid Grey Border (Ata borders ekdum clear distil)
 },
 
     // Aadhichya Themes
