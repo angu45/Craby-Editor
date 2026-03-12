@@ -205,6 +205,51 @@ function insertWord(word, id) {
     sBox.style.display = 'none';
     txt.focus();
 }
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
+    
+    // Shevatcha shabd shodha jo user ne type kela aahe
+    const lastWordMatch = textBefore.match(/[\w.-]+$/);
+    const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
+
+    let wordToInsert = word;
+
+    // Jar HTML editor asel, tar tag automatic bracket madhe taka aani close kara
+    if (currentLang === 'html') {
+        const selfClosingTags = ['img', 'br', 'hr', 'input', 'link', 'meta'];
+        
+        if (selfClosingTags.includes(word.toLowerCase())) {
+            wordToInsert = `<${word}>`;
+        } else if (['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) {
+            wordToInsert = `${word}=""`;
+        } else {
+            // Recommendation select kelyavar: <h1></h1> as print hoil
+            wordToInsert = `<${word}></${word}>`;
+        }
+    } 
+    else if (currentLang === 'css') {
+        wordToInsert = `${word}: ;`;
+    }
+
+    // Code textarea madhe insert kara
+    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
+    
+    // Cursor chi position thik karne (Brackets chya aat cursor set karne)
+    if (currentLang === 'html' && wordToInsert.includes('></')) {
+        // Cursor la <h1> aani </h1> chya madhe set karel
+        const newPos = startPos + word.length + 2; 
+        txt.selectionStart = txt.selectionEnd = newPos;
+    } else if (wordToInsert.endsWith('=""') || wordToInsert.endsWith(': ;')) {
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
+    } else {
+        txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
+    }
+
+    sBox.style.display = 'none';
+    txt.focus();
+}
 
 function handleNav(e, txt) {
     if (sBox.style.display === 'block') {
