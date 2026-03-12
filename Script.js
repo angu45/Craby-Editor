@@ -2,6 +2,34 @@
  * CRABY ULTRA - FULL JAVASCRIPT
  * Features: Auto-close, Recommendation, 8 Themes, Show/Hide Editors, Font Families
  */
+// --- UPDATED THEME DATA WITH SYNTAX COLORS ---
+const themes = {
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', keyword: '#ff7b72', symbol: '#d2a8ff' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', keyword: '#66d9ef', symbol: '#ae81ff' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', keyword: '#ff79c6', symbol: '#bd93f9' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', keyword: '#00cc00', symbol: '#008800' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', keyword: '#81a1c1', symbol: '#b48ead' }
+};
+
+// --- CSS VARIABLES UPDATE FUNCTION ---
+function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const theme = themes[themeKey] || themes.dark;
+
+    // CSS Variables apply karne
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--editor-text', theme.text);
+
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.color = theme.text;
+        // Text Shadow mule code "glow" hoto aani professional disto
+        tx.style.textShadow = `0 0 1px ${theme.accent}44`; 
+    });
+}
 
 // --- 1. CONFIGURATION & THEME DATA ---
 const themes = {
