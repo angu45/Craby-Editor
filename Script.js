@@ -2,6 +2,7 @@
 const themes = {
     // Light Theme (Updated for better visibility)
     light: { 
+    .icon-btn: 'black',
     bg: '#ffffff',          // Main background
     panel: '#f1f5f9',       // Editor panels
     accent: '#2563eb',      // Blue highlight (icons / buttons)
