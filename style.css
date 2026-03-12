@@ -9,7 +9,29 @@ header {
     background: var(--header); padding: 10px 20px; display: flex; 
     justify-content: space-between; align-items: center; 
     border-bottom: 2px solid var(--accent); z-index: 1000; 
+}/* Recommendation Box Styling */
+#suggestion-box {
+    position: absolute;
+    background: #1c2128;
+    border: 1px solid var(--accent);
+    color: white;
+    z-index: 9999;
+    display: none;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    min-width: 150px;
 }
+.suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Fira Code', monospace;
+}
+.suggestion-item:hover {
+    background: var(--accent);
+    color: black;
+}
+
 .logo-container { display: flex; align-items: center; gap: 12px; }
 .logo-container img { height: 35px; }
 .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--accent); }
