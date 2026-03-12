@@ -100,11 +100,12 @@ header {
     flex-direction: column; 
 }
 
-.editor-box {
-    border: 1px solid var(--border-color);
-}
-.icon-btn {
-    color: var(--accent); /* Symbols/Icons color */
+.editor-box { 
+    display: flex; 
+    flex-direction: column; 
+    border-bottom: 1px solid var(--border); 
+    flex: 1; 
+    position: relative; 
 }
 
 .label { 
@@ -119,30 +120,17 @@ header {
     align-items: center;
 }
 
-textarea {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--editor-text); /* Theme nusar badalel */
-    font-family: 'Fira Code', monospace;
-    padding: 20px;
-    resize: none;
-    outline: none;
-    font-size: 14px;
-    line-height: 1.6;
-    tab-size: 4; /* Tab space barobar disel */
-    caret-color: var(--accent); /* Cursor cha color */
-    letter-spacing: 0.5px;
-}
-
-/* Recommendation Box madhe pan colors add karu */
-.suggestion-item span {
-    color: var(--accent);
-    font-weight: 600;
-}
-.suggestion-item small {
-    color: #888;
-    margin-left: 10px;
+textarea { 
+    flex: 1; 
+    background: transparent; 
+    border: none; 
+    color: #9cdcfe; 
+    font-family: 'Fira Code', monospace; 
+    padding: 15px; 
+    resize: none; 
+    outline: none; 
+    font-size: 14px; 
+    line-height: 1.6; 
 }
 
 /* --- 4. PREVIEW OVERLAY (FLOW SCREEN) --- */
@@ -249,9 +237,10 @@ iframe {
     outline: none; 
 }
 
+/* --- 6. RECOMMENDATION BOX --- */
 #suggestion-box {
     position: fixed;
-    background: rgba(22, 27, 34, 0.95); /* Thoda transparent kela */
+    background: #161b22;
     border: 1px solid var(--accent);
     color: #c9d1d9;
     z-index: 2000000;
@@ -259,7 +248,8 @@ iframe {
     border-radius: 6px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     min-width: 180px;
-    backdrop-filter: blur(5px); /* Background blur effect */
+    max-height: 220px;
+    overflow-y: auto;
 }
 
 .suggestion-item {
