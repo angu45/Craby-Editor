@@ -1,14 +1,76 @@
 // --- 1. CONFIGURATION & DICTIONARY ---
+
 const dictionary = {
-    html: [
-        'div', 'span', 'h1', 'h2', 'h3', 'p', 'button', 'input', 'img', 'a', 'section', 'article', 'header', 'footer', 'nav', 'ul', 'li', 'ol', 'form', 'label', 'select', 'textarea', 'table', 'tr', 'td', 'th', 'canvas', 'svg', 'class', 'id', 'style', 'src', 'href', 'type', 'placeholder', 'onclick', 'value', 'name', 'required', 'alt', 'target', 'width', 'height', 'rel'
-    ],
-    css: [
-        'background', 'color', 'margin', 'padding', 'display', 'flex', 'grid', 'border', 'width', 'height', 'font-size', 'font-family', 'font-weight', 'position', 'top', 'left', 'right', 'bottom', 'opacity', 'transition', 'z-index', 'justify-content', 'align-items', 'text-align', 'border-radius', 'box-shadow', 'overflow', 'cursor', 'none', 'block', 'inline-block', 'absolute', 'relative', 'fixed', 'pointer', 'transparent'
-    ],
-    js: [
-        'function', 'const', 'let', 'var', 'console.log', 'document.getElementById', 'document.querySelector', 'addEventListener', 'window', 'setInterval', 'setTimeout', 'if', 'else', 'for', 'return', 'async', 'await', 'fetch', 'JSON.parse', 'JSON.stringify', 'Math.random', 'Math.floor', 'push', 'split', 'replace', 'trim'
-    ]
+
+html: [
+'a','alt','article','aside','audio',
+'b','base','body','br','button',
+'canvas','caption','cite','class','code','col','colgroup',
+'datalist','dd','del','details','dfn','dialog','div','dl','dt',
+'em','embed',
+'fieldset','figcaption','figure','footer','form',
+'h1','h2','h3','h4','h5','h6','head','header','height','hr','html','href',
+'i','id','iframe','img','input',
+'label','legend','li','link',
+'main','map','mark','meta',
+'name','nav',
+'ol','onclick','optgroup','option',
+'p','param','picture','placeholder','pre','progress',
+'q',
+'rel','required',
+'s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','svg',
+'table','tbody','td','template','textarea','tfoot','th','thead','time','title','tr','track','type',
+'u','ul',
+'value','var','video',
+'width'
+],
+
+css: [
+'absolute','align-items','animation','background','background-color','border','border-radius',
+'bottom','box-shadow','box-sizing',
+'clear','color','column-count','column-gap','content','cursor',
+'display',
+'flex','flex-direction','flex-wrap','float','font','font-family','font-size','font-style','font-weight',
+'gap','grid','grid-area','grid-template-columns','grid-template-rows',
+'height',
+'inline','inline-block',
+'justify-content',
+'left','letter-spacing','line-height',
+'margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','min-height','min-width',
+'none',
+'opacity','overflow',
+'padding','padding-bottom','padding-left','padding-right','padding-top','pointer','position',
+'relative','right',
+'text-align','text-decoration','text-transform','top','transform','transition','transparent',
+'visibility',
+'width','word-spacing',
+'z-index'
+],
+
+js: [
+'addEventListener','alert','Array','async','await',
+'break',
+'catch','class','clearInterval','clearTimeout','console','console.log','const','continue',
+'Date','debugger','default','delete','document','document.getElementById','document.querySelector',
+'else','export',
+'fetch','finally','for','forEach','function',
+'if','import','in','instanceof','isNaN',
+'JSON','JSON.parse','JSON.stringify',
+'let',
+'map','Math','Math.floor','Math.random',
+'new','null',
+'Object',
+'parseFloat','parseInt','pop','push',
+'querySelector','querySelectorAll',
+'return',
+'setInterval','setTimeout','shift','slice','some','split','splice','String',
+'this','throw','trim','try','typeof',
+'undefined',
+'var',
+'window','while'
+]
+
+
 };
 
 const sBox = document.createElement('div');
