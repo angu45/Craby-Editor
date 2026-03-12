@@ -1,15 +1,10 @@
-// --- 1. CONFIGURATION & THEME DATA ---
+// --- 1. THEME & DICTIONARY ---
 const themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2' },
-    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9' },
-    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00' },
-    'high-contrast': { bg: '#000000', panel: '#111111', accent: '#ffffff', text: '#ffffff' }
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00' }
 };
-
 const dictionary = {
 
 html: [
@@ -82,6 +77,7 @@ js: [
 
 
 };
+
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
@@ -89,22 +85,17 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. EDITOR VISIBILITY & THEME FUNCTIONS ---
-
+// --- 2. THEME & VISIBILITY ---
 function updateVisibility() {
-    const htmlBox = document.getElementById('html-code').closest('.editor-box');
-    const cssBox = document.getElementById('css-code').closest('.editor-box');
-    const jsBox = document.getElementById('js-code').closest('.editor-box');
-
-    htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
-    cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
-    jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+    document.getElementById('html-code').closest('.editor-box').style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    document.getElementById('css-code').closest('.editor-box').style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    document.getElementById('js-code').closest('.editor-box').style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
 }
 
 function updateThemeAndFont() {
     const themeKey = document.getElementById('theme-sel').value;
     const font = document.getElementById('font-family-sel').value;
-    const theme = themes[themeKey];
+    const theme = themes[themeKey] || themes.dark;
 
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
@@ -113,12 +104,10 @@ function updateThemeAndFont() {
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
         tx.style.color = theme.text;
-        tx.style.textShadow = `0 0 1px ${theme.accent}44`;
     });
 }
 
-// --- 3. AUTO-CLOSE & SUGGESTIONS LOGIC ---
-
+// --- 3. RECOMMENDATION WITH KEYWORD COLORING ---
 document.querySelectorAll('textarea').forEach(txt => {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
@@ -126,28 +115,21 @@ document.querySelectorAll('textarea').forEach(txt => {
         const char = e.data;
         currentLang = txt.id.split('-')[0];
 
-        // Basic Auto-Pairs
+        // Auto Pairs
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
         } 
-        // HTML Tag Auto-Close
         else if (char === '>') {
-            const lastPart = val.substring(0, pos);
-            const match = lastPart.match(/<(\w+)>$/);
-            if (match) {
-                const tagName = match[1];
-                const selfClosing = ['img', 'br', 'hr', 'input', 'link', 'meta'];
-                if (!selfClosing.includes(tagName.toLowerCase())) {
-                    txt.value = val.substring(0, pos) + `</${tagName}>` + val.substring(pos);
-                    txt.selectionStart = txt.selectionEnd = pos;
-                }
+            const match = val.substring(0, pos).match(/<(\w+)>$/);
+            if (match && !['img', 'br', 'hr', 'input'].includes(match[1].toLowerCase())) {
+                txt.value = val.substring(0, pos) + `</${match[1]}>` + val.substring(pos);
+                txt.selectionStart = txt.selectionEnd = pos;
             }
         }
         showSuggestions(txt);
     });
-
     txt.addEventListener('keydown', (e) => handleNav(e, txt));
 });
 
@@ -157,88 +139,64 @@ function showSuggestions(txt) {
     const words = textBefore.split(/[\s<>{}:;()]/);
     const lastWord = words[words.length - 1].toLowerCase();
 
-    if (lastWord.length < 1) {
-        sBox.style.display = 'none';
-        return;
-    }
+    if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
 
     const matches = dictionary[currentLang].filter(word => word.startsWith(lastWord));
 
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
-        // Box position shifted to avoid covering text
         sBox.style.top = `${rect.top + 40}px`; 
         sBox.style.left = `${rect.left + 50}px`;
         sBox.style.display = 'block';
 
-        sBox.innerHTML = matches.map((m, i) => 
-            `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
-                <span>${m}</span> <small>${currentLang}</small>
-            </div>`
-        ).join('');
-    } else {
-        sBox.style.display = 'none';
-    }
+        sBox.innerHTML = matches.map((m, i) => {
+            // KEYWORD COLORING LOGIC
+            let color = "#79c0ff"; // JS Blue
+            if (currentLang === 'html') color = "#ff7b72"; // HTML Red
+            if (currentLang === 'css') color = "#d2a8ff";  // CSS Purple
+
+            return `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
+                <span style="color: ${color}; font-weight: bold;">${m}</span> 
+                <small style="color: #888; margin-left:10px;">${currentLang}</small>
+            </div>`;
+        }).join('');
+    } else { sBox.style.display = 'none'; }
 }
 
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const text = txt.value;
-    const textBefore = text.substring(0, pos);
-    const lastWordMatch = textBefore.match(/[\w.-]+$/);
+    const lastWordMatch = txt.value.substring(0, pos).match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
 
     let wordToInsert = word;
+    if (currentLang === 'html' && ['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) wordToInsert = word + '=""';
+    else if (currentLang === 'css') wordToInsert = word + ': ;';
 
-    // Smart Symbol Insertion
-    if (currentLang === 'html' && ['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) {
-        wordToInsert = word + '=""';
-    } else if (currentLang === 'css' && dictionary.css.includes(word)) {
-        wordToInsert = word + ': ;';
-    }
-
-    txt.value = text.substring(0, startPos) + wordToInsert + text.substring(pos);
+    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
     
-    // Position Cursor
-    if (wordToInsert.endsWith('=""')) {
-        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
-    } else if (wordToInsert.endsWith(': ;')) {
+    if (wordToInsert.endsWith('=""') || wordToInsert.endsWith(': ;')) {
         txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     } else {
         txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
     }
-
     sBox.style.display = 'none';
     txt.focus();
 }
 
+// --- 4. NAVIGATION & ACTIONS ---
 function handleNav(e, txt) {
     if (sBox.style.display === 'block') {
         const items = sBox.querySelectorAll('.suggestion-item');
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            selectedIdx = (selectedIdx + 1) % items.length;
-            updateActive(items);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            selectedIdx = (selectedIdx - 1 + items.length) % items.length;
-            updateActive(items);
-        } else if (e.key === 'Enter' || e.key === 'Tab') {
-            e.preventDefault();
-            if (items[selectedIdx]) items[selectedIdx].click();
-        } else if (e.key === 'Escape') {
-            sBox.style.display = 'none';
-        }
+        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
+        else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+        else if (e.key === 'Escape') { sBox.style.display = 'none'; }
     }
 }
 
-function updateActive(items) {
-    items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
-}
-
-// --- 4. NAVIGATION & TOOLS ---
+function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
@@ -266,16 +224,7 @@ function exportCode() {
     a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-// Global Event Listeners
+window.onload = () => { updateVisibility(); updateThemeAndFont(); };
 document.addEventListener('mousedown', (e) => {
-    const p = document.getElementById('settingsPanel');
-    const b = document.querySelector('.fa-sliders-h')?.parentElement;
-    if (p && p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
-    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
+    if (!sBox.contains(e.target)) sBox.style.display = 'none';
 });
-
-// Init on Load
-window.onload = () => {
-    updateVisibility(); 
-    updateThemeAndFont();
-};
