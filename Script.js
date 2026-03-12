@@ -255,3 +255,109 @@ document.addEventListener('mousedown', (e) => {
     if (p && p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
     if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
 });
+// --- 1. THEME DATA ---
+const themes = {
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#a6e22e' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#50fa7b' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00cc00' },
+    'high-contrast': { bg: '#000000', panel: '#111111', accent: '#ffffff', text: '#ffffff' }
+};
+
+// --- 2. EDITOR VISIBILITY (Add/Remove) ---
+function updateVisibility() {
+    const htmlBox = document.getElementById('html-code').parentElement;
+    const cssBox = document.getElementById('css-code').parentElement;
+    const jsBox = document.getElementById('js-code').parentElement;
+
+    htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+}
+
+// --- 3. THEME & FONT UPDATE ---
+function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const theme = themes[themeKey];
+
+    // CSS Variables Update
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    
+    // Textareas Update
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.color = theme.text;
+    });
+}
+
+// --- 4. DICTIONARY & SUGGESTIONS (Same as before) ---
+const dictionary = {
+    html: ['div', 'span', 'h1', 'p', 'class', 'id', 'href', 'src', 'style'],
+    css: ['color', 'background', 'margin', 'padding', 'display', 'flex'],
+    js: ['function', 'const', 'let', 'console.log', 'document']
+};
+
+const sBox = document.createElement('div');
+sBox.id = 'suggestion-box';
+document.body.appendChild(sBox);
+
+document.querySelectorAll('textarea').forEach(txt => {
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const val = txt.value;
+        const char = e.data;
+        const lang = txt.id.split('-')[0];
+
+        // Auto Symbol Logic
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        }
+
+        // Show Suggestions
+        showSuggestions(txt, lang);
+    });
+});
+
+function showSuggestions(txt, lang) {
+    const pos = txt.selectionStart;
+    const lastWord = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
+    if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
+
+    const matches = dictionary[lang].filter(w => w.startsWith(lastWord));
+    if (matches.length > 0) {
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 40}px`;
+        sBox.style.left = `${rect.left + 50}px`;
+        sBox.style.display = 'block';
+        sBox.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}', '${lang}')">${m}</div>`).join('');
+    } else { sBox.style.display = 'none'; }
+}
+
+function insertWord(word, id, lang) {
+    const txt = document.getElementById(id);
+    let wordToInsert = word;
+    if (lang === 'html' && ['class', 'id', 'href'].includes(word)) wordToInsert = word + '=""';
+    if (lang === 'css') wordToInsert = word + ': ;';
+
+    const pos = txt.selectionStart;
+    const lastWordLen = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().length;
+    txt.value = txt.value.substring(0, pos - lastWordLen) + wordToInsert + txt.value.substring(pos);
+    sBox.style.display = 'none';
+    txt.focus();
+}
+
+// --- 5. INITIALIZE ---
+window.onload = () => {
+    updateVisibility(); // Default: JS hide
+    updateThemeAndFont();
+};
+
+// ... (Baki runCode, toggleSettings, closePreview functions same rahtil)
