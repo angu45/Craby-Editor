@@ -100,12 +100,11 @@ header {
     flex-direction: column; 
 }
 
-.editor-box { 
-    display: flex; 
-    flex-direction: column; 
-    border-bottom: 1px solid var(--border); 
-    flex: 1; 
-    position: relative; 
+.editor-box {
+    border: 1px solid var(--border-color);
+}
+.icon-btn {
+    color: var(--accent); /* Symbols/Icons color */
 }
 
 .label { 
