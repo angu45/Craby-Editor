@@ -102,8 +102,10 @@ u<!DOCTYPE html>
             <option value="monospace">System Monospace</option>
         </select>
     </div>
-
-   <input type="range" id="font-size-bar" min="5" max="50" value="16" oninput="updateThemeAndFont()"><br>
+<div class="setting-item">
+    <label>Font Size: <span id="fs-display">16px</span></label>
+    <input type="range" id="font-size-bar" min="5" max="50" value="16" oninput="updateThemeAndFont()" style="width:100%;">
+</div>
  
     <div class="s-group">
         <label>Editor Theme</label>
@@ -126,6 +128,36 @@ u<!DOCTYPE html>
     <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
 </div>
 
-<script src="Script.js"></script>
+<script src="Script.js">function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    
+    // 1. Seek bar kadhun value ghene
+    const fontSize = document.getElementById('font-size-bar').value;
+    document.getElementById('fs-display').innerText = fontSize + "px"; 
+
+    const theme = themes[themeKey] || themes.dark;
+
+    // 2. CSS variables update karne
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    
+    // 3. Textarea madhe font size aani style apply karne
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.fontSize = fontSize + "px"; // Hya line mule font size badalel
+        tx.style.color = theme.text;
+        tx.style.background = theme.bg;
+        tx.closest('.editor-box').style.borderColor = theme.border;
+    });
+
+    // 4. Labels aani icons update karne
+    document.querySelectorAll('.label, .icon-btn i').forEach(el => {
+        if(el.classList.contains('label')) el.style.background = theme.panel;
+        el.style.color = theme.accent;
+    });
+}
+</script>
 </body>
 </html>
