@@ -26,7 +26,64 @@ header {
     background: var(--panel); border: 1px solid var(--border); color: var(--text); 
     padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; 
     display: flex; align-items: center; gap: 6px; transition: 0.2s;
+}/* --- FULLSCREEN PREVIEW OVERLAY --- */
+.preview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #f0f2f5; /* Light grey background like Vercel apps */
+    z-index: 9999;
+    display: none; /* Suruvatila hidden asel */
+    flex-direction: column;
+    animation: fadeIn 0.3s ease-out;
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.overlay-header {
+    background: var(--header);
+    padding: 10px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--accent);
+}
+
+.overlay-body {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-overlay {
+    background: #ff4444;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: 0.2s;
+}
+
+.close-overlay:hover {
+    transform: scale(1.1);
+    background: #cc0000;
+}
+
+/* Editor Section chi width 100% kara karan preview section screen varun kadhla aahe */
+.editor-section {
+    flex: 1;
+}
+
 .icon-btn:hover { border-color: var(--accent); background: rgba(255,180,0,0.1); }
 .run-btn { background: var(--accent) !important; color: #000 !important; font-weight: bold; border: none; }
 
