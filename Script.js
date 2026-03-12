@@ -1,14 +1,14 @@
 // --- 1. CONFIGURATION & ALL 12 THEMES ---
 const themes = {
-    // Updated Light Theme (Better Border & Symbol Visibility)
-  light: { 
-    bg: '#ffffff',          // Main background
-    panel: '#f1f5f9',       // Editor panels
-    accent: '#2563eb',      // Blue highlight (icons / buttons)
-    text: '#0f172a',        // Main text color
-    border: '#d1d5db',      // Border color
-    label: 'rgba(37, 99, 235, 0.08)' // Soft highlight background
-}  dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' },
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' },
+   
+    light: { 
+        bg: '#ffffff', 
+        panel: '#f8fafc', 
+        accent: '#1e40af', // Deep Blue for Symbols/Icons
+        text: '#0f172a', 
+        border: '#cbd5e1'  // Clear Border
+    },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
     matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
