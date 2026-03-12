@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+u<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -82,8 +82,9 @@
     <h3 style="color: var(--accent); display: flex; justify-content: space-between;">
         IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
     </h3>
-    <br>
-    
+    <br><h4> Font size</h4><br>
+   <input type="range" id="font-size-bar" min="5" max="50" value="16" oninput="updateThemeAndFont()"><br>
+ 
     <div class="s-group">
         <label>Show/Hide Editors</label>
         <div style="display: flex; gap: 10px; font-size: 12px;">
