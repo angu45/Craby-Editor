@@ -237,10 +237,9 @@ iframe {
     outline: none; 
 }
 
-/* --- 6. RECOMMENDATION BOX --- */
 #suggestion-box {
     position: fixed;
-    background: #161b22;
+    background: rgba(22, 27, 34, 0.95); /* Thoda transparent kela */
     border: 1px solid var(--accent);
     color: #c9d1d9;
     z-index: 2000000;
@@ -248,8 +247,7 @@ iframe {
     border-radius: 6px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     min-width: 180px;
-    max-height: 220px;
-    overflow-y: auto;
+    backdrop-filter: blur(5px); /* Background blur effect */
 }
 
 .suggestion-item {
