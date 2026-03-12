@@ -132,3 +132,33 @@ function toggleSettings() { document.getElementById('settingsPanel').classList.t
 
 document.addEventListener('click', (e) => { if(!e.target.classList.contains('suggestion-item')) sBox.style.display = 'none'; });
 window.onload = runCode;
+
+// Navin Run Function
+function runCode() {
+    const h = document.getElementById('html-code').value;
+    const c = `<style>${document.getElementById('css-code').value}</style>`;
+    const j = `<script>${document.getElementById('js-code').value}<\/script>`;
+    
+    // Preview Overlay Show Kara
+    const overlay = document.getElementById('preview-overlay');
+    overlay.style.display = 'flex';
+    
+    const out = document.getElementById('output').contentWindow.document;
+    out.open();
+    out.write(h + c + j);
+    out.close();
+}
+
+// Preview Close Karnyasathi
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+}
+
+// Live Toggle change: Jar live preview ON asel tar automatically overlay open hoil 
+// (Pan me suggest karen ki 'Live' off theva jar Fullscreen vaprayche asel, 
+// karan lihitana varun varun screen open hone annoying hou shakthe)
+function handleInput(el, lang) {
+    const isLive = document.getElementById('live-toggle').checked;
+    showSuggest(el, lang);
+    if(isLive) runCode(); 
+}
