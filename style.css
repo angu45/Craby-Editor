@@ -1,116 +1,39 @@
-/* --- CORE VARIABLES --- */
 :root {
-    --bg: #0d1117; --panel: #161b22; --accent: #ffb400; --text: #c9d1d9; --header: #010409; 
-    --border: rgba(255, 255, 255, 0.1); --gutter: #1c2128;
-    --editor-font: 'Fira Code', monospace; --editor-size: 14px;
+    --bg: #0d1117; --panel: #161b22; --accent: #ffb400; --text: #c9d1d9;
 }
 
-/* --- BASE STYLES --- */
+[data-theme="light"] { --bg: #f0f0f0; --panel: #ffffff; --accent: #007bff; --text: #000; }
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { 
-    background: var(--bg); color: var(--text); 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
-    height: 100vh; display: flex; flex-direction: column; 
-    overflow: hidden; transition: 0.3s; 
+body { background: var(--bg); color: var(--text); font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+header { background: #000; padding: 10px; display: flex; justify-content: space-between; border-bottom: 2px solid var(--accent); }
+
+/* Tabs for Mobile */
+.mobile-tabs { display: flex; background: var(--panel); border-bottom: 1px solid #333; }
+.tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: #888; font-weight: bold; cursor: pointer; }
+.tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+.preview-tab { background: rgba(255,180,0,0.1); }
+
+.main-container { flex: 1; display: flex; position: relative; }
+
+/* Editor Layout */
+.editor-section { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+.editor-box { flex: 1; display: flex; flex-direction: column; border-bottom: 1px solid #333; }
+.label { font-size: 10px; padding: 2px 10px; background: #000; color: var(--accent); }
+textarea { flex: 1; background: transparent; border: none; color: inherit; padding: 10px; font-family: monospace; font-size: 14px; outline: none; resize: none; }
+
+/* Preview Layout */
+.preview-section { flex: 1; background: white; }
+iframe { width: 100%; height: 100%; border: none; }
+
+/* Responsive Logic */
+@media (max-width: 768px) {
+    .editor-box { display: none; } /* Hide all boxes by default */
+    .editor-box.active { display: flex; height: 100%; } /* Show active box */
+    .preview-section { display: none; position: absolute; width: 100%; height: 100%; z-index: 5; }
+    .preview-section.active { display: block; }
 }
 
-/* --- HEADER --- */
-header { 
-    background: var(--header); padding: 10px 15px; 
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 2px solid var(--accent); z-index: 1000; 
-}
-.logo { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
-.nav-actions { display: flex; gap: 5px; }
-
-.icon-btn { 
-    background: var(--panel); border: 1px solid var(--border); 
-    color: var(--text); padding: 8px 10px; border-radius: 6px; 
-    cursor: pointer; font-size: 0.8rem; 
-}
-.run-btn { background: var(--accent) !important; color: #000 !important; font-weight: bold; }
-
-/* --- MAIN CONTAINER --- */
-.main-container { 
-    display: flex; flex: 1; height: calc(100vh - 55px); 
-    overflow: hidden; flex-direction: row; /* Default Desktop */
-}
-
-/* --- EDITOR SECTION --- */
-.editor-section { 
-    flex: 1; display: flex; flex-direction: column; 
-    border-right: 2px solid var(--border); background: var(--bg); 
-    min-width: 300px; overflow-y: auto;
-}
-.editor-box { display: flex; flex-direction: column; border-bottom: 1px solid var(--border); flex: 1; min-height: 150px; }
-.label { background: var(--header); padding: 4px 15px; font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
-
-.editor-wrapper { display: flex; flex: 1; position: relative; overflow: hidden; }
-.line-numbers { 
-    width: 35px; background: var(--gutter); color: var(--text); opacity: 0.3;
-    font-family: var(--editor-font); font-size: 12px; text-align: right; 
-    padding: 15px 5px; border-right: 1px solid var(--border); user-select: none;
-}
-textarea { 
-    flex: 1; background: transparent; border: none; color: var(--text); 
-    font-family: var(--editor-font); font-size: var(--editor-size); 
-    padding: 15px; resize: none; outline: none; line-height: 1.6;
-}
-
-/* --- PREVIEW SECTION --- */
-.preview-section { 
-    flex: 1; background: #cbd5e1; display: flex; 
-    align-items: center; justify-content: center; padding: 10px; 
-    position: relative; overflow: hidden;
-}
-.iframe-container { 
-    width: 100%; height: 100%; background: white; 
-    border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
-    transition: 0.4s; overflow: hidden;
-}
-
-/* --- MOBILE RESPONSIVE (THE REAL MAGIC) --- */
-@media screen and (max-width: 768px) {
-    .main-container { flex-direction: column; } /* Vertical stack on mobile */
-    
-    .editor-section { 
-        min-width: 100%; height: 50%; /* Top half editor */
-        border-right: none; border-bottom: 2px solid var(--border);
-    }
-    
-    .preview-section { height: 50%; padding: 5px; } /* Bottom half preview */
-    
-    .logo span { display: none; } /* Mobile var fack icon dakhva */
-    
-    .icon-btn { padding: 8px; font-size: 0.7rem; }
-    
-    /* Mobile var scroll smooth pahije */
-    .editor-section { overflow-y: scroll; -webkit-overflow-scrolling: touch; }
-    
-    .iframe-container.mobile { 
-        width: 100% !important; height: 100% !important; 
-        border: none !important; border-radius: 0 !important; 
-    }
-}
-
-/* --- SETTINGS PANEL --- */
-.settings-panel { 
-    position: absolute; right: -350px; top: 0; width: 300px; height: 100%; 
-    background: var(--panel); border-left: 2px solid var(--accent); 
-    z-index: 2000; padding: 20px; transition: 0.3s; 
-}
+.settings-panel { position: fixed; right: -300px; top: 0; width: 280px; height: 100%; background: var(--panel); transition: 0.3s; padding: 20px; z-index: 2000; border-left: 2px solid var(--accent); }
 .settings-panel.open { right: 0; }
-.s-group { margin-bottom: 15px; }
-select, input { 
-    width: 100%; padding: 10px; background: var(--bg); 
-    color: var(--text); border: 1px solid var(--border); border-radius: 5px; 
-}
-
-/* --- SUGGESTION BOX --- */
-#suggestion-box { 
-    position: absolute; background: var(--panel); border: 1px solid var(--accent); 
-    color: var(--text); z-index: 9999; display: none; border-radius: 5px; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5); min-width: 180px;
-}
-.suggestion-item { padding: 12px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 13px; }
-.suggestion-item.active { background: var(--accent); color: #000; }
