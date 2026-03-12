@@ -1,3 +1,20 @@
+/**
+ * CRABY ULTRA - FULL JAVASCRIPT
+ * Features: Auto-close, Recommendation, 8 Themes, Show/Hide Editors, Font Families
+ */
+
+// --- 1. CONFIGURATION & THEME DATA ---
+const themes = {
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', label: 'rgba(255,180,0,0.1)' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#a6e22e', label: 'rgba(249,38,114,0.1)' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#50fa7b', label: 'rgba(189,147,249,0.1)' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', label: 'rgba(56,189,248,0.1)' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', label: 'rgba(38,139,210,0.1)' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', label: 'rgba(136,192,208,0.1)' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00cc00', label: 'rgba(0,255,0,0.1)' },
+    'high-contrast': { bg: '#000000', panel: '#111111', accent: '#ffffff', text: '#ffffff', label: 'rgba(255,255,255,0.1)' }
+};
+
 // --- 1. CONFIGURATION & DICTIONARY ---
 
 const dictionary = {
@@ -72,9 +89,6 @@ js: [
 
 
 };
-
-
-// Suggestion Box Element Create Karne
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
@@ -82,22 +96,54 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. MAIN EDITOR EVENTS ---
+// --- 2. THEME & VISIBILITY LOGIC ---
+
+function updateVisibility() {
+    const htmlBox = document.getElementById('html-code').closest('.editor-box');
+    const cssBox = document.getElementById('css-code').closest('.editor-box');
+    const jsBox = document.getElementById('js-code').closest('.editor-box');
+
+    htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+}
+
+function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const theme = themes[themeKey];
+
+    // Update CSS Variables
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--header', theme.bg === '#000000' ? '#111' : '#010409');
+
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.color = theme.text;
+    });
+
+    document.querySelectorAll('.label').forEach(label => {
+        label.style.color = theme.accent;
+    });
+}
+
+// --- 3. EDITOR EVENTS (AUTO-CLOSE & SUGGESTIONS) ---
+
 document.querySelectorAll('textarea').forEach(txt => {
-    // Typing chya veles
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const val = txt.value;
         const char = e.data;
-        currentLang = txt.id.split('-')[0]; 
+        currentLang = txt.id.split('-')[0];
 
-        // A. AUTO-CLOSE BRACKETS & TAGS
+        // A. AUTO-CLOSE LOGIC
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
-        } 
-        else if (char === '>') {
+        } else if (char === '>') {
             const lastPart = val.substring(0, pos);
             const match = lastPart.match(/<(\w+)>$/);
             if (match) {
@@ -109,18 +155,12 @@ document.querySelectorAll('textarea').forEach(txt => {
                 }
             }
         }
-
-        // B. RECOMMENDATION DISPLAY
         showSuggestions(txt);
     });
 
-    // Keyboard Navigation (Arrows & Enter)
-    txt.addEventListener('keydown', (e) => {
-        handleNav(e, txt);
-    });
+    txt.addEventListener('keydown', (e) => handleNav(e, txt));
 });
 
-// --- 3. SUGGESTION SYSTEM ---
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
@@ -137,8 +177,6 @@ function showSuggestions(txt) {
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
-        
-        // BOX POSITION: Thoda khali aani side la जेणेकरून typing disturb honar nahi
         sBox.style.top = `${rect.top + 40}px`; 
         sBox.style.left = `${rect.left + 50}px`;
         sBox.style.display = 'block';
@@ -156,34 +194,25 @@ function showSuggestions(txt) {
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const text = txt.value;
-    const textBefore = text.substring(0, pos);
+    const textBefore = txt.value.substring(0, pos);
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
 
     let wordToInsert = word;
 
-    // 1. HTML Attributes Auto-Completion (class="")
-    if (currentLang === 'html') {
-        const attributes = ['class', 'id', 'href', 'src', 'type', 'value', 'placeholder', 'style', 'rel', 'alt'];
-        if (attributes.includes(word)) {
-            wordToInsert = word + '=""';
-        }
-    }
-    // 2. CSS Properties Auto-Completion (color: ;)
-    else if (currentLang === 'css') {
-        if (dictionary.css.includes(word)) {
-            wordToInsert = word + ': ;';
-        }
+    if (currentLang === 'html' && ['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) {
+        wordToInsert = word + '=""';
+    } else if (currentLang === 'css' && dictionary.css.includes(word)) {
+        wordToInsert = word + ': ;';
     }
 
-    txt.value = text.substring(0, startPos) + wordToInsert + text.substring(pos);
+    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
     
-    // Cursor Position Set Karne
+    // Set Cursor Position
     if (wordToInsert.endsWith('=""')) {
-        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // Quotes chya aat
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     } else if (wordToInsert.endsWith(': ;')) {
-        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // Colon chya nantar
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     } else {
         txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
     }
@@ -216,7 +245,8 @@ function updateActive(items) {
     items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
 }
 
-// --- 4. NAVIGATION & TOOL FUNCTIONS ---
+// --- 4. GLOBAL FUNCTIONS ---
+
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
@@ -243,121 +273,16 @@ function exportCode() {
     a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-function updateEditorStyles() {
-    const fs = document.getElementById('font-size-sel').value;
-    document.querySelectorAll('textarea').forEach(t => t.style.fontSize = fs);
-}
-
-// Global Click Listener
+// Global Click Listeners
 document.addEventListener('mousedown', (e) => {
     const p = document.getElementById('settingsPanel');
     const b = document.querySelector('.fa-sliders-h')?.parentElement;
-    if (p && p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
-    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
-});
-// --- 1. THEME DATA ---
-const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#a6e22e' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#50fa7b' },
-    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9' },
-    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00cc00' },
-    'high-contrast': { bg: '#000000', panel: '#111111', accent: '#ffffff', text: '#ffffff' }
-};
-
-// --- 2. EDITOR VISIBILITY (Add/Remove) ---
-function updateVisibility() {
-    const htmlBox = document.getElementById('html-code').parentElement;
-    const cssBox = document.getElementById('css-code').parentElement;
-    const jsBox = document.getElementById('js-code').parentElement;
-
-    htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
-    cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
-    jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
-}
-
-// --- 3. THEME & FONT UPDATE ---
-function updateThemeAndFont() {
-    const themeKey = document.getElementById('theme-sel').value;
-    const font = document.getElementById('font-family-sel').value;
-    const theme = themes[themeKey];
-
-    // CSS Variables Update
-    document.documentElement.style.setProperty('--bg', theme.bg);
-    document.documentElement.style.setProperty('--panel', theme.panel);
-    document.documentElement.style.setProperty('--accent', theme.accent);
-    
-    // Textareas Update
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontFamily = font;
-        tx.style.color = theme.text;
-    });
-}
-
-// --- 4. DICTIONARY & SUGGESTIONS (Same as before) ---
-const dictionary = {
-    html: ['div', 'span', 'h1', 'p', 'class', 'id', 'href', 'src', 'style'],
-    css: ['color', 'background', 'margin', 'padding', 'display', 'flex'],
-    js: ['function', 'const', 'let', 'console.log', 'document']
-};
-
-const sBox = document.createElement('div');
-sBox.id = 'suggestion-box';
-document.body.appendChild(sBox);
-
-document.querySelectorAll('textarea').forEach(txt => {
-    txt.addEventListener('input', (e) => {
-        const pos = txt.selectionStart;
-        const val = txt.value;
-        const char = e.data;
-        const lang = txt.id.split('-')[0];
-
-        // Auto Symbol Logic
-        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
-        if (pairs[char]) {
-            txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
-            txt.selectionStart = txt.selectionEnd = pos;
-        }
-
-        // Show Suggestions
-        showSuggestions(txt, lang);
-    });
+    if (p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
+    if (!sBox.contains(e.target)) sBox.style.display = 'none';
 });
 
-function showSuggestions(txt, lang) {
-    const pos = txt.selectionStart;
-    const lastWord = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
-    if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
-
-    const matches = dictionary[lang].filter(w => w.startsWith(lastWord));
-    if (matches.length > 0) {
-        const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 40}px`;
-        sBox.style.left = `${rect.left + 50}px`;
-        sBox.style.display = 'block';
-        sBox.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}', '${lang}')">${m}</div>`).join('');
-    } else { sBox.style.display = 'none'; }
-}
-
-function insertWord(word, id, lang) {
-    const txt = document.getElementById(id);
-    let wordToInsert = word;
-    if (lang === 'html' && ['class', 'id', 'href'].includes(word)) wordToInsert = word + '=""';
-    if (lang === 'css') wordToInsert = word + ': ;';
-
-    const pos = txt.selectionStart;
-    const lastWordLen = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().length;
-    txt.value = txt.value.substring(0, pos - lastWordLen) + wordToInsert + txt.value.substring(pos);
-    sBox.style.display = 'none';
-    txt.focus();
-}
-
-// --- 5. INITIALIZE ---
+// Initialization on Load
 window.onload = () => {
-    updateVisibility(); // Default: JS hide
+    updateVisibility(); 
     updateThemeAndFont();
 };
-
-// ... (Baki runCode, toggleSettings, closePreview functions same rahtil)
