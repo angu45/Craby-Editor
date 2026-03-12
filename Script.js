@@ -18,20 +18,24 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. AUTO-CLOSE & RECOMMENDATION LOGIC ---
+// --- 2. CORE EDITOR LOGIC ---
 document.querySelectorAll('textarea').forEach(txt => {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const val = txt.value;
         const char = e.data;
-        currentLang = txt.id.split('-')[0]; // html, css, or js
+        currentLang = txt.id.split('-')[0]; 
 
-        // A. AUTO-CLOSE LOGIC (As it is working)
+        // A. AUTO-CLOSE & SYMBOL COMPLETION
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        
+        // 1. Basic Pairs
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
-        } else if (char === '>') {
+        } 
+        // 2. HTML Auto End Tag
+        else if (char === '>') {
             const lastPart = val.substring(0, pos);
             const match = lastPart.match(/<(\w+)>$/);
             if (match) {
@@ -44,7 +48,7 @@ document.querySelectorAll('textarea').forEach(txt => {
             }
         }
 
-        // B. RECOMMENDATION LOGIC
+        // B. RECOMMENDATION SHOW
         showSuggestions(txt);
     });
 
@@ -53,6 +57,7 @@ document.querySelectorAll('textarea').forEach(txt => {
     });
 });
 
+// Recommendation Box Function
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
@@ -69,7 +74,6 @@ function showSuggestions(txt) {
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
-        // Simple positioning (Better cursor tracking sathi library lagte, pan he basic logic aahe)
         sBox.style.top = `${rect.top + 30}px`;
         sBox.style.left = `${rect.left + 30}px`;
         sBox.style.display = 'block';
@@ -84,6 +88,7 @@ function showSuggestions(txt) {
     }
 }
 
+// Word Insert Logic (With Auto Symbols)
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
@@ -92,8 +97,34 @@ function insertWord(word, id) {
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
 
-    txt.value = text.substring(0, startPos) + word + text.substring(pos);
-    txt.selectionStart = txt.selectionEnd = startPos + word.length;
+    let wordToInsert = word;
+
+    // logic for HTML attributes (class, href, etc.)
+    if (currentLang === 'html') {
+        const attributes = ['class', 'id', 'href', 'src', 'type', 'value', 'placeholder', 'style', 'rel', 'alt'];
+        if (attributes.includes(word)) {
+            wordToInsert = word + '=""';
+        }
+    }
+    // logic for CSS properties (color, margin, etc.)
+    else if (currentLang === 'css') {
+        const cssProps = dictionary.css;
+        if (cssProps.includes(word)) {
+            wordToInsert = word + ': ;';
+        }
+    }
+
+    txt.value = text.substring(0, startPos) + wordToInsert + text.substring(pos);
+    
+    // Position cursor correctly
+    if (wordToInsert.endsWith('=""')) {
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // inside ""
+    } else if (wordToInsert.endsWith(': ;')) {
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2; // after :
+    } else {
+        txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
+    }
+
     sBox.style.display = 'none';
     txt.focus();
 }
@@ -119,12 +150,10 @@ function handleNav(e, txt) {
 }
 
 function updateActive(items) {
-    items.forEach((it, i) => {
-        it.classList.toggle('active', i === selectedIdx);
-    });
+    items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
 }
 
-// --- 3. CORE UI FUNCTIONS ---
+// --- 3. OTHER TOOLS ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
@@ -156,11 +185,9 @@ function updateEditorStyles() {
     document.querySelectorAll('textarea').forEach(t => t.style.fontSize = fs);
 }
 
-// Close settings on outside click
 document.addEventListener('mousedown', (e) => {
     const p = document.getElementById('settingsPanel');
     const b = document.querySelector('.fa-sliders-h')?.parentElement;
     if (p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
     if (!sBox.contains(e.target)) sBox.style.display = 'none';
 });
-
