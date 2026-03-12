@@ -186,8 +186,43 @@ function toggleSettings() { document.getElementById('settingsPanel').classList.t
 function setDevice(m) { document.getElementById('wrapper').className = 'iframe-wrapper ' + (m==='mobile'?'mobile':''); }
 
 function beautifyCode() {
-    const h = document.getElementById('html-code');
-    h.value = h.value.replace(/>\s+</g, '><').replace(/(<[^>]+>)/g, '$1\n').trim();
+    // 1. HTML Beautify (Proper Indentation logic)
+    const htmlField = document.getElementById('html-code');
+    let html = htmlField.value.replace(/>\s+</g, '><'); // saglya extra spaces kadha
+    let tab = '  '; // 2 spaces for indentation
+    let result = '';
+    let indent = '';
+
+    html.split(/>/).forEach(element => {
+        if (element.match(/^\/\w/)) {
+            indent = indent.substring(tab.length);
+        }
+        result += indent + element + '>\n';
+        if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input") && !element.startsWith("img") && !element.startsWith("br")) {
+            indent += tab;
+        }
+    });
+    htmlField.value = result.substring(0, result.lastIndexOf('>') + 1).trim();
+
+    // 2. CSS Beautify
+    const cssField = document.getElementById('css-code');
+    let css = cssField.value
+        .replace(/\s*([\{\}\:\;\,])\s*/g, "$1") // extra spaces kadha
+        .replace(/\{/g, " {\n  ")
+        .replace(/\;/g, ";\n  ")
+        .replace(/\s*\}\s*/g, "\n}\n\n")
+        .replace(/\,\s*/g, ", ");
+    cssField.value = css.trim();
+
+    // 3. JS Beautify (Basic Formatting)
+    const jsField = document.getElementById('js-code');
+    let js = jsField.value
+        .replace(/\s*([\{\}\(\)\=\+\-\*\/\,])\s*/g, "$1")
+        .replace(/\{/g, " {\n  ")
+        .replace(/\}/g, "\n}\n")
+        .replace(/\;/g, ";\n  ")
+        .replace(/\( /g, "(").replace(/ \)/g, ")");
+    jsField.value = js.trim();
 }
 
 function exportCode() {
