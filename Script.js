@@ -1,19 +1,25 @@
 // --- 1. CONFIGURATION & ALL 8 THEMES ---
+// --- 1. CONFIGURATION & ALL 12 THEMES ---
 const themes = {
-    // Aadhichya 4 Themes
+    // Light Theme (Ata Default kela aahe)
+    light: { bg: '#ffffff', panel: '#f1f5f9', accent: '#2563eb', text: '#1e293b' },
+    
+    // Aadhichya Themes
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2' },
     matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900' },
     
-    // Light Theme
-    light: { bg: '#ffffff', panel: '#f1f5f9', accent: '#2563eb', text: '#1e293b' },
-    
-    // Navin 3 Themes
+    // Navin Themes
     cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3' },
     evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0' },
-    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff' }
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9' }
 };
+
 const dictionary = {
 
 html: [
