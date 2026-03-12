@@ -63,22 +63,47 @@
         </div>
     </div>
 </div>
-
 <div class="settings-panel" id="settingsPanel">
-    <h3 style="color: var(--accent); display: flex; justify-content: space-between; align-items: center;">
-        IDE Settings 
-        <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
+    <h3 style="color: var(--accent); display: flex; justify-content: space-between;">
+        IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
     </h3>
     <br>
+    
     <div class="s-group">
-        <label>Font Size</label>
-        <select id="font-size-sel" onchange="updateEditorStyles()">
-            <option value="14px" selected>14px</option>
-            <option value="16px">16px</option>
-            <option value="18px">18px</option>
+        <label>Show/Hide Editors</label>
+        <div style="display: flex; gap: 10px; font-size: 12px;">
+            <label><input type="checkbox" id="chk-html" checked onchange="updateVisibility()"> HTML</label>
+            <label><input type="checkbox" id="chk-css" checked onchange="updateVisibility()"> CSS</label>
+            <label><input type="checkbox" id="chk-js" onchange="updateVisibility()"> JS</label>
+        </div>
+    </div>
+
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Consolas', monospace">Consolas</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+            <option value="monospace">System Monospace</option>
         </select>
     </div>
-    <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; border:none; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
+
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark (Default)</option>
+            <option value="monokai">Monokai (Pro)</option>
+            <option value="dracula">Dracula</option>
+            <option value="midnight">Midnight Blue</option>
+            <option value="solarized">Solarized Dark</option>
+            <option value="nord">Nordic Frost</option>
+            <option value="matrix">Matrix Green</option>
+            <option value="high-contrast">High Contrast</option>
+        </select>
+    </div>
+
+    <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
 </div>
 
 <script src="Script.js"></script>
