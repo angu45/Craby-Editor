@@ -20,53 +20,115 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --bg: #0d1117; --panel: #161b22; --accent: #ffb400; --text: #c9d1d9; --border: rgba(255, 255, 255, 0.1); --header: #010409;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* --- HEADER --- */
+        header { 
+            background: var(--header); padding: 10px 20px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border-bottom: 2px solid var(--accent); z-index: 1000; 
+        }
+        /* Logo style (No <a> tag) */
+        .logo-container { display: flex; align-items: center; gap: 12px; cursor: default; }
+        .logo-container img { height: 35px; pointer-events: none; }
+        .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--accent); letter-spacing: 0.5px; }
+
+        .nav-actions { display: flex; gap: 8px; align-items: center; }
+
+        .icon-btn { 
+            background: var(--panel); border: 1px solid var(--border); color: var(--text); 
+            padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; 
+            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .icon-btn:hover { border-color: var(--accent); background: rgba(255,180,0,0.1); }
+        .run-btn { background: var(--accent) !important; color: #000 !important; font-weight: 800; border: none; }
+
+        /* --- MAIN LAYOUT --- */
+        .main-container { display: flex; flex: 1; position: relative; overflow: hidden; }
+        .editor-section { flex: 1; display: flex; flex-direction: column; }
+        .editor-box { display: flex; flex-direction: column; border-bottom: 1px solid var(--border); flex: 1; }
+
+        .label { background: rgba(0,0,0,0.4); padding: 6px 15px; font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: 1px; display: flex; justify-content: space-between; }
+        textarea { flex: 1; background: transparent; border: none; color: #9cdcfe; font-family: 'Fira Code', monospace; padding: 15px; resize: none; outline: none; font-size: 14px; line-height: 1.6; }
+
+        /* --- FLOW SCREEN PREVIEW --- */
+        .preview-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #f1f5f9; z-index: 99999; display: none; flex-direction: column;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .overlay-header {
+            background: var(--header); padding: 12px 25px; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent);
+        }
+        .overlay-body { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; }
+
+        .iframe-wrapper { width: 100%; height: 100%; background: white; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; transition: 0.3s; }
+        .iframe-wrapper.mobile { width: 375px; height: 667px; border: 12px solid #1a1a1a; border-radius: 35px; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* --- SETTINGS PANEL --- */
+        .settings-panel { position: absolute; right: -350px; top: 0; width: 320px; height: 100%; background: var(--panel); border-left: 2px solid var(--accent); z-index: 2000; padding: 25px; transition: 0.3s; overflow-y: auto; color: white;}
+        .settings-panel.open { right: 0; }
+        .s-group { margin-bottom: 15px; }
+        .s-group label { display: block; font-size: 12px; margin-bottom: 5px; opacity: 0.8; }
+        .s-group select { width: 100%; padding: 10px; background: #0d1117; border: 1px solid var(--border); color: white; border-radius: 4px; }
+    </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
-              </div>
-   <div class="nav-actions">
-    <button class="icon-btn" onclick="beautifyCode()"><i class="fas fa-magic"></i></button>
-    <button class="icon-btn" onclick="exportCode()"><i class="fas fa-download"></i></button>
-    <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-sliders-h"></i></button>
-    <button class="icon-btn run-btn" id="run-btn-main" onclick="runCode()"><b><i class="fas fa-play"></i> RUN</b></button>
-</div>
-
-<script src="Script.js"></script>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        <span class="logo-text">CRABY ULTRA</span>
+    </div>
+    <div class="nav-actions">
+        <button class="icon-btn" onclick="beautifyCode()" title="Format Code"><i class="fas fa-magic"></i></button>
+        <button class="icon-btn" onclick="exportCode()" title="Download File"><i class="fas fa-download"></i></button>
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-sliders-h"></i></button>
+        <button class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play"></i> RUN</b></button>
+    </div>
 </header>
 
 <div class="main-container">
     <div class="editor-section">
-        <div class="editor-box" id="html-box">
+        <div class="editor-box">
             <div class="label">HTML <i class="fas fa-code"></i></div>
-            <textarea id="html-code" oninput="handleInput(this, 'html')" onkeydown="handleNav(event)" spellcheck="false"><h1>Hello!</h1></textarea>
+            <textarea id="html-code" spellcheck="false"><h1>Welcome to Craby Editor</h1>
+<p>Start writing your code here...</p></textarea>
         </div>
-        <div class="editor-box" id="css-box">
+        <div class="editor-box">
             <div class="label">CSS <i class="fab fa-css3-alt"></i></div>
-            <textarea id="css-code" oninput="handleInput(this, 'css')" onkeydown="handleNav(event)" spellcheck="false">h1 { color: #ffb400; text-align: center; font-family: sans-serif; }</textarea>
+            <textarea id="css-code" spellcheck="false">body { background: #f4f4f4; display: flex; align-items: center; justify-content: center; height: 80vh; font-family: sans-serif; }
+h1 { color: #ffb400; text-shadow: 2px 2px #000; }</textarea>
         </div>
-        <div class="editor-box" id="js-box">
+        <div class="editor-box">
             <div class="label">JAVASCRIPT <i class="fab fa-js"></i></div>
-            <textarea id="js-code" oninput="handleInput(this, 'js')" onkeydown="handleNav(event)" spellcheck="false">console.log('Craby Editor Loaded');</textarea>
+            <textarea id="js-code" spellcheck="false">console.log('Editor initialized!');</textarea>
         </div>
-        <div id="suggestion-box"></div>
     </div>
 </div>
 
 <div id="preview-overlay" class="preview-overlay">
     <div class="overlay-header">
-        <div class="overlay-logo">
+        <div class="logo-container">
             <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
-            <span>PREVIEW MODE</span>
+            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
         </div>
-        <div class="device-toggles">
+        <div style="display: flex; gap: 10px;">
             <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
             <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
+            <button class="icon-btn" style="background: #ff4d4d !important; color: white !important; border:none;" onclick="closePreview()"><b><i class="fas fa-times"></i> CLOSE</b></button>
         </div>
-        <button class="close-btn" onclick="closePreview()"><i class="fas fa-times"></i> Close</button>
     </div>
     <div class="overlay-body">
         <div id="wrapper" class="iframe-wrapper">
@@ -75,244 +137,69 @@
     </div>
 </div>
 
-<script src="Script.js">// --- CONFIGURATION ---
-const VERCEL_PROJECT_ID = "prj_meM3Eo45r76ByCNXL5PHnEJrMZV8";
+<div class="settings-panel" id="settingsPanel">
+    <h3 style="color: var(--accent);">IDE Settings</h3><br>
+    <div class="s-group">
+        <label>Font Size</label>
+        <select id="font-size-sel" onchange="updateEditorStyles()">
+            <option value="12px">12px</option>
+            <option value="14px" selected>14px</option>
+            <option value="16px">16px</option>
+            <option value="18px">18px</option>
+        </select>
+    </div>
+    <button class="icon-btn" style="width:100%; margin-top:20px; background: var(--accent); color: #000; border:none;" onclick="toggleSettings()"><b>Save & Close</b></button>
+</div>
 
-const dict = {
-    html: { 
-        tags: ['div','span','h1','h2','h3','p','button','input','img','a','section','article','header','footer','nav','ul','li','ol','main','canvas','form','label','select','textarea','table','tr','td','th'], 
-        attrs: ['class','id','style','src','href','type','placeholder','onclick','value','name','required','alt','target','width','height'] 
-    },
-    css: { 
-        props: ['background','color','margin','padding','display','flex','grid','border','width','height','font-size','position','top','left','opacity','transition','z-index','justify-content','align-items','text-align','border-radius'], 
-        vals: ['block','none','flex','grid','center','relative','absolute','fixed','pointer','transparent','inherit','100%','100vh'] 
-    },
-    js: { 
-        keys: ['function','const','let','var','console.log','document.getElementById','document.querySelector','addEventListener','window','setInterval','setTimeout','if','else','for','return','async','await','fetch','JSON.parse','Math.random'] 
+<script>
+    // CORE LOGIC - NO REDIRECTION
+    function runCode() {
+        const overlay = document.getElementById('preview-overlay');
+        overlay.style.display = 'flex';
+
+        const html = document.getElementById('html-code').value;
+        const css = "<style>" + document.getElementById('css-code').value + "</style>";
+        const js = "<script>" + document.getElementById('js-code').value + "<\/script>";
+        
+        const outFrame = document.getElementById('output');
+        const outDoc = outFrame.contentWindow.document;
+        outDoc.open();
+        outDoc.write(html + css + js);
+        outDoc.close();
     }
-};
 
-let selectedIdx = 0;
-const sBox = document.getElementById('suggestion-box');
-
-// --- CORE RUN LOGIC ---
-function runCode() {
-    const overlay = document.getElementById('preview-overlay');
-    overlay.style.display = 'flex'; // Flow Screen Open Kara
-
-    const h = document.getElementById('html-code').value;
-    const c = `<style>${document.getElementById('css-code').value}</style>`;
-    const j = `<script>${document.getElementById('js-code').value}<\/script>`;
-    
-    const out = document.getElementById('output').contentWindow.document;
-    out.open();
-    out.write(h + c + j);
-    out.close();
-}
-
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
-function setDevice(mode) {
-    const wrapper = document.getElementById('wrapper');
-    wrapper.className = 'iframe-wrapper ' + (mode === 'mobile' ? 'mobile' : '');
-}
-
-// --- INPUT & AUTOCOMPLETE ---
-function handleInput(el, lang) {
-    const isLive = document.getElementById('live-toggle')?.checked;
-    
-    // Auto-close brackets/tags
-    el.addEventListener('input', (e) => {
-        const pos = el.selectionStart;
-        const val = el.value;
-        if (e.data === '{') {
-            el.value = val.substring(0, pos) + '}' + val.substring(pos);
-            el.selectionStart = el.selectionEnd = pos;
-        }
-        if (e.data === '(') {
-            el.value = val.substring(0, pos) + ')' + val.substring(pos);
-            el.selectionStart = el.selectionEnd = pos;
-        }
-    }, {once: true});
-
-    showSuggest(el, lang);
-    if(isLive) runCode();
-}
-
-function showSuggest(el, lang) {
-    const pos = el.selectionStart;
-    const text = el.value.substring(0, pos);
-    const lastWord = text.split(/[\s<>{}:;()]/).pop().toLowerCase();
-    
-    let list = []; let type = '';
-    if (lang === 'html') { list = dict.html.tags.concat(dict.html.attrs); type = 'html'; }
-    else if (lang === 'css') { list = dict.css.props.concat(dict.css.vals); type = 'css'; }
-    else { list = dict.js.keys; type = 'js'; }
-
-    const matches = list.filter(m => m.startsWith(lastWord));
-
-    if (matches.length > 0 && lastWord.length > 0) {
-        sBox.innerHTML = matches.map((m, i) => `
-            <div class="suggestion-item ${i===0?'active':''}" onclick="insert('${m}','${el.id}')">
-                <span>${m}</span><small style="opacity:0.5">${type}</small>
-            </div>`).join('');
-        sBox.style.display = 'block';
-        sBox.style.top = (el.offsetTop + 40) + 'px';
-        sBox.style.left = '40px';
-        selectedIdx = 0;
-    } else { sBox.style.display = 'none'; }
-}
-
-function insert(val, id) {
-    const el = document.getElementById(id);
-    const pos = el.selectionStart;
-    const text = el.value;
-    const lastWordMatch = text.substring(0, pos).match(/[\w.-]+$/);
-    const start = lastWordMatch ? pos - lastWordMatch[0].length : pos;
-
-    el.value = text.substring(0, start) + val + text.substring(pos);
-    el.selectionStart = el.selectionEnd = start + val.length;
-    sBox.style.display = 'none';
-    el.focus();
-}
-
-function handleNav(e) {
-    if (sBox.style.display === 'block') {
-        const items = sBox.querySelectorAll('.suggestion-item');
-        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
-        if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
-        if (e.key === 'Enter') { e.preventDefault(); items[selectedIdx].click(); }
-        if (e.key === 'Escape') sBox.style.display = 'none';
+    function closePreview() {
+        document.getElementById('preview-overlay').style.display = 'none';
     }
-}
 
-function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
-
-// --- UTILS ---
-function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
-
-function beautifyCode() {
-    const h = document.getElementById('html-code');
-    h.value = h.value.replace(/>\s+</g, '><').replace(/(<[^>]+>)/g, '$1\n').trim();
-    alert("Code Formatted!");
-}
-
-function exportCode() {
-    const code = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
-    const blob = new Blob([code], {type: "text/html"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "index.html";
-    a.click();
-}
-// --- CONFIGURATION ---
-const VERCEL_PROJECT_ID = "prj_meM3Eo45r76ByCNXL5PHnEJrMZV8";
-
-// --- CORE FUNCTIONALITIES ---
-
-// 1. RUN BUTTON FIX
-function runCode() {
-    console.log("Running code..."); // Debugging sathi
-    const overlay = document.getElementById('preview-overlay');
-    if (!overlay) {
-        alert("Error: Preview overlay not found in HTML!");
-        return;
+    function toggleSettings() {
+        document.getElementById('settingsPanel').classList.toggle('open');
     }
-    
-    overlay.style.display = 'flex'; 
 
-    const html = document.getElementById('html-code').value;
-    const css = `<style>${document.getElementById('css-code').value}</style>`;
-    const js = `<script>${document.getElementById('js-code').value}<\/script>`;
-    
-    const outputFrame = document.getElementById('output');
-    const out = outputFrame.contentWindow.document;
-    
-    out.open();
-    out.write(html + css + js);
-    out.close();
-}
-
-// 2. CLOSE PREVIEW FIX
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
-// 3. SETTINGS TOGGLE FIX
-function toggleSettings() {
-    const panel = document.getElementById('settingsPanel');
-    if (panel) {
-        panel.classList.toggle('open');
-    } else {
-        console.error("Settings panel not found!");
-    }
-}
-
-// 4. BEAUTIFY BUTTON FIX
-function beautifyCode() {
-    try {
-        const h = document.getElementById('html-code');
-        // Simple regex-based formatter
-        h.value = h.value
-            .replace(/>\s+</g, '><')
-            .replace(/(<[^>]+>)/g, '$1\n')
-            .trim();
-        alert("HTML Formatted!");
-    } catch (e) {
-        console.error("Beautify error:", e);
-    }
-}
-
-// 5. EXPORT BUTTON FIX
-function exportCode() {
-    const code = `<!DOCTYPE html>
-<html>
-<head>
-    <style>${document.getElementById('css-code').value}</style>
-</head>
-<body>
-    ${document.getElementById('html-code').value}
-    <script>${document.getElementById('js-code').value}<\/script>
-</body>
-</html>`;
-    
-    const blob = new Blob([code], {type: "text/html"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "craby-export.html";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-// 6. DEVICE TOGGLE
-function setDevice(mode) {
-    const wrapper = document.getElementById('wrapper');
-    if (wrapper) {
+    function setDevice(mode) {
+        const wrapper = document.getElementById('wrapper');
         wrapper.className = 'iframe-wrapper ' + (mode === 'mobile' ? 'mobile' : '');
     }
-}
 
-// --- EDITOR LOGIC (Autocomplete & Input) ---
-
-function handleInput(el, lang) {
-    // Live preview feature (if checkbox exists)
-    const liveToggle = document.getElementById('live-toggle');
-    if (liveToggle && liveToggle.checked) {
-        runCode();
+    function beautifyCode() {
+        const h = document.getElementById('html-code');
+        h.value = h.value.replace(/>\s+</g, '><').replace(/(<[^>]+>)/g, '$1\n').trim();
     }
-    // Show suggestions (from previous code)
-    if (typeof showSuggest === "function") {
-        showSuggest(el, lang);
-    }
-}
 
-// Window load handle
-window.onload = function() {
-    console.log("Craby Editor Ultra Ready!");
-};
+    function exportCode() {
+        const fullContent = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
+        const blob = new Blob([fullContent], {type: "text/html"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "craby_project.html";
+        link.click();
+    }
+
+    function updateEditorStyles() {
+        const fs = document.getElementById('font-size-sel').value;
+        document.querySelectorAll('textarea').forEach(tx => tx.style.fontSize = fs);
+    }
 </script>
+
 </body>
 </html>
