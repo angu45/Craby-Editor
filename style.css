@@ -8,7 +8,10 @@
 [data-theme="forest"] { --bg: #1a2e1a; --panel: #233d23; --accent: #7cfc00; --text: #e0efe0; --header: #0f1a0f; --border: rgba(124,252,0,0.1); --gutter: #142414; }
 [data-theme="cyber"] { --bg: #000; --panel: #1a1a1a; --accent: #f0f; --text: #0ff; --header: #000; --border: #f0f; --gutter: #111; }
 [data-theme="matrix"] { --bg: #000; --panel: #000; --accent: #00ff00; --text: #00ff00; --header: #000; --border: #008000; --gutter: #001100; }
-
+img{
+    height:40px;
+    width:70px;
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; }
 
