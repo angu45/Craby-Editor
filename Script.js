@@ -147,7 +147,32 @@ function runCode() {
     out.open();
     out.write(h + c + j);
     out.close();
+}// Run logic
+function runCode() {
+    const overlay = document.getElementById('preview-overlay');
+    overlay.style.display = 'flex';
+    
+    const h = document.getElementById('html-code').value;
+    const c = `<style>${document.getElementById('css-code').value}</style>`;
+    const j = `<script>${document.getElementById('js-code').value}<\/script>`;
+    
+    const out = document.getElementById('output').contentWindow.document;
+    out.open();
+    out.write(h + c + j);
+    out.close();
 }
+
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+}
+
+function setDevice(m) {
+    const wrapper = document.getElementById('wrapper');
+    wrapper.className = 'iframe-wrapper ' + (m === 'mobile' ? 'mobile' : '');
+}
+
+// Baki functions (handleInput, beautifyCode, etc.) tech theva jo tuze pehle hote.
+
 
 // Preview Close Karnyasathi
 function closePreview() {
