@@ -1,49 +1,14 @@
-/**
- * CRABY ULTRA - FULL JAVASCRIPT
- * Features: Auto-close, Recommendation, 8 Themes, Show/Hide Editors, Font Families
- */
-// --- UPDATED THEME DATA WITH SYNTAX COLORS ---
-const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', keyword: '#ff7b72', symbol: '#d2a8ff' },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', keyword: '#66d9ef', symbol: '#ae81ff' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', keyword: '#ff79c6', symbol: '#bd93f9' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', keyword: '#00cc00', symbol: '#008800' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', keyword: '#81a1c1', symbol: '#b48ead' }
-};
-
-// --- CSS VARIABLES UPDATE FUNCTION ---
-function updateThemeAndFont() {
-    const themeKey = document.getElementById('theme-sel').value;
-    const font = document.getElementById('font-family-sel').value;
-    const theme = themes[themeKey] || themes.dark;
-
-    // CSS Variables apply karne
-    document.documentElement.style.setProperty('--bg', theme.bg);
-    document.documentElement.style.setProperty('--panel', theme.panel);
-    document.documentElement.style.setProperty('--accent', theme.accent);
-    document.documentElement.style.setProperty('--editor-text', theme.text);
-
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontFamily = font;
-        tx.style.color = theme.text;
-        // Text Shadow mule code "glow" hoto aani professional disto
-        tx.style.textShadow = `0 0 1px ${theme.accent}44`; 
-    });
-}
-
 // --- 1. CONFIGURATION & THEME DATA ---
 const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', label: 'rgba(255,180,0,0.1)' },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#a6e22e', label: 'rgba(249,38,114,0.1)' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#50fa7b', label: 'rgba(189,147,249,0.1)' },
-    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', label: 'rgba(56,189,248,0.1)' },
-    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', label: 'rgba(38,139,210,0.1)' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', label: 'rgba(136,192,208,0.1)' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00cc00', label: 'rgba(0,255,0,0.1)' },
-    'high-contrast': { bg: '#000000', panel: '#111111', accent: '#ffffff', text: '#ffffff', label: 'rgba(255,255,255,0.1)' }
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00' },
+    'high-contrast': { bg: '#000000', panel: '#111111', accent: '#ffffff', text: '#ffffff' }
 };
-
-// --- 1. CONFIGURATION & DICTIONARY ---
 
 const dictionary = {
 
@@ -124,7 +89,7 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. THEME & VISIBILITY LOGIC ---
+// --- 2. EDITOR VISIBILITY & THEME FUNCTIONS ---
 
 function updateVisibility() {
     const htmlBox = document.getElementById('html-code').closest('.editor-box');
@@ -141,23 +106,18 @@ function updateThemeAndFont() {
     const font = document.getElementById('font-family-sel').value;
     const theme = themes[themeKey];
 
-    // Update CSS Variables
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
-    document.documentElement.style.setProperty('--header', theme.bg === '#000000' ? '#111' : '#010409');
-
+    
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
         tx.style.color = theme.text;
-    });
-
-    document.querySelectorAll('.label').forEach(label => {
-        label.style.color = theme.accent;
+        tx.style.textShadow = `0 0 1px ${theme.accent}44`;
     });
 }
 
-// --- 3. EDITOR EVENTS (AUTO-CLOSE & SUGGESTIONS) ---
+// --- 3. AUTO-CLOSE & SUGGESTIONS LOGIC ---
 
 document.querySelectorAll('textarea').forEach(txt => {
     txt.addEventListener('input', (e) => {
@@ -166,12 +126,14 @@ document.querySelectorAll('textarea').forEach(txt => {
         const char = e.data;
         currentLang = txt.id.split('-')[0];
 
-        // A. AUTO-CLOSE LOGIC
+        // Basic Auto-Pairs
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
-        } else if (char === '>') {
+        } 
+        // HTML Tag Auto-Close
+        else if (char === '>') {
             const lastPart = val.substring(0, pos);
             const match = lastPart.match(/<(\w+)>$/);
             if (match) {
@@ -205,6 +167,7 @@ function showSuggestions(txt) {
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
+        // Box position shifted to avoid covering text
         sBox.style.top = `${rect.top + 40}px`; 
         sBox.style.left = `${rect.left + 50}px`;
         sBox.style.display = 'block';
@@ -222,21 +185,23 @@ function showSuggestions(txt) {
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const textBefore = txt.value.substring(0, pos);
+    const text = txt.value;
+    const textBefore = text.substring(0, pos);
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
 
     let wordToInsert = word;
 
+    // Smart Symbol Insertion
     if (currentLang === 'html' && ['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) {
         wordToInsert = word + '=""';
     } else if (currentLang === 'css' && dictionary.css.includes(word)) {
         wordToInsert = word + ': ;';
     }
 
-    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
+    txt.value = text.substring(0, startPos) + wordToInsert + text.substring(pos);
     
-    // Set Cursor Position
+    // Position Cursor
     if (wordToInsert.endsWith('=""')) {
         txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     } else if (wordToInsert.endsWith(': ;')) {
@@ -273,7 +238,7 @@ function updateActive(items) {
     items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
 }
 
-// --- 4. GLOBAL FUNCTIONS ---
+// --- 4. NAVIGATION & TOOLS ---
 
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
@@ -301,15 +266,15 @@ function exportCode() {
     a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-// Global Click Listeners
+// Global Event Listeners
 document.addEventListener('mousedown', (e) => {
     const p = document.getElementById('settingsPanel');
     const b = document.querySelector('.fa-sliders-h')?.parentElement;
-    if (p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
-    if (!sBox.contains(e.target)) sBox.style.display = 'none';
+    if (p && p.classList.contains('open') && !p.contains(e.target) && (!b || !b.contains(e.target))) p.classList.remove('open');
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
 });
 
-// Initialization on Load
+// Init on Load
 window.onload = () => {
     updateVisibility(); 
     updateThemeAndFont();
