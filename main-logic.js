@@ -1,42 +1,32 @@
-/* --- 1. CORE VARIABLES & STORAGE --- */
+/* --- 1. CORE VARIABLES --- */
 window.saveHistory = (id, content) => localStorage.setItem(`craby_code_${id}`, content);
 
-/* --- 2. SHUTTERS (LEFT & RIGHT) --- */
-
-// Left Explorer Shutter
+/* --- 2. SHUTTERS --- */
 window.toggleLeftSidebar = () => {
     const sb = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
-    if(sb && shutter) {
-        sb.classList.toggle('open');
-        shutter.classList.toggle('active');
-        shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
-    }
+    sb.classList.toggle('open');
+    shutter.classList.toggle('active');
+    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
 };
 
-// Right Settings Shutter (FIXED)
-window.toggleSettings = () => {
-    const panel = document.getElementById('settingsPanel');
-    if(panel) {
-        panel.classList.toggle('open');
-    }
-};
+window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('open');
 
-/* --- 3. DYNAMIC STACKED WINDOWS --- */
+/* --- 3. DYNAMIC WINDOWS & AUTO-HEIGHT --- */
 window.addFileToUI = function(name, id, content = "") {
     const wrapper = document.getElementById('editor-wrapper');
     const fileList = document.getElementById('file-list');
     if(!wrapper || document.getElementById(`box-${id}`)) return;
 
-    // Add to Sidebar
+    // Pro Look Sidebar Item
     const item = document.createElement('div');
     item.className = 'file-item';
     item.id = `tab-${id}`;
-    item.innerHTML = `<i class="fas fa-file-code"></i> ${name}`;
-    item.onclick = () => document.getElementById(`box-${id}`).scrollIntoView({ behavior: 'smooth' });
+    item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
+    item.onclick = () => window.restoreBox(id); // Clicking here restores the file
     fileList.appendChild(item);
 
-    // Add Editor Box
+    // Editor Box
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
@@ -44,9 +34,9 @@ window.addFileToUI = function(name, id, content = "") {
         <div class="label">
             <span>${name.toUpperCase()}</span>
             <div class="box-controls">
-                <button onclick="minimizeBox('${id}')"><i class="fas fa-minus"></i></button>
-                <button onclick="toggleFullscreen('${id}')"><i class="fas fa-expand-arrows-alt"></i></button>
-                <button onclick="deleteFile('${id}')"><i class="fas fa-trash-alt"></i></button>
+                <button onclick="minimizeBox('${id}')" title="Minimize"><i class="fas fa-minus"></i></button>
+                <button onclick="toggleFullscreen('${id}')" title="Fullscreen"><i class="fas fa-expand-arrows-alt"></i></button>
+                <button onclick="deleteFile('${id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
             </div>
         </div>
         <textarea id="${id}-code" spellcheck="false" oninput="saveHistory('${id}', this.value)">${content}</textarea>
@@ -56,15 +46,21 @@ window.addFileToUI = function(name, id, content = "") {
     if(window.updateThemeAndFont) window.updateThemeAndFont();
 };
 
-window.createNewFile = () => {
-    const name = prompt("File Name:");
-    if(name) window.addFileToUI(name, name.replace(/[^a-z0-9]/gi, '-').toLowerCase(), "");
+/* --- 4. SMART CONTROLS --- */
+
+// Minimize: Totally hide from screen
+window.minimizeBox = (id) => {
+    const box = document.getElementById(`box-${id}`);
+    if(box) box.style.display = 'none';
 };
 
-/* --- 4. WINDOW CONTROLS --- */
-window.minimizeBox = (id) => {
-    const el = document.getElementById(`${id}-code`);
-    if(el) el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+// Restore: Bring back to screen from Shutter
+window.restoreBox = (id) => {
+    const box = document.getElementById(`box-${id}`);
+    if(box) {
+        box.style.display = 'flex'; // Bring back
+        box.scrollIntoView({ behavior: 'smooth' });
+    }
 };
 
 window.deleteFile = (id) => {
@@ -77,16 +73,13 @@ window.deleteFile = (id) => {
 
 window.toggleFullscreen = (id) => {
     const box = document.getElementById(`box-${id}`);
-    if(box) {
-        box.classList.toggle('fullscreen-mode');
-        document.getElementById(`exit-${id}`).style.display = box.classList.contains('fullscreen-mode') ? 'block' : 'none';
-    }
+    box.classList.toggle('fullscreen-mode');
+    document.getElementById(`exit-${id}`).style.display = box.classList.contains('fullscreen-mode') ? 'block' : 'none';
 };
 
-/* --- 5. RUN ENGINE --- */
+/* --- 5. RUN & INIT --- */
 window.runCode = () => {
-    const overlay = document.getElementById('preview-overlay');
-    overlay.style.display = 'flex';
+    document.getElementById('preview-overlay').style.display = 'flex';
     const h = document.getElementById('html-code')?.value || '';
     const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
     const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
@@ -96,14 +89,12 @@ window.runCode = () => {
 
 window.closePreview = () => document.getElementById('preview-overlay').style.display = 'none';
 
-/* --- 6. INITIAL LOAD --- */
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('editor-wrapper').innerHTML = '';
     document.getElementById('file-list').innerHTML = '';
-
     const getCode = (k, def) => localStorage.getItem(`craby_code_${k}`) || def;
 
-    window.addFileToUI("index.html", "html", getCode('html', "<h1>Craby Stack</h1>"));
-    window.addFileToUI("style.css", "css", getCode('css', "h1 { color: orange; }"));
-    window.addFileToUI("main.js", "js", getCode('js', "console.log('Started');"));
+    window.addFileToUI("index.html", "html", getCode('html', "<h1>Craby Smart Layout</h1>"));
+    window.addFileToUI("style.css", "css", getCode('css', "h1 { color: #ffb400; }"));
+    window.addFileToUI("main.js", "js", getCode('js', "console.log('Smart Height Active');"));
 });
