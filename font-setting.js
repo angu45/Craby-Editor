@@ -1,4 +1,5 @@
-const themes = {
+// Themes Global Object
+window.themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
@@ -13,15 +14,16 @@ const themes = {
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-function updateThemeAndFont() {
+window.updateThemeAndFont = function() {
     const themeKey = document.getElementById('theme-sel').value;
     const font = document.getElementById('font-family-sel').value;
     const fontSize = document.getElementById('font-size-bar').value;
     
-    const fsDisplay = document.getElementById('fs-display');
-    if(fsDisplay) fsDisplay.innerText = fontSize + "px"; 
+    if(document.getElementById('fs-display')) {
+        document.getElementById('fs-display').innerText = fontSize + "px"; 
+    }
 
-    const theme = themes[themeKey] || themes.dark;
+    const theme = window.themes[themeKey] || window.themes.dark;
 
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
@@ -33,9 +35,4 @@ function updateThemeAndFont() {
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
     });
-
-    document.querySelectorAll('.label').forEach(label => {
-        label.style.background = theme.panel;
-        label.style.color = theme.accent;
-    });
-}
+};
