@@ -25,6 +25,7 @@ body {
 }
 
 /* --- 2. HEADER & NAVIGATION --- */
+
 header { 
     position: fixed; 
     top: 0; 
@@ -37,7 +38,8 @@ header {
     justify-content: space-between; 
     align-items: center; 
     padding: 0 20px;
-    border-bottom: 2px solid var(--accent); 
+    border-bottom: 2px solid var(--accent); background: var(--header); 
+         
 }
 
 .logo-container { 
