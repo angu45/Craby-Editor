@@ -1,43 +1,38 @@
-function toggleLeftSidebar() {
+window.toggleLeftSidebar = function() {
     const sb = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
-}
+    if(sb && shutter) {
+        sb.classList.toggle('open');
+        shutter.classList.toggle('active');
+        shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+    }
+};
 
-function addFileToUI(name, id, content = "") {
+window.addFileToUI = function(name, id, content = "") {
     const fileList = document.getElementById('file-list');
+    const wrapper = document.getElementById('editor-wrapper');
+    if(!fileList || !wrapper) return;
+
+    // Explorer Tab
     const newTab = document.createElement('div');
     newTab.className = 'file-item';
     newTab.id = `tab-${id}`;
     newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span>`;
-    newTab.onclick = () => restoreBox(id);
+    newTab.onclick = () => {
+        document.querySelectorAll('.editor-box').forEach(b => b.style.display = 'none');
+        document.getElementById(`box-${id}`).style.display = 'flex';
+    };
     fileList.appendChild(newTab);
 
-    const wrapper = document.getElementById('editor-wrapper');
+    // Editor ডबा
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
     newBox.innerHTML = `
-        <div class="label">
-            <span>${name.toUpperCase()}</span>
-            <div class="window-controls">
-                <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
-                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
-            </div>
-        </div>
+        <div class="label"><span>${name.toUpperCase()}</span></div>
         <textarea id="${id}-code" spellcheck="false">${content}</textarea>
     `;
     wrapper.appendChild(newBox);
     
-    // Core Engine मधील फंक्शन कॉल करणे
-    if (typeof attachInputListeners === "function") {
-        attachInputListeners(document.getElementById(`${id}-code`));
-    }
-    updateThemeAndFont();
-}
-
-function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; }
-function restoreBox(id) { document.getElementById(`box-${id}`).style.display = 'flex'; }
-function deleteBox(id) { if(confirm("Delete?")) { document.getElementById(`box-${id}`).remove(); document.getElementById(`tab-${id}`).remove(); }}
+    if(window.updateThemeAndFont) window.updateThemeAndFont();
+};
