@@ -1,188 +1,86 @@
-/* CRABY EDITOR - MASTER LOGIC 
-   Features: Dynamic Layout, Persistence, Shutter, Settings, Run & Download
-*/
-
-// --- 1. INITIALIZATION & SETTINGS ---
-document.addEventListener('DOMContentLoaded', () => {
-    // सुरुवातीला डिफॉल्ट फाईल्स लोड करणे
-    initFiles();
-    // सेव्ह केलेल्या सेटिंग्ज अप्लाय करणे
-    if (window.updateThemeAndFont) window.updateThemeAndFont();
-    window.applySettings();
-});
-
-window.applySettings = () => {
-    const font = localStorage.getItem('craby_font') || "'Fira Code', monospace";
-    const theme = localStorage.getItem('craby_theme') || "dark";
-    const fontSize = localStorage.getItem('craby_font_size') || "16";
-
-    // UI सिंक करणे
-    if(document.getElementById('font-family-sel')) document.getElementById('font-family-sel').value = font;
-    if(document.getElementById('theme-sel')) document.getElementById('theme-sel').value = theme;
-    if(document.getElementById('font-size-bar')) document.getElementById('font-size-bar').value = fontSize;
-    
-    if (window.updateThemeAndFont) window.updateThemeAndFont();
+// --- 1. SHUTTER & FILE SYSTEM ---
+window.toggleLeftSidebar = function() {
+    const sb = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+    if(sb && shutter) {
+        sb.classList.toggle('open');
+        shutter.classList.toggle('active');
+        const icon = shutter.querySelector('i');
+        icon.className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+    }
 };
 
-// --- 2. DYNAMIC LAYOUT ENGINE (Divide Screen Height) ---
-window.updateLayout = () => {
+window.addFileToUI = function(name, id, content = "") {
+    const fileList = document.getElementById('file-list');
     const wrapper = document.getElementById('editor-wrapper');
-    if (!wrapper) return;
-    
-    const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none');
-    const count = visibleBoxes.length;
+    if(!fileList || !wrapper) return;
 
-    if (count > 0) {
-        const heightPercentage = 100 / count;
-        visibleBoxes.forEach(box => {
-            box.style.flex = `1 1 ${heightPercentage}%`;
-            box.style.height = `${heightPercentage}%`;
-            box.style.minHeight = "0"; // Flexbox ला नीट काम करण्यासाठी
-        });
-    }
+    const newTab = document.createElement('div');
+    newTab.className = 'file-item';
+    newTab.id = `tab-${id}`;
+    newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span>`;
+    newTab.onclick = () => {
+        document.querySelectorAll('.editor-box').forEach(b => b.style.display = 'none');
+        document.getElementById(`box-${id}`).style.display = 'flex';
+    };
+    fileList.appendChild(newTab);
+
+    const newBox = document.createElement('div');
+    newBox.className = 'editor-box';
+    newBox.id = `box-${id}`;
+    newBox.innerHTML = `
+        <div class="label"><span>${name.toUpperCase()} <i class="fas fa-code"></i></span></div>
+        <textarea id="${id}-code" spellcheck="false">${content}</textarea>
+    `;
+    wrapper.appendChild(newBox);
+    if(window.updateThemeAndFont) window.updateThemeAndFont();
 };
 
-// --- 3. FILE & WINDOW CONTROLS ---
-function initFiles() {
-    // लोकल स्टोअरेजमधून कोड मिळवणे
-    const html = localStorage.getItem('craby_code_html') || "<h1>Welcome to Craby</h1>";
-    const css = localStorage.getItem('craby_code_css') || "h1 { color: orange; text-align: center; font-family: sans-serif; }";
-    
-    document.getElementById('html-code').value = html;
-    document.getElementById('css-code').value = css;
-    
-    window.updateLayout();
-}
-
-window.saveHistory = (id, value) => {
-    localStorage.setItem(`craby_code_${id}`, value);
+// --- 2. REGULAR FUNCTIONS (Run, Settings, Tools) ---
+window.toggleSettings = function() {
+    const panel = document.getElementById('settingsPanel');
+    if(panel) panel.classList.toggle('open');
 };
 
-window.minimizeBox = (id) => {
-    const box = document.getElementById(`box-${id}`);
-    const checkbox = document.getElementById(`chk-${id}`);
-    if(box) {
-        box.style.display = 'none';
-        if(checkbox) checkbox.checked = false;
-        window.updateLayout();
-    }
-};
-
-window.updateVisibility = () => {
-    const htmlBox = document.getElementById('box-html');
-    const cssBox = document.getElementById('box-css');
-    
-    htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
-    cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
-    
-    window.updateLayout();
-};
-
-window.deleteFile = (id) => {
-    if(confirm(`तुम्हाला खरोखर ${id.toUpperCase()} मधील कोड साफ करायचा आहे का?`)) {
-        document.getElementById(`${id}-code`).value = "";
-        localStorage.setItem(`craby_code_${id}`, "");
-    }
-};
-
-window.toggleFullscreen = (id) => {
-    const box = document.getElementById(`box-${id}`);
-    box.classList.toggle('fullscreen-mode');
-};
-
-// --- 4. RUN & PREVIEW LOGIC ---
-window.runCode = () => {
+window.runCode = function() {
     const overlay = document.getElementById('preview-overlay');
-    const iframe = document.getElementById('output');
+    if(overlay) overlay.style.display = 'flex';
     
-    overlay.style.display = 'flex';
+    const h = document.getElementById('html-code')?.value || '';
+    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
+    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
     
-    const html = document.getElementById('html-code').value;
-    const css = `<style>${document.getElementById('css-code').value}</style>`;
-    // जर JS बॉक्स भविष्यात ॲड केला तर त्याचे लॉजिक:
-    const js = document.getElementById('js-code') ? `<script>${document.getElementById('js-code').value}<\/script>` : "";
-
-    const fullCode = html + css + js;
-    
-    const out = iframe.contentWindow.document;
+    const out = document.getElementById('output').contentWindow.document;
     out.open();
-    out.write(fullCode);
+    out.write(h + c + j);
     out.close();
 };
 
-window.closePreview = () => {
-    document.getElementById('preview-overlay').style.display = 'none';
+window.closePreview = function() { document.getElementById('preview-overlay').style.display = 'none'; };
+
+window.setDevice = function(mode) {
+    const wrapper = document.getElementById('wrapper');
+    if(mode === 'mobile') wrapper.classList.add('mobile');
+    else wrapper.classList.remove('mobile');
 };
 
-window.setDevice = (mode) => {
-    const wrapper = document.querySelector('.iframe-wrapper');
-    if(mode === 'mobile') {
-        wrapper.style.width = '375px';
-        wrapper.style.height = '667px';
-    } else {
-        wrapper.style.width = '100%';
-        wrapper.style.height = '100%';
+window.beautifyCode = function() {
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<');
+    });
+};
+
+// --- 3. INITIALIZATION ON LOAD ---
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('file-list').innerHTML = '';
+    document.getElementById('editor-wrapper').innerHTML = '';
+
+    if(window.addFileToUI) {
+        window.addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
+        window.addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
     }
-};
 
-// --- 5. DOWNLOAD / EXPORT LOGIC ---
-window.exportCode = () => {
-    const html = document.getElementById('html-code').value;
-    const css = document.getElementById('css-code').value;
-    
-    const fullContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craby Export</title>
-    <style>${css}</style>
-</head>
-<body>
-    ${html}
-</body>
-</html>`;
-
-    const blob = new Blob([fullContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = "index.html";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-};
-
-// --- 6. SHUTTER & MENU LOGIC ---
-window.toggleLeftSidebar = () => {
-    const sidebar = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sidebar.classList.toggle('open');
-    shutter.classList.toggle('active');
-};
-
-window.toggleSettings = () => {
-    document.getElementById('settingsPanel').classList.toggle('open');
-};
-
-document.addEventListener('click', (e) => {
-    const sidebar = document.getElementById('leftSidebar');
-    const settings = document.getElementById('settingsPanel');
-    const shutter = document.getElementById('shutterBtn');
-
-    if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !shutter.contains(e.target)) {
-        window.toggleLeftSidebar();
-    }
-    if (settings.classList.contains('open') && !settings.contains(e.target) && !e.target.closest('.icon-btn')) {
-        window.toggleSettings();
-    }
+    document.getElementById('theme-sel').value = 'dark';
+    document.getElementById('font-size-bar').value = 16;
+    window.updateThemeAndFont();
 });
-
-window.resetAllSettings = () => {
-    if(confirm("सर्व सेटिंग्ज रिसेट करायच्या आहेत का?")) {
-        localStorage.clear();
-        location.reload();
-    }
-};
