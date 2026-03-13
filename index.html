@@ -41,10 +41,24 @@
 </head>
 <body>
 
+<div class="sidebar-shutter" onclick="toggleLeftSidebar()" id="shutterBtn">
+    <i class="fas fa-chevron-right"></i>
+</div>
+
+<div class="action-sidebar" id="leftSidebar">
+    <div class="sidebar-header">
+        <span>EXPLORER</span>
+        <i class="fas fa-plus" onclick="createNewFile()"></i>
+    </div>
+    <div id="file-list" class="file-list">
+        </div>
+</div>
+
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
-        <h1 style="display:none;">Craby Editor - Best Online HTML Editor</h1> </div>
+        <h1 style="display:none;">Craby Editor - Best Online HTML Editor</h1> 
+    </div>
     <div class="nav-actions">
         <button class="icon-btn" onclick="beautifyCode()" title="Format Code"><i class="fas fa-magic"></i></button>
         <button class="icon-btn" onclick="exportCode()" title="Download File"><i class="fas fa-download"></i></button>
@@ -54,7 +68,7 @@
 </header>
 
 <div class="main-container">
-    <div class="editor-section">
+    <div class="editor-section" id="editor-wrapper">
         <div class="editor-box">
             <div class="label">HTML <i class="fas fa-code"></i></div>
             <textarea id="html-code" spellcheck="false"><!DOCTYPE html>
@@ -85,37 +99,6 @@ h1 {
     </div>
 </div>
 
-<div id="preview-overlay" class="preview-overlay">
-    <div class="overlay-header">
-        <div class="logo-container">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
-            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
-            <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
-            <button class="icon-btn" style="background: #ff4d4d !important; color: white !important; border:none;" onclick="closePreview()"><b>CLOSE</b></button>
-        </div>
-    </div>
-    <div class="overlay-body">
-        <div id="wrapper" class="iframe-wrapper">
-            <iframe id="output"></iframe>
-        </div>
-    </div>
-</div><div class="sidebar-shutter" onclick="toggleLeftSidebar()" id="shutterBtn">
-    <i class="fas fa-chevron-right"></i>
-</div>
-
-<div class="action-sidebar" id="leftSidebar">
-    <div class="sidebar-header">
-        <span>EXPLORER</span>
-        <i class="fas fa-plus" onclick="createNewFile()"></i>
-    </div>
-    <div id="file-list" class="file-list">
-        </div>
-</div>
-
-
 <div class="settings-panel" id="settingsPanel">
     <h3 style="color: var(--accent); display: flex; justify-content: space-between;">
         IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
@@ -126,7 +109,7 @@ h1 {
         <div style="display: flex; gap: 10px; font-size: 12px;">
             <label><input type="checkbox" id="chk-html" checked onchange="updateVisibility()"> HTML</label>
             <label><input type="checkbox" id="chk-css" checked onchange="updateVisibility()"> CSS</label>
-            <label><input type="checkbox" id="chk-js" onchange="updateVisibility()"> JS</label>
+            <label><input type="checkbox" id="chk-js" checked onchange="updateVisibility()"> JS</label>
         </div>
     </div>
 
@@ -167,16 +150,35 @@ h1 {
     <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
 </div>
 
+<div id="preview-overlay" class="preview-overlay" style="display: none;">
+    <div class="overlay-header">
+        <div class="logo-container">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
+            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
+            <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
+            <button class="icon-btn" style="background: #ff4d4d !important; color: white !important; border:none;" onclick="closePreview()"><b>CLOSE</b></button>
+        </div>
+    </div>
+    <div class="overlay-body">
+        <div id="wrapper" class="iframe-wrapper">
+            <iframe id="output"></iframe>
+        </div>
+    </div>
+</div>
+
 <script src="Script.js"></script> 
 
 <script>
+// Internal function to sync UI with Script.js themes
 function updateThemeAndFont() {
     const themeKey = document.getElementById('theme-sel').value;
     const font = document.getElementById('font-family-sel').value;
     const fontSize = document.getElementById('font-size-bar').value;
     document.getElementById('fs-display').innerText = fontSize + "px"; 
 
-    // Themes object 'Script.js' madhe asne garjeche aahe
     const theme = (typeof themes !== 'undefined') ? (themes[themeKey] || themes.dark) : null;
 
     if (theme) {
@@ -189,11 +191,16 @@ function updateThemeAndFont() {
             tx.style.fontSize = fontSize + "px"; 
             tx.style.color = theme.text;
             tx.style.background = theme.bg;
-            if(theme.border) tx.closest('.editor-box').style.borderColor = theme.border;
+            const eb = tx.closest('.editor-box');
+            if(eb && theme.border) eb.style.borderColor = theme.border;
         });
 
-        document.querySelectorAll('.label, .icon-btn i').forEach(el => {
-            if(el.classList.contains('label')) el.style.background = theme.panel;
+        document.querySelectorAll('.label').forEach(el => {
+            el.style.background = theme.panel;
+            el.style.color = theme.accent;
+        });
+
+        document.querySelectorAll('.icon-btn i').forEach(el => {
             el.style.color = theme.accent;
         });
     }
