@@ -1,22 +1,30 @@
-// --- 1. CONFIG & DICTIONARY ---
+// --- 1. CONFIGURATION & ALL 12 THEMES (Pahilyasarkhe) ---
 const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#c9d1d9', border: 'rgba(255,255,255,0.1)' },
-    light: { bg: '#f6f8fa', panel: '#ffffff', accent: '#d97706', text: '#24292f', border: 'rgba(0,0,0,0.1)' },
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
+    light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' }
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
 const dictionary = {
-    html: ['div', 'span', 'section', 'article', 'header', 'footer', 'nav', 'button', 'input', 'img', 'h1', 'p', 'a', 'ul', 'li'],
-    css: ['background', 'color', 'margin', 'padding', 'display', 'flex', 'border', 'font-size', 'width', 'height', 'position']
+    html: ['a','alt','article','aside','audio','b','base','body','br','button','canvas','caption','cite','class','code','col','colgroup','datalist','dd','del','details','dfn','dialog','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','height','hr','html','href','i','id','iframe','img','input','label','legend','li','link','main','map','mark','meta','name','nav','ol','onclick','optgroup','option','p','param','picture','placeholder','pre','progress','q','rel','required','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','svg','table','tbody','td','template','textarea','tfoot','th','thead','time','title','tr','track','type','u','ul','value','var','video','width'],
+    css: ['absolute','align-items','animation','background','background-color','border','border-radius','bottom','box-shadow','box-sizing','clear','color','column-count','column-gap','content','cursor','display','flex','flex-direction','flex-wrap','float','font','font-family','font-size','font-style','font-weight','gap','grid','grid-area','grid-template-columns','grid-template-rows','height','inline','inline-block','justify-content','left','letter-spacing','line-height','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','min-height','min-width','none','opacity','overflow','padding','padding-bottom','padding-left','padding-right','padding-top','pointer','position','relative','right','text-align','text-decoration','text-transform','top','transform','transition','transparent','visibility','width','word-spacing','z-index'],
+    js: ['addEventListener','alert','Array','async','await','break','catch','class','clearInterval','clearTimeout','console','console.log','const','continue','Date','debugger','default','delete','document','document.getElementById','document.querySelector','else','export','fetch','finally','for','forEach','function','if','import','in','instanceof','isNaN','JSON','JSON.parse','JSON.stringify','let','map','Math','Math.floor','Math.random','new','null','Object','parseFloat','parseInt','pop','push','querySelector','querySelectorAll','return','setInterval','setTimeout','shift','slice','some','split','splice','String','this','throw','trim','try','typeof','undefined','var','window','while']
 };
 
 const sBox = document.getElementById('suggestion-box');
 let selectedIdx = 0;
 
-// --- 1. SIDEBAR LOGIC ---
-function toggleSidebar() {
+// --- 2. SIDEBARS LOGIC ---
+function toggleLeftSidebar() {
     const sb = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
     sb.classList.toggle('open');
@@ -24,78 +32,15 @@ function toggleSidebar() {
     shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
 }
 
-// --- 2. FILE & EDITOR SYSTEM ---
-function addFileToUI(name, id, content = "") {
-    // Sidebar Tab
-    const fileList = document.getElementById('file-list');
-    const newTab = document.createElement('div');
-    newTab.className = 'file-item';
-    newTab.id = `tab-${id}`;
-    newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span>`;
-    newTab.onclick = () => focusEditor(id);
-    fileList.appendChild(newTab);
-
-    // Editor Box
-    const wrapper = document.getElementById('editor-wrapper');
-    const newBox = document.createElement('div');
-    newBox.className = 'editor-box';
-    newBox.id = `box-${id}`;
-    newBox.innerHTML = `
-        <div class="label">
-            <span>${name}</span>
-            <div class="window-controls">
-                <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
-                <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
-                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
-            </div>
-        </div>
-        <textarea id="${id}-code" spellcheck="false">${content}</textarea>
-    `;
-    wrapper.appendChild(newBox);
+function toggleRightSidebar() {
+    document.getElementById('rightSidebar').classList.toggle('open');
 }
 
-// --- 3. RUN SCREEN LOGIC ---
-function runCode() {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    refreshPreview();
-}
-
-function refreshPreview() {
-    const html = document.querySelector('[id*="html-code"]')?.value || "";
-    const css = `<style>${document.querySelector('[id*="css-code"]')?.value || ""}</style>`;
-    const out = document.getElementById('output').contentWindow.document;
-    out.open();
-    out.write(html + css);
-    out.close();
-}
-
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
-function setDevice(mode) {
-    const container = document.getElementById('iframe-container');
-    if(mode === 'mobile') {
-        container.style.width = '375px';
-        container.style.margin = '20px auto';
-    } else {
-        container.style.width = '100%';
-        container.style.margin = '0';
-    }
-}
-
-// Initial Load
-window.onload = () => {
-    addFileToUI("index.html", "html", "<h1>Welcome to Craby Editor</h1>");
-    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
-};
-// --- 3. FILE SYSTEM LOGIC ---
-
+// --- 3. FILE SYSTEM & DEFAULT SETUP ---
 function createNewFile() {
-    const fileName = prompt("File name (e.g. index.html):");
+    const fileName = prompt("Enter file name (e.g. script.js):");
     if (!fileName) return;
     const fileId = fileName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-    if(document.getElementById(`box-${fileId}`)) return alert("File exists!");
     addFileToUI(fileName, fileId);
 }
 
@@ -128,38 +73,17 @@ function addFileToUI(name, id, content = "") {
     attachInputListeners(document.getElementById(`${id}-code`));
 }
 
-function minimizeBox(id) {
-    document.getElementById(`box-${id}`).style.display = "none";
-    document.getElementById(`status-${id}`).style.display = "inline";
-}
-
-function restoreBox(id) {
-    document.getElementById(`box-${id}`).style.display = "flex";
-    document.getElementById(`status-${id}`).style.display = "none";
-    document.getElementById(`${id}-code`).focus();
-}
-
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; document.getElementById(`status-${id}`).style.display = 'inline'; }
+function restoreBox(id) { document.getElementById(`box-${id}`).style.display = 'flex'; document.getElementById(`status-${id}`).style.display = 'none'; }
 function expandBox(id) {
     const boxes = document.querySelectorAll('.editor-box');
-    const cur = document.getElementById(`box-${id}`);
-    if (cur.style.flex === "10") {
-        boxes.forEach(b => b.style.flex = "1");
-    } else {
-        boxes.forEach(b => b.style.flex = "0.1");
-        cur.style.flex = "10";
-        cur.style.display = "flex";
-    }
+    const current = document.getElementById(`box-${id}`);
+    if (current.style.flex === "10") { boxes.forEach(b => b.style.flex = "1"); }
+    else { boxes.forEach(b => b.style.flex = "0.1"); current.style.flex = "10"; current.style.display = "flex"; }
 }
+function deleteBox(id) { if(confirm("Delete this file?")) { document.getElementById(`box-${id}`).remove(); document.getElementById(`tab-${id}`).remove(); } }
 
-function deleteBox(id) {
-    if(confirm("Delete file?")) {
-        document.getElementById(`box-${id}`).remove();
-        document.getElementById(`tab-${id}`).remove();
-    }
-}
-
-// --- 4. THE PROFESSIONAL RUN SCREEN LOGIC ---
-
+// --- 4. RUN SCREEN (PROFESSIONAL OVERLAY) ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
@@ -167,38 +91,20 @@ function runCode() {
 }
 
 function refreshPreview() {
-    const h = document.querySelector('[id*="html-code"]') ? document.querySelector('[id*="html-code"]').value : '';
-    const c = `<style>${document.querySelector('[id*="css-code"]') ? document.querySelector('[id*="css-code"]').value : ''}</style>`;
+    const h = document.getElementById('html-code') ? document.getElementById('html-code').value : '';
+    const c = `<style>${document.getElementById('css-code') ? document.getElementById('css-code').value : ''}</style>`;
     const out = document.getElementById('output').contentWindow.document;
-    out.open();
-    out.write(h + c);
-    out.close();
+    out.open(); out.write(h + c); out.close();
 }
 
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
 function setDevice(mode) {
     const container = document.getElementById('iframe-container');
-    const btnD = document.getElementById('btn-desk');
-    const btnM = document.getElementById('btn-mob');
-    
-    if(mode === 'mobile') {
-        container.style.width = '375px';
-        container.style.margin = '20px auto';
-        btnM.classList.add('active');
-        btnD.classList.remove('active');
-    } else {
-        container.style.width = '100%';
-        container.style.margin = '0';
-        btnD.classList.add('active');
-        btnM.classList.remove('active');
-    }
+    container.style.width = (mode === 'mobile') ? '375px' : '100%';
+    container.style.margin = (mode === 'mobile') ? '20px auto' : '0';
 }
 
-// --- 5. EDITOR CORE (Autocomplete & Themes) ---
-
+// --- 5. EDITOR CORE & AUTOCOMPLETE ---
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
@@ -210,23 +116,24 @@ function attachInputListeners(txt) {
         }
         showSuggestions(txt);
     });
+    txt.addEventListener('keydown', (e) => handleNav(e, txt));
 }
 
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
-    const text = txt.value.substring(0, pos);
-    const words = text.split(/[\s<>{}:;()]/);
+    const textBefore = txt.value.substring(0, pos);
+    const words = textBefore.split(/[\s<>{}:;()]/);
     const lastWord = words[words.length - 1].toLowerCase();
-    const lang = txt.id.includes('html') ? 'html' : 'css';
+    const lang = txt.id.includes('html') ? 'html' : txt.id.includes('css') ? 'css' : 'js';
 
     if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
     const matches = dictionary[lang].filter(w => w.startsWith(lastWord));
 
     if (matches.length > 0) {
-        sBox.innerHTML = matches.map(m => `<div onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
+        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
         sBox.style.display = 'block';
         const rect = txt.getBoundingClientRect();
-        sBox.style.top = (rect.top + 30) + 'px';
+        sBox.style.top = (rect.top + 35) + 'px';
         sBox.style.left = (rect.left + 20) + 'px';
     } else { sBox.style.display = 'none'; }
 }
@@ -234,52 +141,52 @@ function showSuggestions(txt) {
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const text = txt.value.substring(0, pos);
-    const lastWordMatch = text.match(/[\w-]+$/);
+    const textBefore = txt.value.substring(0, pos);
+    const lastWordMatch = textBefore.match(/[\w-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
     txt.value = txt.value.substring(0, startPos) + word + txt.value.substring(pos);
     sBox.style.display = 'none';
     txt.focus();
 }
 
+function handleNav(e, txt) {
+    if (sBox.style.display === 'block') {
+        const items = sBox.querySelectorAll('.suggestion-item');
+        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
+        else if (e.key === 'Enter') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+    }
+}
+function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
+
+// --- 6. THEMES & ACTIONS ---
 function updateThemeAndFont() {
     const themeKey = document.getElementById('theme-sel').value;
-    const size = document.getElementById('font-size-bar').value;
-    const theme = themes[themeKey];
-
+    const theme = themes[themeKey] || themes.dark;
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
     document.documentElement.style.setProperty('--text', theme.text);
     document.documentElement.style.setProperty('--border', theme.border);
-    
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontSize = size + "px";
-        tx.style.color = theme.text;
-    });
+    document.querySelectorAll('textarea').forEach(tx => { tx.style.color = theme.text; tx.style.background = 'transparent'; });
 }
 
-function beautifyCode() {
+function beautifyCode() { 
     document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.trim().replace(/>\s+</g, '><').replace(/>/g, '>\n');
+        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<');
     });
 }
-
 function exportCode() {
-    const h = document.querySelector('[id*="html-code"]').value;
-    const blob = new Blob([h], {type: "text/html"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "index.html";
-    a.click();
+    const html = document.getElementById('html-code')?.value || '';
+    const blob = new Blob([html], {type: "text/html"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
-
 function undoCode() { document.execCommand('undo'); }
 function redoCode() { document.execCommand('redo'); }
 
 // --- INITIAL LOAD ---
 window.onload = () => {
-    addFileToUI("index.html", "html", "<h1>Hello Craby Pro!</h1>");
-    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
+    addFileToUI("index.html", "html", "<h1>Hello Craby!</h1>");
+    addFileToUI("style.css", "css", "h1 { color: #ffb400; }");
     updateThemeAndFont();
 };
