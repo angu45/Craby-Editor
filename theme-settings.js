@@ -70,6 +70,70 @@ window.toggleSettings = () => {
         settings.classList.toggle('open'); // Settings Panel उघडण्यासाठी/बंद करण्यासाठी
     }
 };
+/** * Craby Editor - Settings & Persistence
+ * Handles LocalStorage and UI customizations
+ */
+
+// 1. Persistence: Save Keystrokes
+function saveHistory(type, value) {
+    localStorage.setItem(`craby_${type}`, value);
+}
+
+// 2. Settings Panel Toggle
+function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    panel.classList.toggle('active');
+}
+
+// 3. Theme and Font Application
+function updateThemeAndFont() {
+    const theme = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const size = document.getElementById('font-size-bar').value;
+
+    // Apply to UI
+    document.getElementById('fs-display').innerText = `${size}px`;
+    
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(ta => {
+        ta.style.fontFamily = font;
+        ta.style.fontSize = `${size}px`;
+    });
+
+    // Body class for theme-specific CSS
+    document.body.className = `theme-${theme}`;
+    
+    // Save Settings
+    const settings = { theme, font, size };
+    localStorage.setItem('craby_settings', JSON.stringify(settings));
+}
+
+// 4. Load Data on Startup
+window.onload = () => {
+    // Restore Code
+    if(localStorage.getItem('craby_html')) 
+        document.getElementById('html-code').value = localStorage.getItem('craby_html');
+    if(localStorage.getItem('craby_css')) 
+        document.getElementById('css-code').value = localStorage.getItem('craby_css');
+    
+    // Restore Settings
+    const savedSettings = JSON.parse(localStorage.getItem('craby_settings'));
+    if (savedSettings) {
+        document.getElementById('theme-sel').value = savedSettings.theme;
+        document.getElementById('font-family-sel').value = savedSettings.font;
+        document.getElementById('font-size-bar').value = savedSettings.size;
+        updateThemeAndFont();
+    }
+    
+    updateVisibility(); // Initialize partitioning
+};
+
+function resetAllSettings() {
+    if(confirm("Reset all settings and clear code?")) {
+        localStorage.clear();
+        location.reload();
+    }
+}
 
 // 3. Close On Outside Click (Optional पण कामाचं)
 // स्क्रीनवर कुठेही बाहेर क्लिक केल्यावर पॅनल बंद व्हावेत असं वाटत असेल तर:
