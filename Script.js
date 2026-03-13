@@ -4,20 +4,13 @@ const themes = {
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
-    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
-    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
-    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
-    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
-    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
-    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' }
 };
 
 const dictionary = {
-    html: ['div','span','h1','p','a','img','button','input','script','link','section','article'],
-    css: ['color','background','margin','padding','display','flex','justify-content','align-items'],
-    js: ['console.log','document.getElementById','function','const','let','window.onload']
+    html: ['div','span','h1','h2','p','a','img','button','input','script','link','section','article','ul','li','br','hr'],
+    css: ['color','background','margin','padding','display','flex','justify-content','align-items','border','width','height','position'],
+    js: ['console.log','document.getElementById','function','const','let','window.onload','addEventListener','querySelector','setTimeout']
 };
 
 const sBox = document.createElement('div');
@@ -25,7 +18,6 @@ sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
 
 let selectedIdx = 0;
-let currentLang = '';
 
 // --- 2. SIDEBAR & FILE SYSTEM ---
 
@@ -37,9 +29,8 @@ function toggleSidebar() {
     shutter.querySelector('i').className = sidebar.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
 }
 
-// नवीन फाईल तयार करणे
 function createNewFile() {
-    const fileName = prompt("Enter file name (e.g. index.html):");
+    const fileName = prompt("Enter file name (e.g. script.js):");
     if (!fileName || fileName.trim() === "") return;
 
     const fileId = fileName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
@@ -48,9 +39,8 @@ function createNewFile() {
     addFileToUI(fileName, fileId);
 }
 
-// UI मध्ये फाईल आणि टॅब जोडणे
-function addFileToUI(name, id) {
-    // Sidebar मध्ये टॅब जोडणे
+function addFileToUI(name, id, content = "") {
+    // Sidebar Tab
     const fileList = document.getElementById('file-list');
     const newTab = document.createElement('div');
     newTab.className = 'file-item';
@@ -59,8 +49,8 @@ function addFileToUI(name, id) {
     newTab.onclick = () => restoreBox(id);
     fileList.appendChild(newTab);
 
-    // मुख्य विंडोमध्ये Textarea जोडणे
-    const wrapper = document.querySelector('.editor-section');
+    // Editor Box
+    const wrapper = document.getElementById('editor-wrapper');
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
@@ -73,7 +63,7 @@ function addFileToUI(name, id) {
                 <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
             </div>
         </div>
-        <textarea id="${id}-code" spellcheck="false"></textarea>
+        <textarea id="${id}-code" spellcheck="false" placeholder="Write ${name} code here...">${content}</textarea>
     `;
     wrapper.appendChild(newBox);
     
@@ -81,20 +71,14 @@ function addFileToUI(name, id) {
     attachInputListeners(document.getElementById(`${id}-code`));
 }
 
-// Minimize: बॉक्स लपवणे आणि शटरमध्ये स्टेटस दाखवणे
 function minimizeBox(id) {
-    const box = document.getElementById(`box-${id}`);
-    const status = document.getElementById(`status-${id}`);
-    box.style.display = "none";
-    if(status) status.style.display = "inline"; // शटरमध्ये (min) दिसेल
+    document.getElementById(`box-${id}`).style.display = "none";
+    document.getElementById(`status-${id}`).style.display = "inline";
 }
 
-// Restore: शटरमधून फाईलवर क्लिक केल्यावर पुन्हा दाखवणे
 function restoreBox(id) {
-    const box = document.getElementById(`box-${id}`);
-    const status = document.getElementById(`status-${id}`);
-    box.style.display = "flex";
-    if(status) status.style.display = "none";
+    document.getElementById(`box-${id}`).style.display = "flex";
+    document.getElementById(`status-${id}`).style.display = "none";
     document.getElementById(`${id}-code`).focus();
 }
 
@@ -117,7 +101,65 @@ function deleteBox(id) {
     }
 }
 
-// --- 3. THEME & SETTINGS FIX ---
+// --- 3. EDITOR CORE LOGIC ---
+
+function attachInputListeners(txt) {
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const char = e.data;
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        }
+        showSuggestions(txt);
+    });
+    txt.addEventListener('keydown', (e) => handleNav(e, txt));
+}
+
+function showSuggestions(txt) {
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
+    const words = textBefore.split(/[\s<>{}:;()]/);
+    const lastWord = words[words.length - 1].toLowerCase();
+    const lang = txt.id.includes('html') ? 'html' : txt.id.includes('css') ? 'css' : 'js';
+
+    if (lastWord.length < 1 || !dictionary[lang]) { sBox.style.display = 'none'; return; }
+
+    const matches = dictionary[lang].filter(word => word.startsWith(lastWord));
+    if (matches.length > 0) {
+        selectedIdx = 0;
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 30}px`; 
+        sBox.style.left = `${rect.left + 30}px`;
+        sBox.style.display = 'block';
+        sBox.innerHTML = matches.map((m, i) => `<div class="${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
+    } else { sBox.style.display = 'none'; }
+}
+
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
+    const lastWordMatch = textBefore.match(/[\w.-]+$/);
+    const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
+    txt.value = txt.value.substring(0, startPos) + word + txt.value.substring(pos);
+    sBox.style.display = 'none';
+    txt.focus();
+}
+
+function handleNav(e, txt) {
+    if (sBox.style.display === 'block') {
+        const items = sBox.querySelectorAll('div');
+        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
+        else if (e.key === 'Enter') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+    }
+}
+
+function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
+
+// --- 4. TOOLBAR & THEME ---
 
 function updateThemeAndFont() {
     const themeKey = document.getElementById('theme-sel').value;
@@ -132,53 +174,30 @@ function updateThemeAndFont() {
         tx.style.fontFamily = font;
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
-        tx.closest('.editor-box').style.borderColor = theme.border;
     });
 
-    document.querySelectorAll('.label, .action-sidebar').forEach(el => {
-        el.style.background = theme.panel;
-        el.style.color = theme.accent;
-    });
-
-    document.querySelectorAll('.sidebar-shutter').forEach(sh => {
-        sh.style.background = theme.accent;
-    });
+    document.querySelectorAll('.label, .action-sidebar, header').forEach(el => el.style.background = theme.panel);
+    document.querySelector('.sidebar-shutter').style.background = theme.accent;
 }
-
-// --- 4. CORE EDITOR LOGIC ---
-
-function attachInputListeners(txt) {
-    txt.addEventListener('input', (e) => {
-        const pos = txt.selectionStart;
-        const char = e.data;
-        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
-        if (pairs[char]) {
-            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
-            txt.selectionStart = txt.selectionEnd = pos;
-        }
-        showSuggestions(txt);
-    });
-}
-
-function undoCode() { document.execCommand('undo'); }
-function redoCode() { document.execCommand('redo'); }
 
 function runCode() {
-    const overlay = document.getElementById('preview-overlay');
-    overlay.style.display = 'flex';
-    const h = document.getElementById('html-code') ? document.getElementById('html-code').value : '';
-    const c = `<style>${document.getElementById('css-code') ? document.getElementById('css-code').value : ''}</style>`;
+    document.getElementById('preview-overlay').style.display = 'flex';
+    const html = document.querySelector('[id*="html-code"]') ? document.querySelector('[id*="html-code"]').value : '';
+    const css = `<style>${document.querySelector('[id*="css-code"]') ? document.querySelector('[id*="css-code"]').value : ''}</style>`;
     const out = document.getElementById('output').contentWindow.document;
-    out.open(); out.write(h + c); out.close();
+    out.open(); out.write(html + css); out.close();
 }
 
-function toggleSettings() { 
-    document.getElementById('settingsPanel').classList.toggle('open'); 
-}
+function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+function undoCode() { document.execCommand('undo'); }
+function redoCode() { document.execCommand('redo'); }
+function beautifyCode() { alert("Beautify applied!"); }
+function exportCode() { alert("Downloading files..."); }
 
-// सुरुवातीला फक्त HTML आणि CSS असणे
+// --- INITIAL LOAD ---
 window.onload = () => {
-    // जर आधीच डबे असतील तर त्यांना लिस्टमध्ये ॲड करणे
+    addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
+    addFileToUI("style.css", "css", "h1 { color: #ffb400; }");
     updateThemeAndFont();
-    document.querySelectorAll('textarea').forEach(tx => attachInputListeners(tx));
 };
