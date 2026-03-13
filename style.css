@@ -7,6 +7,24 @@
     --border: rgba(255, 255, 255, 0.1); 
     --header: #010409;
 }
+.settings-panel { 
+    position: fixed; 
+    right: -350px; /* सुरुवातीला बाहेर */
+    top: 0; 
+    width: 320px; 
+    height: 100%; 
+    background: var(--panel); 
+    border-left: 2px solid var(--accent); 
+    z-index: 5000; /* सर्वात वर हवा */
+    padding: 30px; 
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    display: block !important; /* visibility:hidden काढून टाकला */
+}
+
+.settings-panel.open { 
+    right: 0; /* क्लिक केल्यावर आत येईल */
+}
 
 * { 
     margin: 0; 
