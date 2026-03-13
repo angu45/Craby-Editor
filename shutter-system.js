@@ -4,7 +4,8 @@ window.toggleLeftSidebar = function() {
     if(sb && shutter) {
         sb.classList.toggle('open');
         shutter.classList.toggle('active');
-        shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+        const icon = shutter.querySelector('i');
+        icon.className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
     }
 };
 
@@ -13,7 +14,7 @@ window.addFileToUI = function(name, id, content = "") {
     const wrapper = document.getElementById('editor-wrapper');
     if(!fileList || !wrapper) return;
 
-    // Explorer Tab
+    // Explorer Item
     const newTab = document.createElement('div');
     newTab.className = 'file-item';
     newTab.id = `tab-${id}`;
@@ -24,15 +25,16 @@ window.addFileToUI = function(name, id, content = "") {
     };
     fileList.appendChild(newTab);
 
-    // Editor ডबा
+    // Editor Box
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
     newBox.innerHTML = `
-        <div class="label"><span>${name.toUpperCase()}</span></div>
+        <div class="label"><span>${name.toUpperCase()} <i class="fas fa-code"></i></span></div>
         <textarea id="${id}-code" spellcheck="false">${content}</textarea>
     `;
     wrapper.appendChild(newBox);
     
+    // Apply current theme to new elements
     if(window.updateThemeAndFont) window.updateThemeAndFont();
 };
