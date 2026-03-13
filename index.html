@@ -68,8 +68,35 @@
 </header>
 
 <div class="main-container">
-    <div class="editor-section" id="editor-wrapper" style="display: flex; flex-direction: column; width: 100%;">
+    <div class="editor-section" id="editor-wrapper">
+        
+        <div class="editor-box" id="box-html">
+            <div class="label">
+                <span>INDEX.HTML</span>
+                <div class="box-controls">
+                    <button onclick="minimizeBox('html')" title="Minimize"><i class="fas fa-minus"></i></button>
+                    <button onclick="toggleFullscreen('html')" title="Fullscreen"><i class="fas fa-expand"></i></button>
+                    <button onclick="deleteFile('html')" title="Delete" style="color:#ff4d4d;"><i class="fas fa-trash-can"></i></button>
+                </div>
+            </div>
+            <textarea id="html-code" spellcheck="false" oninput="saveHistory('html', this.value)"><h1>Welcome to Craby</h1></textarea>
+            <button class="exit-full-btn" id="exit-html" onclick="toggleFullscreen('html')">Exit Fullscreen</button>
         </div>
+
+        <div class="editor-box" id="box-css">
+            <div class="label">
+                <span>STYLE.CSS</span>
+                <div class="box-controls">
+                    <button onclick="minimizeBox('css')" title="Minimize"><i class="fas fa-minus"></i></button>
+                    <button onclick="toggleFullscreen('css')" title="Fullscreen"><i class="fas fa-expand"></i></button>
+                    <button onclick="deleteFile('css')" title="Delete" style="color:#ff4d4d;"><i class="fas fa-trash-can"></i></button>
+                </div>
+            </div>
+            <textarea id="css-code" spellcheck="false" oninput="saveHistory('css', this.value)">h1 { color: orange; }</textarea>
+            <button class="exit-full-btn" id="exit-css" onclick="toggleFullscreen('css')">Exit Fullscreen</button>
+        </div>
+
+    </div>
 </div>
 
 <div class="settings-panel" id="settingsPanel">
