@@ -13,18 +13,17 @@
     padding: 0; 
     box-sizing: border-box; 
 }
-
+/* --- 1. CORE LAYOUT --- */
 body { 
     background: var(--bg); 
     color: var(--text); 
     font-family: 'Plus Jakarta Sans', sans-serif; 
     height: 100vh; 
     display: flex; 
-    flex-direction: column; 
-    overflow: hidden; 
+    flex-direction: column; /* Header on top, container below */
+    overflow: hidden; /* Prevent body scroll */
 }
 
-/* --- 2. HEADER --- */
 header { 
     background: var(--header); 
     padding: 10px 20px; 
@@ -33,7 +32,53 @@ header {
     align-items: center; 
     border-bottom: 2px solid var(--accent); 
     z-index: 1000; 
-    height: 60px; /* Fixed height so it doesn't shift */
+    height: 60px; /* Fixed height for header */
+    flex-shrink: 0; /* Header will never shrink or move */
+}
+
+.main-container { 
+    display: flex; 
+    flex: 1; /* Takes remaining height below header */
+    overflow: hidden; 
+    position: relative;
+}
+
+.editor-section { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    overflow-y: auto; /* Internal scrolling if files are many */
+}
+
+/* --- 2. EDITOR BOX LOGIC --- */
+.editor-box { 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%;
+    /* This ensures they share space but don't crush each other */
+    flex-grow: 1; 
+    flex-shrink: 0;
+    min-height: 200px; /* Minimum height for each file */
+    border-bottom: 2px solid var(--border); 
+    background: var(--bg);
+}
+
+textarea { 
+    width: 100%;
+    flex: 1; 
+    background: transparent; 
+    border: none; 
+    color: #9cdcfe; 
+    font-family: 'Fira Code', monospace; 
+    padding: 15px; 
+    resize: none; 
+    outline: none; 
+}
+
+/* Sidebar and Settings should have high z-index */
+.action-sidebar, .settings-panel {
+    z-index: 5000;
 }
 
 .logo-container img { height: 30px; }
