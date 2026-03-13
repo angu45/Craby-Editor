@@ -1,4 +1,3 @@
-// Themes Global Object
 window.themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
@@ -34,40 +33,16 @@ window.updateThemeAndFont = function() {
         tx.style.fontSize = fontSize + "px"; 
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
+        const eb = tx.closest('.editor-box');
+        if(eb && theme.border) eb.style.borderColor = theme.border;
+    });
+
+    document.querySelectorAll('.label').forEach(el => {
+        el.style.background = theme.panel;
+        el.style.color = theme.accent;
+    });
+
+    document.querySelectorAll('.icon-btn i').forEach(el => {
+        el.style.color = theme.accent;
     });
 };
-
-// Internal function to sync UI with Script.js themes
-function updateThemeAndFont() {
-    const themeKey = document.getElementById('theme-sel').value;
-    const font = document.getElementById('font-family-sel').value;
-    const fontSize = document.getElementById('font-size-bar').value;
-    document.getElementById('fs-display').innerText = fontSize + "px"; 
-
-    // Accessing themes from font-settings.js
-    const theme = (typeof themes !== 'undefined') ? (themes[themeKey] || themes.dark) : null;
-
-    if (theme) {
-        document.documentElement.style.setProperty('--bg', theme.bg);
-        document.documentElement.style.setProperty('--panel', theme.panel);
-        document.documentElement.style.setProperty('--accent', theme.accent);
-        
-        document.querySelectorAll('textarea').forEach(tx => {
-            tx.style.fontFamily = font;
-            tx.style.fontSize = fontSize + "px"; 
-            tx.style.color = theme.text;
-            tx.style.background = theme.bg;
-            const eb = tx.closest('.editor-box');
-            if(eb && theme.border) eb.style.borderColor = theme.border;
-        });
-
-        document.querySelectorAll('.label').forEach(el => {
-            el.style.background = theme.panel;
-            el.style.color = theme.accent;
-        });
-
-        document.querySelectorAll('.icon-btn i').forEach(el => {
-            el.style.color = theme.accent;
-        });
-    }
-}
