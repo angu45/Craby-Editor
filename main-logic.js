@@ -1,202 +1,244 @@
-/* CRABY EDITOR - MAIN LOGIC
-   Features: Dynamic Layout, Shutter Management, File System, Fullscreen & Preview
-*/
-
-// --- 1. INITIALIZATION ---
-document.addEventListener('DOMContentLoaded', () => {
-    // सुरुवातीला जुना डेटा साफ करून फक्त २ डिफॉल्ट फाईल्स लोड करणे
-    const wrapper = document.getElementById('editor-wrapper');
-    const fileList = document.getElementById('file-list');
-    if(wrapper) wrapper.innerHTML = '';
-    if(fileList) fileList.innerHTML = '';
-
-    // डिफॉल्ट फाईल्स: index.html आणि style.css
-    window.addFileToUI("index.html", "html", localStorage.getItem('craby_code_html') || "<h1>Welcome to Craby</h1>");
-    window.addFileToUI("style.css", "css", localStorage.getItem('craby_code_css') || "h1 { color: orange; text-align: center; }");
-
-    // थीम अप्लाय करणे (तुमच्या theme-settings.js मधील फंक्शन)
-    if(window.updateThemeAndFont) window.updateThemeAndFont();
-});
-
-// --- 2. DYNAMIC LAYOUT ENGINE (Equal Space Occupancy) ---
-window.updateLayout = () => {
-    const wrapper = document.getElementById('editor-wrapper');
-    const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none' && !box.classList.contains('fullscreen-mode'));
-    const count = visibleBoxes.length;
-
-    if (count > 0) {
-        const height = 100 / count;
-        visibleBoxes.forEach(box => {
-            box.style.flex = `1 1 ${height}%`;
-            box.style.height = `${height}%`;
-        });
-    }
+// --- 1. CONFIGURATION & ALL 12 THEMES ---
+const themes = {
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
+    light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// --- 3. FILE SYSTEM (Add, New, Minimize, Delete) ---
-window.createNewFile = () => {
-    const fileName = prompt("Enter file name (e.g. script.js, about.html):");
-    if (fileName && fileName.trim() !== "") {
-        const id = fileName.replace('.', '-').toLowerCase() + "_" + Date.now();
-        window.addFileToUI(fileName, id, "");
-        window.toggleLeftSidebar(); // फाईल बनवल्यावर शटर बंद
-    }
+const dictionary = {
+    html: ['a','alt','article','aside','audio','b','base','body','br','button','canvas','caption','cite','class','code','col','colgroup','datalist','dd','del','details','dfn','dialog','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','height','hr','html','href','i','id','iframe','img','input','label','legend','li','link','main','map','mark','meta','name','nav','ol','onclick','optgroup','option','p','param','picture','placeholder','pre','progress','q','rel','required','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','svg','table','tbody','td','template','textarea','tfoot','th','thead','time','title','tr','track','type','u','ul','value','var','video','width'],
+    css: ['absolute','align-items','animation','background','background-color','border','border-radius','bottom','box-shadow','box-sizing','clear','color','column-count','column-gap','content','cursor','display','flex','flex-direction','flex-wrap','float','font','font-family','font-size','font-style','font-weight','gap','grid','grid-area','grid-template-columns','grid-template-rows','height','inline','inline-block','justify-content','left','letter-spacing','line-height','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','min-height','min-width','none','opacity','overflow','padding','padding-bottom','padding-left','padding-right','padding-top','pointer','position','relative','right','text-align','text-decoration','text-transform','top','transform','transition','transparent','visibility','width','word-spacing','z-index'],
+    js: ['addEventListener','alert','Array','async','await','break','catch','class','clearInterval','clearTimeout','console','console.log','const','continue','Date','debugger','default','delete','document','document.getElementById','document.querySelector','else','export','fetch','finally','for','forEach','function','if','import','in','instanceof','isNaN','JSON','JSON.parse','JSON.stringify','let','map','Math','Math.floor','Math.random','new','null','Object','parseFloat','parseInt','pop','push','querySelector','querySelectorAll','return','setInterval','setTimeout','shift','slice','some','split','splice','String','this','throw','trim','try','typeof','undefined','var','window','while']
 };
 
-window.addFileToUI = (name, id, content = "") => {
-    const wrapper = document.getElementById('editor-wrapper');
-    const fileList = document.getElementById('file-list');
+const sBox = document.createElement('div');
+sBox.id = 'suggestion-box';
+document.body.appendChild(sBox);
+
+let selectedIdx = 0;
+let currentLang = '';
+
+// --- 2. THEME & VISIBILITY LOGIC ---
+function updateVisibility() {
+    document.getElementById('html-code').closest('.editor-box').style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    document.getElementById('css-code').closest('.editor-box').style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    document.getElementById('js-code').closest('.editor-box').style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+}
+
+function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const theme = themes[themeKey] || themes.dark;
+
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--border-color', theme.border);
     
-    if(!wrapper || document.getElementById(`box-${id}`)) return;
-
-    // A. Shutter Explorer Tab
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    item.id = `tab-${id}`;
-    item.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent); font-size:10px;">(Hidden)</small>`;
-    item.onclick = () => window.restoreBox(id);
-    if(fileList) fileList.appendChild(item);
-
-    // B. Editor Box Creation
-    const newBox = document.createElement('div');
-    newBox.className = 'editor-box';
-    newBox.id = `box-${id}`;
-    newBox.innerHTML = `
-        <div class="label" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
-            <span style="letter-spacing: 1px;">${name.toUpperCase()}</span>
-            <div class="box-controls" style="display: flex; gap: 18px; font-size: 14px;">
-                <i class="fas fa-minus" onclick="window.minimizeBox('${id}')" title="Minimize" style="cursor:pointer;"></i>
-                <i class="fas fa-expand" onclick="window.toggleFullscreen('${id}')" title="Fullscreen" style="cursor:pointer;"></i>
-                <i class="fas fa-trash-alt" onclick="window.deleteFile('${id}')" title="Delete" style="cursor:pointer; color:#ff4d4d;"></i>
-            </div>
-        </div>
-        <textarea id="${id}-code" spellcheck="false" oninput="window.saveHistory('${id}', this.value)">${content}</textarea>
-        <button class="exit-full-btn" id="exit-${id}" onclick="window.toggleFullscreen('${id}')" style="display:none;">Exit Fullscreen</button>
-    `;
-    
-    wrapper.appendChild(newBox);
-    window.updateLayout();
-};
-
-window.minimizeBox = (id) => {
-    document.getElementById(`box-${id}`).style.display = 'none';
-    const status = document.getElementById(`status-${id}`);
-    if(status) status.style.display = 'inline';
-    window.updateLayout();
-};
-
-window.restoreBox = (id) => {
-    const box = document.getElementById(`box-${id}`);
-    if(box) {
-        box.style.display = 'flex';
-        const status = document.getElementById(`status-${id}`);
-        if(status) status.style.display = 'none';
-        window.updateLayout();
-    }
-};
-
-window.deleteFile = (id) => {
-    if(confirm(`⚠️ Warning: Are you sure you want to delete this file permanently?`)) {
-        const box = document.getElementById(`box-${id}`);
-        const tab = document.getElementById(`tab-${id}`);
-        if(box) box.remove();
-        if(tab) tab.remove();
-        localStorage.removeItem(`craby_code_${id}`);
-        window.updateLayout();
-    }
-};
-
-// --- 4. FULLSCREEN LOGIC ---
-window.toggleFullscreen = (id) => {
-    const box = document.getElementById(`box-${id}`);
-    const exitBtn = document.getElementById(`exit-${id}`);
-    
-    if (!box.classList.contains('fullscreen-mode')) {
-        box.classList.add('fullscreen-mode');
-        if(exitBtn) exitBtn.style.display = 'block';
-    } else {
-        box.classList.remove('fullscreen-mode');
-        if(exitBtn) exitBtn.style.display = 'none';
-    }
-    window.updateLayout();
-};
-
-// --- 5. RUN, PREVIEW & DOWNLOAD ---
-window.runCode = () => {
-    const overlay = document.getElementById('preview-overlay');
-    const iframe = document.getElementById('output');
-    overlay.style.display = 'flex';
-
-    // सर्व टेक्स्टएरिया मधून कोड गोळा करणे (Professional Bundle)
-    const textareas = document.querySelectorAll('textarea');
-    let html = "", css = "", js = "";
-
-    textareas.forEach(tx => {
-        if(tx.id.includes('html')) html += tx.value;
-        else if(tx.id.includes('css')) css += tx.value;
-        else if(tx.id.includes('js') || tx.id.includes('script')) js += tx.value;
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.color = theme.text;
+        tx.style.background = theme.bg;
+        tx.closest('.editor-box').style.borderColor = theme.border;
     });
 
-    const fullCode = `
-        <!DOCTYPE html>
-        <html>
-        <head><style>${css}</style></head>
-        <body>
-            ${html}
-            <script>${js}<\/script>
-        </body>
-        </html>`;
+    document.querySelectorAll('.label').forEach(label => {
+        label.style.background = theme.panel;
+        label.style.color = theme.accent;
+    });
 
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write(fullCode);
-    doc.close();
-};
+    document.querySelectorAll('.icon-btn i').forEach(icon => {
+        icon.style.color = theme.accent;
+    });
+}
 
-window.closePreview = () => {
-    document.getElementById('preview-overlay').style.display = 'none';
-};
+// --- 3. EDITOR CORE LOGIC ---
+document.querySelectorAll('textarea').forEach(txt => {
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const val = txt.value;
+        const char = e.data;
+        currentLang = txt.id.split('-')[0];
 
-window.setDevice = (mode) => {
-    const wrapper = document.querySelector('.iframe-wrapper');
-    if(mode === 'mobile') {
-        wrapper.style.width = '375px'; // Standard Mobile Width
-        wrapper.style.height = '667px';
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        } 
+        else if (char === '>') {
+            const match = val.substring(0, pos).match(/<(\w+)>$/);
+            if (match && !['img', 'br', 'hr', 'input'].includes(match[1].toLowerCase())) {
+                txt.value = val.substring(0, pos) + `</${match[1]}>` + val.substring(pos);
+                txt.selectionStart = txt.selectionEnd = pos;
+            }
+        }
+        showSuggestions(txt);
+    });
+    txt.addEventListener('keydown', (e) => handleNav(e, txt));
+});
+
+function showSuggestions(txt) {
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
+    const words = textBefore.split(/[\s<>{}:;()]/);
+    const lastWord = words[words.length - 1].toLowerCase();
+
+    if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
+
+    const matches = dictionary[currentLang].filter(word => word.startsWith(lastWord));
+
+    if (matches.length > 0) {
+        selectedIdx = 0;
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 40}px`; 
+        sBox.style.left = `${rect.left + 50}px`;
+        sBox.style.display = 'block';
+
+        sBox.innerHTML = matches.map((m, i) => {
+            const themeKey = document.getElementById('theme-sel').value;
+            let color = themeKey === 'light' ? "#1e40af" : "#79c0ff"; 
+            if (currentLang === 'html') color = themeKey === 'light' ? "#b91c1c" : "#ff7b72"; 
+            if (currentLang === 'css') color = themeKey === 'light' ? "#7e22ce" : "#d2a8ff";  
+
+            return `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
+                <span style="color: ${color}; font-weight: bold;">${m}</span> 
+                <small style="color: #64748b; margin-left:10px;">${currentLang}</small>
+            </div>`;
+        }).join('');
+    } else { sBox.style.display = 'none'; }
+}
+
+// SMART INSERT WORD (TAG AUTOCOMPLETE)
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
+    const lastWordMatch = textBefore.match(/[\w.-]+$/);
+    const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
+
+    let wordToInsert = word;
+
+    if (currentLang === 'html') {
+        const selfClosingTags = ['img', 'br', 'hr', 'input', 'link', 'meta'];
+        if (selfClosingTags.includes(word.toLowerCase())) {
+            wordToInsert = `<${word}>`;
+        } else if (['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) {
+            wordToInsert = `${word}=""`;
+        } else {
+            // Recommendation select kelyavar: <h1></h1> print hoil
+            wordToInsert = `<${word}></${word}>`;
+        }
+    } 
+    else if (currentLang === 'css') {
+        wordToInsert = `${word}: ;`;
+    }
+
+    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
+    
+    // Cursor position thik karne
+    if (currentLang === 'html' && wordToInsert.includes('></')) {
+        const newPos = startPos + word.length + 2; 
+        txt.selectionStart = txt.selectionEnd = newPos;
+    } else if (wordToInsert.endsWith('=""') || wordToInsert.endsWith(': ;')) {
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     } else {
-        wrapper.style.width = '100%';
-        wrapper.style.height = '100%';
+        txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
     }
-};
 
-window.exportCode = () => {
-    // सध्या उघडलेल्या HTML कोडला डाऊनलोड करणे
-    const htmlCode = document.querySelector('textarea[id*="html"]')?.value || "";
-    const blob = new Blob([htmlCode], { type: "text/html" });
+    sBox.style.display = 'none';
+    txt.focus();
+}
+
+function handleNav(e, txt) {
+    if (sBox.style.display === 'block') {
+        const items = sBox.querySelectorAll('.suggestion-item');
+        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
+        else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+        else if (e.key === 'Escape') { sBox.style.display = 'none'; }
+    }
+}
+
+function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
+
+// --- 4. TOOLBAR ACTIONS ---
+function runCode() {
+    const overlay = document.getElementById('preview-overlay');
+    overlay.style.display = 'flex';
+    const h = document.getElementById('html-code').value;
+    const c = `<style>${document.getElementById('css-code').value}</style>`;
+    const j = `<script>${document.getElementById('js-code').value}<\/script>`;
+    const out = document.getElementById('output').contentWindow.document;
+    out.open(); out.write(h + c + j); out.close();
+}
+
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
+function setDevice(m) { document.getElementById('wrapper').className = 'iframe-wrapper ' + (m==='mobile'?'mobile':''); }
+
+function beautifyCode() {
+    // 1. HTML Beautify (Proper Indentation logic)
+    const htmlField = document.getElementById('html-code');
+    let html = htmlField.value.replace(/>\s+</g, '><'); // saglya extra spaces kadha
+    let tab = '  '; // 2 spaces for indentation
+    let result = '';
+    let indent = '';
+
+    html.split(/>/).forEach(element => {
+        if (element.match(/^\/\w/)) {
+            indent = indent.substring(tab.length);
+        }
+        result += indent + element + '>\n';
+        if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input") && !element.startsWith("img") && !element.startsWith("br")) {
+            indent += tab;
+        }
+    });
+    htmlField.value = result.substring(0, result.lastIndexOf('>') + 1).trim();
+
+    // 2. CSS Beautify
+    const cssField = document.getElementById('css-code');
+    let css = cssField.value
+        .replace(/\s*([\{\}\:\;\,])\s*/g, "$1") // extra spaces kadha
+        .replace(/\{/g, " {\n  ")
+        .replace(/\;/g, ";\n  ")
+        .replace(/\s*\}\s*/g, "\n}\n\n")
+        .replace(/\,\s*/g, ", ");
+    cssField.value = css.trim();
+
+    // 3. JS Beautify (Basic Formatting)
+    const jsField = document.getElementById('js-code');
+    let js = jsField.value
+        .replace(/\s*([\{\}\(\)\=\+\-\*\/\,])\s*/g, "$1")
+        .replace(/\{/g, " {\n  ")
+        .replace(/\}/g, "\n}\n")
+        .replace(/\;/g, ";\n  ")
+        .replace(/\( /g, "(").replace(/ \)/g, ")");
+    jsField.value = js.trim();
+}
+
+function exportCode() {
+    const content = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
+    const blob = new Blob([content], {type: "text/html"});
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "index.html";
-    a.click();
+    a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
+}
+
+// --- 5. INITIALIZATION ---
+window.onload = () => { 
+    updateVisibility(); 
+    document.getElementById('theme-sel').value = 'dark'; 
+    updateThemeAndFont(); 
 };
 
-// --- 6. SHUTTER & UTILS ---
-window.toggleLeftSidebar = () => {
-    const sb = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-};
-
-window.toggleSettings = () => {
-    document.getElementById('settingsPanel').classList.toggle('open');
-};
-
-window.saveHistory = (id, val) => {
-    localStorage.setItem(`craby_code_${id}`, val);
-};
-
-window.resetAllSettings = () => {
-    if(confirm("Reset all code and settings?")) {
-        localStorage.clear();
-        location.reload();
-    }
-};
+document.addEventListener('mousedown', (e) => {
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
+});
