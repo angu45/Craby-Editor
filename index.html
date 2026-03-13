@@ -41,6 +41,35 @@
 </head>
 <body>
 
+<div class="sidebar-shutter" onclick="toggleSidebar()" id="shutterBtn">
+    <i class="fas fa-chevron-right"></i>
+</div>
+
+<div class="action-sidebar" id="actionSidebar">
+    <div class="sidebar-header">
+        <span>File Manager</span>
+        <i class="fas fa-times" onclick="toggleSidebar()"></i>
+    </div>
+    <div class="sidebar-content">
+        <button class="side-btn" title="New File"><i class="fas fa-plus"></i> NEW FILE</button>
+        <hr style="border: 0.5px solid var(--border); margin: 15px 0;">
+        
+        <label style="font-size: 10px; opacity: 0.6; display: block; margin-bottom: 10px;">ACTIVE FILES</label>
+        <div class="file-list">
+            <div class="file-item active">index.html</div>
+            <div class="file-item">style.css</div>
+            <div class="file-item">script.js</div>
+        </div>
+
+        <hr style="border: 0.5px solid var(--border); margin: 15px 0;">
+        <label style="font-size: 10px; opacity: 0.6; display: block; margin-bottom: 10px;">HISTORY</label>
+        <div style="display: flex; gap: 10px;">
+            <button class="side-btn" onclick="undoCode()"><i class="fas fa-undo"></i> Undo</button>
+            <button class="side-btn" onclick="redoCode()"><i class="fas fa-redo"></i> Redo</button>
+        </div>
+    </div>
+</div>
+
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
@@ -60,16 +89,13 @@
             <div class="label">
                 <span>HTML <i class="fas fa-code"></i></span>
                 <div class="window-controls">
-                    <i class="fas fa-minus" onclick="minimizeBox('html')" title="Minimize"></i>
-                    <i class="fas fa-expand" onclick="expandBox('html')" title="Full Screen"></i>
-                    <i class="fas fa-trash" onclick="clearCode('html')" title="Clear"></i>
+                    <i class="fas fa-minus" onclick="minimizeBox('html')"></i>
+                    <i class="fas fa-expand" onclick="expandBox('html')"></i>
+                    <i class="fas fa-trash" onclick="clearCode('html')"></i>
                 </div>
             </div>
             <textarea id="html-code" spellcheck="false"><!DOCTYPE html>
 <html>
-<head>
-    <title>Craby Editor</title>
-</head>
 <body>
     <h1>Welcome to Craby Editor</h1>
 </body>
@@ -80,149 +106,43 @@
             <div class="label">
                 <span>CSS <i class="fab fa-css3-alt"></i></span>
                 <div class="window-controls">
-                    <i class="fas fa-minus" onclick="minimizeBox('css')" title="Minimize"></i>
-                    <i class="fas fa-expand" onclick="expandBox('css')" title="Full Screen"></i>
-                    <i class="fas fa-trash" onclick="clearCode('css')" title="Clear"></i>
+                    <i class="fas fa-minus" onclick="minimizeBox('css')"></i>
+                    <i class="fas fa-expand" onclick="expandBox('css')"></i>
+                    <i class="fas fa-trash" onclick="clearCode('css')"></i>
                 </div>
             </div>
-            <textarea id="css-code" spellcheck="false">
-h1 {  
-    color: #ffb400; 
-    text-align: center; 
-    font-family: sans-serif;
-}</textarea>
+            <textarea id="css-code" spellcheck="false">h1 { color: #ffb400; text-align: center; }</textarea>
         </div>
 
         <div class="editor-box" id="box-js">
             <div class="label">
-                <span>JAVASCRIPT <i class="fab fa-js"></i></span>
+                <span>JS <i class="fab fa-js"></i></span>
                 <div class="window-controls">
-                    <i class="fas fa-minus" onclick="minimizeBox('js')" title="Minimize"></i>
-                    <i class="fas fa-expand" onclick="expandBox('js')" title="Full Screen"></i>
-                    <i class="fas fa-trash" onclick="clearCode('js')" title="Clear"></i>
+                    <i class="fas fa-minus" onclick="minimizeBox('js')"></i>
+                    <i class="fas fa-expand" onclick="expandBox('js')"></i>
+                    <i class="fas fa-trash" onclick="clearCode('js')"></i>
                 </div>
             </div>
-            <textarea id="js-code" spellcheck="false">console.log('Running...');</textarea>
+            <textarea id="js-code" spellcheck="false">console.log('Ready');</textarea>
         </div>
     </div>
-</div>
-
-<footer>
-    <div class="footer-left">
-        <button class="foot-btn" title="New File"><i class="fas fa-plus"></i> NEW FILE</button>
-        <div class="file-tabs">
-            <span class="tab active">index.html</span>
-            <span class="tab">style.css</span>
-            <span class="tab">script.js</span>
-        </div>
-    </div>
-    <div class="footer-right">
-        <button class="foot-btn" onclick="undoCode()" title="Undo"><i class="fas fa-undo"></i></button>
-        <button class="foot-btn" onclick="redoCode()" title="Redo"><i class="fas fa-redo"></i></button>
-        <div class="file-count">Files: 3</div>
-    </div>
-</footer>
-
-<div id="preview-overlay" class="preview-overlay">
-    <div class="overlay-header">
-        <div class="logo-container">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
-            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
-        </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
-            <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
-            <button class="icon-btn" style="background: #ff4d4d !important; color: white !important; border:none;" onclick="closePreview()"><b>CLOSE</b></button>
-        </div>
-    </div>
-    <div class="overlay-body">
-        <div id="wrapper" class="iframe-wrapper">
-            <iframe id="output"></iframe>
-        </div>
-    </div>
-</div>
-
-<div class="settings-panel" id="settingsPanel">
-    <h3 style="color: var(--accent); display: flex; justify-content: space-between;">
-        IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
-    </h3>
-    <br>
-    <div class="s-group">
-        <label>Show/Hide Editors</label>
-        <div style="display: flex; gap: 10px; font-size: 12px;">
-            <label><input type="checkbox" id="chk-html" checked onchange="updateVisibility()"> HTML</label>
-            <label><input type="checkbox" id="chk-css" checked onchange="updateVisibility()"> CSS</label>
-            <label><input type="checkbox" id="chk-js" checked onchange="updateVisibility()"> JS</label>
-        </div>
-    </div>
-
-    <div class="s-group">
-        <label>Font Family</label>
-        <select id="font-family-sel" onchange="updateThemeAndFont()">
-            <option value="'Fira Code', monospace">Fira Code</option>
-            <option value="'Courier New', monospace">Courier New</option>
-            <option value="'Consolas', monospace">Consolas</option>
-            <option value="'Source Code Pro', monospace">Source Code Pro</option>
-            <option value="monospace">System Monospace</option>
-        </select>
-    </div>
-
-    <div class="s-group">
-        <label>Font Size: <span id="fs-display">16px</span></label>
-        <input type="range" id="font-size-bar" min="5" max="50" value="16" oninput="updateThemeAndFont()" style="width:100%; cursor: pointer;">
-    </div>
- 
-    <div class="s-group">
-        <label>Editor Theme</label>
-        <select id="theme-sel" onchange="updateThemeAndFont()">
-            <option value="dark">Github Dark</option>
-            <option value="light">Simple Light</option>
-            <option value="monokai">Monokai Pro</option>
-            <option value="dracula">Dracula</option>
-            <option value="matrix">Matrix Green</option>
-            <option value="nord">Nordic Blue</option>
-            <option value="midnight">Midnight Deep</option>
-            <option value="solarized">Solarized Dark</option>
-            <option value="cyberpunk">Cyberpunk Neon</option>
-            <option value="evergreen">Evergreen Dark</option>
-            <option value="midnight_purple">Midnight Purple</option>
-            <option value="oceanic">Oceanic Blue</option>
-        </select>
-    </div>
-
-    <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
 </div>
 
 <script src="Script.js"></script> 
-
 <script>
-function updateThemeAndFont() {
-    const themeKey = document.getElementById('theme-sel').value;
-    const font = document.getElementById('font-family-sel').value;
-    const fontSize = document.getElementById('font-size-bar').value;
-    document.getElementById('fs-display').innerText = fontSize + "px"; 
-
-    const theme = (typeof themes !== 'undefined') ? (themes[themeKey] || themes.dark) : null;
-
-    if (theme) {
-        document.documentElement.style.setProperty('--bg', theme.bg);
-        document.documentElement.style.setProperty('--panel', theme.panel);
-        document.documentElement.style.setProperty('--accent', theme.accent);
+    function toggleSidebar() {
+        const sidebar = document.getElementById('actionSidebar');
+        const shutter = document.getElementById('shutterBtn');
+        sidebar.classList.toggle('open');
+        shutter.classList.toggle('active');
         
-        document.querySelectorAll('textarea').forEach(tx => {
-            tx.style.fontFamily = font;
-            tx.style.fontSize = fontSize + "px"; 
-            tx.style.color = theme.text;
-            tx.style.background = theme.bg;
-            if(theme.border) tx.closest('.editor-box').style.borderColor = theme.border;
-        });
-
-        document.querySelectorAll('.label, .icon-btn i, footer, .foot-btn').forEach(el => {
-            if(el.classList.contains('label') || el.tagName === 'FOOTER') el.style.background = theme.panel;
-            if(!el.classList.contains('foot-btn')) el.style.color = theme.accent;
-        });
+        const icon = shutter.querySelector('i');
+        if(sidebar.classList.contains('open')) {
+            icon.className = 'fas fa-chevron-left';
+        } else {
+            icon.className = 'fas fa-chevron-right';
+        }
     }
-}
 </script>
 
 </body>
