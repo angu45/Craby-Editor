@@ -1,22 +1,27 @@
-// --- 1. SETTINGS & GLOBALS ---
-window.onload = () => {
+/* CRABY EDITOR - MAIN LOGIC
+   Features: Dynamic Layout, Shutter Management, File System, Fullscreen & Preview
+*/
+
+// --- 1. INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    // सुरुवातीला जुना डेटा साफ करून फक्त २ डिफॉल्ट फाईल्स लोड करणे
     const wrapper = document.getElementById('editor-wrapper');
     const fileList = document.getElementById('file-list');
     if(wrapper) wrapper.innerHTML = '';
     if(fileList) fileList.innerHTML = '';
 
-    // Default 2 Files: HTML and CSS
-    addFileToUI("index.html", "html", "<h1>Welcome to Craby</h1>");
-    addFileToUI("style.css", "css", "h1 { color: orange; text-align: center; }");
+    // डिफॉल्ट फाईल्स: index.html आणि style.css
+    window.addFileToUI("index.html", "html", localStorage.getItem('craby_code_html') || "<h1>Welcome to Craby</h1>");
+    window.addFileToUI("style.css", "css", localStorage.getItem('craby_code_css') || "h1 { color: orange; text-align: center; }");
 
+    // थीम अप्लाय करणे (तुमच्या theme-settings.js मधील फंक्शन)
     if(window.updateThemeAndFont) window.updateThemeAndFont();
-    updateLayout();
-};
+});
 
-// --- 2. DYNAMIC LAYOUT (Space Management) ---
-function updateLayout() {
+// --- 2. DYNAMIC LAYOUT ENGINE (Equal Space Occupancy) ---
+window.updateLayout = () => {
     const wrapper = document.getElementById('editor-wrapper');
-    const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none');
+    const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none' && !box.classList.contains('fullscreen-mode'));
     const count = visibleBoxes.length;
 
     if (count > 0) {
@@ -26,130 +31,172 @@ function updateLayout() {
             box.style.height = `${height}%`;
         });
     }
-}
+};
 
 // --- 3. FILE SYSTEM (Add, New, Minimize, Delete) ---
-function addFileToUI(name, id, content = "") {
+window.createNewFile = () => {
+    const fileName = prompt("Enter file name (e.g. script.js, about.html):");
+    if (fileName && fileName.trim() !== "") {
+        const id = fileName.replace('.', '-').toLowerCase() + "_" + Date.now();
+        window.addFileToUI(fileName, id, "");
+        window.toggleLeftSidebar(); // फाईल बनवल्यावर शटर बंद
+    }
+};
+
+window.addFileToUI = (name, id, content = "") => {
     const wrapper = document.getElementById('editor-wrapper');
     const fileList = document.getElementById('file-list');
+    
     if(!wrapper || document.getElementById(`box-${id}`)) return;
 
-    // Sidebar Explorer Tab
+    // A. Shutter Explorer Tab
     const item = document.createElement('div');
     item.className = 'file-item';
     item.id = `tab-${id}`;
-    item.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span>`;
-    item.onclick = () => restoreBox(id);
-    fileList.appendChild(item);
+    item.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent); font-size:10px;">(Hidden)</small>`;
+    item.onclick = () => window.restoreBox(id);
+    if(fileList) fileList.appendChild(item);
 
-    // Editor Box Logic
+    // B. Editor Box Creation
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
     newBox.innerHTML = `
-        <div class="label" style="display:flex; justify-content:space-between; align-items:center; padding:8px 15px;">
-            <span>${name.toUpperCase()}</span>
-            <div class="box-controls" style="display:flex; gap:18px; align-items:center;">
-                <i class="fas fa-minus" onclick="minimizeBox('${id}')" title="Minimize" style="cursor:pointer;"></i>
-                <i class="fas fa-expand" onclick="toggleFullscreen('${id}')" title="Fullscreen" style="cursor:pointer;"></i>
-                <i class="fas fa-trash-alt" onclick="deleteBox('${id}')" title="Delete" style="cursor:pointer; color:#ff4d4d;"></i>
+        <div class="label" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+            <span style="letter-spacing: 1px;">${name.toUpperCase()}</span>
+            <div class="box-controls" style="display: flex; gap: 18px; font-size: 14px;">
+                <i class="fas fa-minus" onclick="window.minimizeBox('${id}')" title="Minimize" style="cursor:pointer;"></i>
+                <i class="fas fa-expand" onclick="window.toggleFullscreen('${id}')" title="Fullscreen" style="cursor:pointer;"></i>
+                <i class="fas fa-trash-alt" onclick="window.deleteFile('${id}')" title="Delete" style="cursor:pointer; color:#ff4d4d;"></i>
             </div>
         </div>
-        <textarea id="${id}-code" spellcheck="false" oninput="localStorage.setItem('craby_save_${id}', this.value)">${content}</textarea>
+        <textarea id="${id}-code" spellcheck="false" oninput="window.saveHistory('${id}', this.value)">${content}</textarea>
+        <button class="exit-full-btn" id="exit-${id}" onclick="window.toggleFullscreen('${id}')" style="display:none;">Exit Fullscreen</button>
     `;
+    
     wrapper.appendChild(newBox);
-    updateLayout();
-}
+    window.updateLayout();
+};
 
-// नवीन फाईल तयार करणे
-function createNewFile() {
-    const fileName = prompt("Enter file name (e.g. script.js):");
-    if (fileName) {
-        const id = fileName.split('.')[0].toLowerCase() + "_" + Date.now();
-        addFileToUI(fileName, id, "");
-        if(document.getElementById('leftSidebar').classList.contains('open')) toggleLeftSidebar();
-    }
-}
-
-function minimizeBox(id) {
+window.minimizeBox = (id) => {
     document.getElementById(`box-${id}`).style.display = 'none';
-    updateLayout();
-}
+    const status = document.getElementById(`status-${id}`);
+    if(status) status.style.display = 'inline';
+    window.updateLayout();
+};
 
-function restoreBox(id) {
+window.restoreBox = (id) => {
     const box = document.getElementById(`box-${id}`);
     if(box) {
         box.style.display = 'flex';
-        updateLayout();
+        const status = document.getElementById(`status-${id}`);
+        if(status) status.style.display = 'none';
+        window.updateLayout();
     }
-}
+};
 
-function deleteBox(id) {
-    const result = confirm(`तुम्हाला '${id}' फाईल कायमची (Permanently) डिलीट करायची आहे का?`);
-    if(result) {
-        document.getElementById(`box-${id}`).remove();
-        document.getElementById(`tab-${id}`).remove();
-        localStorage.removeItem(`craby_save_${id}`);
-        updateLayout();
+window.deleteFile = (id) => {
+    if(confirm(`⚠️ Warning: Are you sure you want to delete this file permanently?`)) {
+        const box = document.getElementById(`box-${id}`);
+        const tab = document.getElementById(`tab-${id}`);
+        if(box) box.remove();
+        if(tab) tab.remove();
+        localStorage.removeItem(`craby_code_${id}`);
+        window.updateLayout();
     }
-}
+};
 
-// Fullscreen Logic
-function toggleFullscreen(id) {
+// --- 4. FULLSCREEN LOGIC ---
+window.toggleFullscreen = (id) => {
     const box = document.getElementById(`box-${id}`);
-    box.classList.toggle('fullscreen-active');
-    // CSS मध्ये .fullscreen-active साठी position: fixed; top:0; left:0; width:100%; height:100%; z-index:9999; असावा.
-}
-
-// --- 4. PREVIEW LOGIC (Desktop/Mobile) ---
-function runCode() {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    const h = document.querySelector('[id*="html-code"]')?.value || '';
-    const c = `<style>${document.querySelector('[id*="css-code"]')?.value || ''}</style>`;
-    const j = `<script>${document.querySelector('[id*="js-code"]')?.value || ''}<\/script>`;
+    const exitBtn = document.getElementById(`exit-${id}`);
     
-    const out = document.getElementById('output').contentWindow.document;
-    out.open();
-    out.write(h + c + j);
-    out.close();
-}
-
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
-function setDevice(mode) {
-    const iframe = document.getElementById('output');
-    if(mode === 'mobile') {
-        iframe.style.width = '375px';
-        iframe.style.margin = '20px auto';
-        iframe.style.border = '10px solid #333';
-        iframe.style.borderRadius = '20px';
+    if (!box.classList.contains('fullscreen-mode')) {
+        box.classList.add('fullscreen-mode');
+        if(exitBtn) exitBtn.style.display = 'block';
     } else {
-        iframe.style.width = '100%';
-        iframe.style.margin = '0';
-        iframe.style.border = 'none';
-        iframe.style.borderRadius = '0';
+        box.classList.remove('fullscreen-mode');
+        if(exitBtn) exitBtn.style.display = 'none';
     }
-}
+    window.updateLayout();
+};
 
-// --- 5. SIDEBAR & DOWNLOAD ---
-function toggleLeftSidebar() {
-    const sb = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-}
+// --- 5. RUN, PREVIEW & DOWNLOAD ---
+window.runCode = () => {
+    const overlay = document.getElementById('preview-overlay');
+    const iframe = document.getElementById('output');
+    overlay.style.display = 'flex';
 
-function toggleSettings() {
-    document.getElementById('settingsPanel').classList.toggle('open');
-}
+    // सर्व टेक्स्टएरिया मधून कोड गोळा करणे (Professional Bundle)
+    const textareas = document.querySelectorAll('textarea');
+    let html = "", css = "", js = "";
 
-function exportCode() {
-    const h = document.querySelector('[id*="html-code"]')?.value || '';
-    const blob = new Blob([h], {type: "text/html"});
+    textareas.forEach(tx => {
+        if(tx.id.includes('html')) html += tx.value;
+        else if(tx.id.includes('css')) css += tx.value;
+        else if(tx.id.includes('js') || tx.id.includes('script')) js += tx.value;
+    });
+
+    const fullCode = `
+        <!DOCTYPE html>
+        <html>
+        <head><style>${css}</style></head>
+        <body>
+            ${html}
+            <script>${js}<\/script>
+        </body>
+        </html>`;
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(fullCode);
+    doc.close();
+};
+
+window.closePreview = () => {
+    document.getElementById('preview-overlay').style.display = 'none';
+};
+
+window.setDevice = (mode) => {
+    const wrapper = document.querySelector('.iframe-wrapper');
+    if(mode === 'mobile') {
+        wrapper.style.width = '375px'; // Standard Mobile Width
+        wrapper.style.height = '667px';
+    } else {
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
+    }
+};
+
+window.exportCode = () => {
+    // सध्या उघडलेल्या HTML कोडला डाऊनलोड करणे
+    const htmlCode = document.querySelector('textarea[id*="html"]')?.value || "";
+    const blob = new Blob([htmlCode], { type: "text/html" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "index.html";
     a.click();
-}
+};
+
+// --- 6. SHUTTER & UTILS ---
+window.toggleLeftSidebar = () => {
+    const sb = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+    sb.classList.toggle('open');
+    shutter.classList.toggle('active');
+};
+
+window.toggleSettings = () => {
+    document.getElementById('settingsPanel').classList.toggle('open');
+};
+
+window.saveHistory = (id, val) => {
+    localStorage.setItem(`craby_code_${id}`, val);
+};
+
+window.resetAllSettings = () => {
+    if(confirm("Reset all code and settings?")) {
+        localStorage.clear();
+        location.reload();
+    }
+};
