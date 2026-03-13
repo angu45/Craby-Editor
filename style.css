@@ -1,110 +1,116 @@
-/* --- 1. CORE FIXES --- */
+/* --- 1. CORE VARIABLES & MODERNIZATION --- */
 :root {
     --bg: #0d1117; 
     --panel: #161b22; 
     --accent: #ffb400; 
     --text: #c9d1d9; 
-    --header: #010409;
-    --border: rgba(255, 255, 255, 0.1);
-}
-
-html, body {/* --- 1. CORE VARIABLES --- */
-:root {
-    --bg: #0d1117; 
-    --panel: #161b22; 
-    --accent: #ffb400; 
-    --text: #c9d1d9; 
-    --border: rgba(255, 255, 255, 0.1); 
+    --border: rgba(255, 255, 255, 0.08); 
     --header: #010409;
     --current-font: 'Plus Jakarta Sans', sans-serif;
+    --bezier: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Theme Classes */
-body.theme-light {
-    --bg: #ffffff; --panel: #f0f0f0; --text: #000000; --header: #e0e0e0; --border: #cccccc;
-}
-body.theme-blue {
-    --bg: #0a192f; --panel: #172a45; --text: #ccd6f6; --header: #020c1b; --border: #303c55;
-}
+/* Smooth Scrolling */
+* { scroll-behavior: smooth; box-sizing: border-box; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-html, body {
+body {
     height: 100dvh; width: 100%; overflow: hidden; position: fixed;
     background: var(--bg); color: var(--text);
     font-family: var(--current-font) !important;
+    transition: background 0.4s var(--bezier);
 }
 
-/* --- 2. SETTINGS PANEL (FIXED) --- */
+/* --- 2. IMPROVED BUTTON SIZES & ANIMATION --- */
+.icon-btn, .run-btn {
+    padding: 12px 18px; /* Bigger touch area for mobile */
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s var(--bezier);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+}
+
+.icon-btn:active, .run-btn:active {
+    transform: scale(0.92); /* Press effect */
+}
+
+.run-btn {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 4px 15px rgba(255, 180, 0, 0.2);
+}
+
+/* --- 3. DECORATED SHUTTER (SIDEBAR) --- */
+.action-sidebar {
+    position: fixed; left: -300px; top: 0; width: 280px; height: 100%;
+    background: var(--panel); border-right: 1px solid var(--border);
+    z-index: 5000; transition: transform 0.4s var(--bezier);
+    padding-top: 80px;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+.action-sidebar.open { transform: translateX(300px); }
+
+.sidebar-shutter {
+    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 60px; background: var(--accent);
+    cursor: pointer; z-index: 5001; border-radius: 0 10px 10px 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #000; transition: all 0.4s var(--bezier);
+    box-shadow: 5px 0 15px rgba(255, 180, 0, 0.3);
+}
+
+.sidebar-shutter.active { left: 280px; border-radius: 10px 0 0 10px; }
+
+/* File Items inside Shutter */
+.file-item {
+    padding: 14px 20px; margin: 10px 15px;
+    background: rgba(255,255,255,0.03); border-radius: 12px;
+    transition: all 0.2s var(--bezier);
+    border: 1px solid transparent;
+}
+
+.file-item:hover {
+    background: rgba(255, 180, 0, 0.1);
+    border-color: var(--accent);
+    transform: translateX(5px);
+}
+
+/* --- 4. PREMIUM SETTINGS PANEL --- */
 .settings-panel { 
-    position: fixed; right: -350px; top: 0; width: 320px; height: 100%; 
-    background: var(--panel); border-left: 2px solid var(--accent); 
-    z-index: 6000; padding: 30px; transition: 0.3s ease; 
-}
-.settings-panel.open { right: 0; }
-
-.settings-item { margin-bottom: 20px; }
-.settings-item label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--accent); font-weight: bold; }
-.settings-item select, .settings-item input {
-    width: 100%; padding: 10px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 5px;
+    position: fixed; right: -360px; top: 0; width: 330px; height: 100%; 
+    background: rgba(22, 27, 34, 0.9); backdrop-filter: blur(20px);
+    border-left: 1px solid var(--border); z-index: 6000; 
+    padding: 40px 25px; transition: transform 0.4s var(--bezier);
 }
 
-/* Reset Button Style */
+.settings-panel.open { transform: translateX(-360px); }
+
+.settings-item select {
+    appearance: none; width: 100%; padding: 14px;
+    background: #0d1117; color: #fff; border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; font-size: 14px;
+}
+
+/* Reset Button with Glow */
 .reset-btn {
-    width: 100%; padding: 12px; background: #ff4d4d; color: white; border: none;
-    border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 20px;
-}
-.reset-btn:hover { background: #ff3333; }
-
-/* Rest of your CSS remains same (Header, Editor, Sidebar)... */
-
-    height: 100dvh; width: 100%; overflow: hidden;
-    position: fixed; background: var(--bg);
+    width: 100%; padding: 15px; background: rgba(255, 77, 77, 0.1);
+    color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 12px;
+    font-weight: 700; transition: 0.3s; margin-top: 30px;
 }
 
-/* Header Fix */
-header { 
-    height: 60px; background: var(--header); 
-    display: flex; justify-content: space-between; align-items: center; 
-    padding: 0 15px; border-bottom: 2px solid var(--accent);
-    position: relative; z-index: 2000; /* Priority top */
+.reset-btn:hover { background: #ff4d4d; color: #fff; box-shadow: 0 0 20px rgba(255, 77, 77, 0.4); }
+
+/* --- 5. EDITOR BOXES --- */
+.editor-box {
+    animation: fadeIn 0.5s var(--bezier);
 }
 
-/* --- 2. EDITOR SECTION FIX --- */
-.main-container { 
-    height: calc(100dvh - 60px); 
-    display: flex; overflow: hidden; 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-
-.editor-section { 
-    flex: 1; display: flex; flex-direction: column; 
-    overflow-y: auto; padding-bottom: 20px;
-}
-
-.editor-box { 
-    min-height: 250px; border-bottom: 2px solid var(--border);
-    display: flex; flex-direction: column; background: var(--bg);
-}
-
-/* --- 3. PREVIEW OVERLAY (CRITICAL FIX) --- */
-.preview-overlay {
-    position: fixed; top: 0; left: 0; 
-    width: 100%; height: 100dvh;
-    background: #1a1a1a; z-index: 9999; /* Highest priority */
-    display: none; flex-direction: column;
-}
-
-.preview-header {
-    height: 60px; background: #000; border-bottom: 2px solid var(--accent);
-    display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
-}
-
-.preview-body { 
-    flex: 1; display: flex; justify-content: center; align-items: center; 
-    padding: 10px; background: #333; 
-}
-
-.iframe-wrapper { width: 100%; height: 100%; background: #fff; border-radius: 8px; }
-.iframe-wrapper.mobile { width: 360px; height: 640px; border: 8px solid #000; }
-
-iframe#output { width: 100%; height: 100%; border: none; }
