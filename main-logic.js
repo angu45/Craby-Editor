@@ -17,6 +17,66 @@ window.applySettings = () => {
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontSize = fontSize;
     });
+/* --- DYNAMIC FILE LOGIC --- */
+
+window.addFileToUI = function(name, id, content = "") {
+    const wrapper = document.getElementById('editor-wrapper');
+    const fileList = document.getElementById('file-list');
+    
+    if(!wrapper || document.getElementById(`box-${id}`)) return;
+
+    // 1. Sidebar Item
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.id = `tab-${id}`;
+    item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
+    item.onclick = () => window.restoreBox(id);
+    fileList.appendChild(item);
+
+    // 2. Editor Box
+    const newBox = document.createElement('div');
+    newBox.className = 'editor-box';
+    newBox.id = `box-${id}`;
+    
+    // flex: 1 मुळे हा बॉक्स उपलब्ध जागेचा समान हिस्सा घेईल
+    newBox.style.flex = "1 1 0"; 
+
+    newBox.innerHTML = `
+        <div class="label">
+            <span>${name.toUpperCase()}</span>
+            <div class="box-controls">
+                <button onclick="minimizeBox('${id}')"><i class="fas fa-minus"></i></button>
+                <button onclick="deleteFile('${id}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        <textarea id="${id}-code" spellcheck="false" oninput="saveHistory('${id}', this.value)">${content}</textarea>
+    `;
+    
+    wrapper.appendChild(newBox);
+    window.applySettings();
+};
+
+// जेव्हा तुम्ही फाईल डिलीट कराल, तेव्हा उरलेल्या फाईल्स आपोआप मोठी जागा घेतील
+window.deleteFile = (id) => {
+    if(confirm(`Delete ${name}?`)) {
+        const box = document.getElementById(`box-${id}`);
+        const tab = document.getElementById(`tab-${id}`);
+        if(box) box.remove();
+        if(tab) tab.remove();
+        localStorage.removeItem(`craby_code_${id}`);
+        // No extra code needed, CSS flex will handle the rest!
+    }
+};
+
+window.minimizeBox = (id) => {
+    const box = document.getElementById(`box-${id}`);
+    if(box.style.display === 'none') {
+        box.style.display = 'flex'; // Restore
+    } else {
+        box.style.display = 'none'; // Hide and share space
+    }
+};
+
 
     // Settings Panel मधील UI सिंक करणे
     if(document.getElementById('font-select')) document.getElementById('font-select').value = font;
