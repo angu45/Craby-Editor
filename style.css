@@ -1,4 +1,4 @@
-/* --- 1. VARIABLES & CORE RESET --- */
+/* --- 1. CORE RESET & VIEWPORT FIX --- */
 :root {
     --bg: #0d1117; 
     --panel: #161b22; 
@@ -8,77 +8,34 @@
     --header: #010409;
 }
 
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-}
-/* --- 1. CORE LAYOUT --- */
-body { 
-    background: var(--bg); 
-    color: var(--text); 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
-    height: 100vh; 
-    display: flex; 
-    flex-direction: column; /* Header on top, container below */
-    overflow: hidden; /* Prevent body scroll */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    height: 100dvh; /* Dynamic height for mobile browsers */
+    width: 100%;
+    overflow: hidden;
+    position: fixed; /* Prevents layout bouncing on mobile focus */
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 2. HEADER (STAYS ON TOP) --- */
 header { 
+    height: 60px;
     background: var(--header); 
-    padding: 10px 20px; 
+    padding: 0 20px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     border-bottom: 2px solid var(--accent); 
-    z-index: 1000; 
-    height: 60px; /* Fixed height for header */
-    flex-shrink: 0; /* Header will never shrink or move */
-}
-
-.main-container { 
-    display: flex; 
-    flex: 1; /* Takes remaining height below header */
-    overflow: hidden; 
-    position: relative;
-}
-
-.editor-section { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    height: 100%; 
-    overflow-y: auto; /* Internal scrolling if files are many */
-}
-
-/* --- 2. EDITOR BOX LOGIC --- */
-.editor-box { 
-    display: flex; 
-    flex-direction: column; 
-    width: 100%;
-    /* This ensures they share space but don't crush each other */
-    flex-grow: 1; 
-    flex-shrink: 0;
-    min-height: 200px; /* Minimum height for each file */
-    border-bottom: 2px solid var(--border); 
-    background: var(--bg);
-}
-
-textarea { 
-    width: 100%;
-    flex: 1; 
-    background: transparent; 
-    border: none; 
-    color: #9cdcfe; 
-    font-family: 'Fira Code', monospace; 
-    padding: 15px; 
-    resize: none; 
-    outline: none; 
-}
-
-/* Sidebar and Settings should have high z-index */
-.action-sidebar, .settings-panel {
-    z-index: 5000;
+    z-index: 2000;
+    flex-shrink: 0; /* Prevents header from collapsing when keyboard opens */
 }
 
 .logo-container img { height: 30px; }
@@ -88,41 +45,37 @@ textarea {
     background: var(--panel); 
     border: 1px solid var(--border); 
     color: var(--text); 
-    padding: 8px 14px; 
+    padding: 8px 12px; 
     border-radius: 6px; 
     cursor: pointer; 
     font-size: 0.8rem; 
-    transition: 0.2s;
 }
-.icon-btn:hover { border-color: var(--accent); background: rgba(255,180,0,0.1); }
 .run-btn { background: var(--accent) !important; color: #000 !important; font-weight: 800; }
 
-/* --- 3. EDITOR MAIN AREA (Smart Dynamic Height) --- */
+/* --- 3. MAIN CONTAINER & EDITORS --- */
 .main-container { 
+    flex: 1;
     display: flex; 
-    flex: 1; 
     overflow: hidden; 
+    height: calc(100dvh - 60px);
 }
 
 .editor-section { 
     flex: 1; 
     display: flex; 
-    flex-direction: column; /* Stack editors vertically */
-    height: 100%; 
-    overflow: hidden; /* Prevent global scroll, use internal scroll for textareas */
+    flex-direction: column; 
+    overflow-y: auto; /* Allows scrolling if multiple files are open */
 }
 
-/* The 'flex: 1' here ensures that all visible editor boxes 
-   share the available screen space equally.
-*/
 .editor-box { 
     display: flex; 
     flex-direction: column; 
     width: 100%;
-    flex: 1; 
+    flex-grow: 1;
+    flex-shrink: 0;
+    min-height: 200px; /* Minimum space for each editor */
     border-bottom: 2px solid var(--border); 
     background: var(--bg);
-    transition: flex 0.3s ease; /* Smooth transition when files are minimized/restored */
 }
 
 .label { 
@@ -131,37 +84,17 @@ textarea {
     font-size: 11px; 
     font-weight: 800; 
     color: var(--accent); 
-    text-transform: uppercase;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border);
 }
 
-/* Control Buttons (Minimize, Fullscreen, Delete) */
-.box-controls {
-    display: flex;
-    gap: 15px;
-}
-
-.box-controls button {
-    background: transparent;
-    border: none;
-    color: var(--text);
-    cursor: pointer;
-    font-size: 13px;
-    opacity: 0.6;
-    transition: 0.3s;
-}
-
-.box-controls button:hover {
-    opacity: 1;
-    color: var(--accent);
-}
+.box-controls { display: flex; gap: 15px; }
+.box-controls button { background: transparent; border: none; color: var(--text); cursor: pointer; }
 
 textarea { 
     width: 100%;
-    flex: 1; /* Takes up all space inside the box below the label */
+    flex: 1; 
     background: transparent; 
     border: none; 
     color: #9cdcfe; 
@@ -169,73 +102,36 @@ textarea {
     padding: 15px; 
     resize: none; 
     outline: none; 
-    line-height: 1.6; 
+    line-height: 1.5;
 }
 
-/* --- 4. SIDEBAR & EXPLORER --- */
-.action-sidebar {
-    position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
-    background: var(--panel); border-right: 1px solid var(--border);
-    z-index: 2000; transition: 0.3s; padding: 70px 15px 20px 15px;
+/* --- 4. SIDEBAR & SETTINGS (HIGH Z-INDEX) --- */
+.action-sidebar, .settings-panel {
+    position: fixed; top: 0; height: 100%; z-index: 5000;
+    background: var(--panel); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.action-sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
-
-/* Sidebar File Items - Better Look */
-.file-item {
-    padding: 10px 15px;
-    margin-bottom: 6px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    transition: 0.2s;
-    border-left: 3px solid transparent;
-}
-.file-item:hover { 
-    background: rgba(255,180,0,0.1); 
-    border-left-color: var(--accent);
-    transform: translateX(5px);
-}
+.action-sidebar { left: -280px; width: 280px; border-right: 1px solid var(--border); padding-top: 70px; }
+.action-sidebar.open { left: 0; }
+.settings-panel { right: -350px; width: 320px; border-left: 2px solid var(--accent); padding: 30px; }
+.settings-panel.open { right: 0; }
 
 .sidebar-shutter {
     position: fixed; left: 0; top: 50%; transform: translateY(-50%);
-    width: 20px; height: 50px; background: var(--accent);
-    cursor: pointer; z-index: 2001; border-radius: 0 5px 5px 0;
+    width: 25px; height: 50px; background: var(--accent);
+    cursor: pointer; z-index: 5001; border-radius: 0 5px 5px 0;
     display: flex; align-items: center; justify-content: center; color: #000;
 }
 .sidebar-shutter.active { left: 280px; }
 
-/* --- 5. SETTINGS PANEL (Right Sidebar) --- */
-.settings-panel { 
-    position: fixed; right: -350px; top: 0; width: 320px; height: 100%; 
-    background: var(--panel); border-left: 2px solid var(--accent); 
-    z-index: 5000; padding: 30px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+/* File Item in Sidebar */
+.file-item {
+    padding: 12px; margin: 5px 15px; background: rgba(255,255,255,0.03);
+    border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 10px;
 }
-.settings-panel.open { right: 0; }
+.file-item:hover { background: rgba(255,180,0,0.1); border-left: 3px solid var(--accent); }
 
-/* --- 6. FULLSCREEN & PREVIEW --- */
+/* Fullscreen Mode */
 .editor-box.fullscreen-mode {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
     z-index: 6000; background: var(--bg);
 }
-
-.exit-full-btn {
-    position: absolute; bottom: 20px; right: 20px;
-    background: #ff4d4d; color: white; border: none;
-    padding: 10px 15px; border-radius: 5px; cursor: pointer;
-    font-weight: bold;
-}
-
-.preview-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #f1f5f9; z-index: 7000; display: none; flex-direction: column;
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
