@@ -32,7 +32,7 @@
 
     <script type="application/ld+json">
     {
-      "@context" : "https://craby-editor.vercel.app",
+      "@context" : "https://schema.org",
       "@type" : "WebSite",
       "name" : "Craby-Editor",
       "url" : "https://craby-editor.vercel.app"
@@ -44,7 +44,8 @@
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
-        <h1 style="display:none;">Craby Editor - Best Online HTML Editor</h1> </div>
+        <h1 style="display:none;">Craby Editor</h1> 
+    </div>
     <div class="nav-actions">
         <button class="icon-btn" onclick="beautifyCode()" title="Format Code"><i class="fas fa-magic"></i></button>
         <button class="icon-btn" onclick="exportCode()" title="Download File"><i class="fas fa-download"></i></button>
@@ -55,8 +56,15 @@
 
 <div class="main-container">
     <div class="editor-section">
-        <div class="editor-box">
-            <div class="label">HTML <i class="fas fa-code"></i></div>
+        <div class="editor-box" id="box-html">
+            <div class="label">
+                <span>HTML <i class="fas fa-code"></i></span>
+                <div class="window-controls">
+                    <i class="fas fa-minus" onclick="minimizeBox('html')" title="Minimize"></i>
+                    <i class="fas fa-expand" onclick="expandBox('html')" title="Full Screen"></i>
+                    <i class="fas fa-trash" onclick="clearCode('html')" title="Clear"></i>
+                </div>
+            </div>
             <textarea id="html-code" spellcheck="false"><!DOCTYPE html>
 <html>
 <head>
@@ -65,25 +73,55 @@
 <body>
     <h1>Welcome to Craby Editor</h1>
 </body>
-</html>
-</textarea>
+</html></textarea>
         </div>
-        <div class="editor-box">
-            <div class="label">CSS <i class="fab fa-css3-alt"></i></div>
+
+        <div class="editor-box" id="box-css">
+            <div class="label">
+                <span>CSS <i class="fab fa-css3-alt"></i></span>
+                <div class="window-controls">
+                    <i class="fas fa-minus" onclick="minimizeBox('css')" title="Minimize"></i>
+                    <i class="fas fa-expand" onclick="expandBox('css')" title="Full Screen"></i>
+                    <i class="fas fa-trash" onclick="clearCode('css')" title="Clear"></i>
+                </div>
+            </div>
             <textarea id="css-code" spellcheck="false">
 h1 {  
     color: #ffb400; 
     text-align: center; 
     font-family: sans-serif;
-}
-            </textarea>
+}</textarea>
         </div>
-        <div class="editor-box">
-            <div class="label">JAVASCRIPT <i class="fab fa-js"></i></div>
+
+        <div class="editor-box" id="box-js">
+            <div class="label">
+                <span>JAVASCRIPT <i class="fab fa-js"></i></span>
+                <div class="window-controls">
+                    <i class="fas fa-minus" onclick="minimizeBox('js')" title="Minimize"></i>
+                    <i class="fas fa-expand" onclick="expandBox('js')" title="Full Screen"></i>
+                    <i class="fas fa-trash" onclick="clearCode('js')" title="Clear"></i>
+                </div>
+            </div>
             <textarea id="js-code" spellcheck="false">console.log('Running...');</textarea>
         </div>
     </div>
 </div>
+
+<footer>
+    <div class="footer-left">
+        <button class="foot-btn" title="New File"><i class="fas fa-plus"></i> NEW FILE</button>
+        <div class="file-tabs">
+            <span class="tab active">index.html</span>
+            <span class="tab">style.css</span>
+            <span class="tab">script.js</span>
+        </div>
+    </div>
+    <div class="footer-right">
+        <button class="foot-btn" onclick="undoCode()" title="Undo"><i class="fas fa-undo"></i></button>
+        <button class="foot-btn" onclick="redoCode()" title="Redo"><i class="fas fa-redo"></i></button>
+        <div class="file-count">Files: 3</div>
+    </div>
+</footer>
 
 <div id="preview-overlay" class="preview-overlay">
     <div class="overlay-header">
@@ -114,7 +152,7 @@ h1 {
         <div style="display: flex; gap: 10px; font-size: 12px;">
             <label><input type="checkbox" id="chk-html" checked onchange="updateVisibility()"> HTML</label>
             <label><input type="checkbox" id="chk-css" checked onchange="updateVisibility()"> CSS</label>
-            <label><input type="checkbox" id="chk-js" onchange="updateVisibility()"> JS</label>
+            <label><input type="checkbox" id="chk-js" checked onchange="updateVisibility()"> JS</label>
         </div>
     </div>
 
@@ -164,7 +202,6 @@ function updateThemeAndFont() {
     const fontSize = document.getElementById('font-size-bar').value;
     document.getElementById('fs-display').innerText = fontSize + "px"; 
 
-    // Themes object 'Script.js' madhe asne garjeche aahe
     const theme = (typeof themes !== 'undefined') ? (themes[themeKey] || themes.dark) : null;
 
     if (theme) {
@@ -180,9 +217,9 @@ function updateThemeAndFont() {
             if(theme.border) tx.closest('.editor-box').style.borderColor = theme.border;
         });
 
-        document.querySelectorAll('.label, .icon-btn i').forEach(el => {
-            if(el.classList.contains('label')) el.style.background = theme.panel;
-            el.style.color = theme.accent;
+        document.querySelectorAll('.label, .icon-btn i, footer, .foot-btn').forEach(el => {
+            if(el.classList.contains('label') || el.tagName === 'FOOTER') el.style.background = theme.panel;
+            if(!el.classList.contains('foot-btn')) el.style.color = theme.accent;
         });
     }
 }
