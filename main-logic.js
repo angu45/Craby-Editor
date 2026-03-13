@@ -1,80 +1,99 @@
 /* ==========================================
-   1. HISTORY & STORAGE
-   ========================================== */
-window.saveHistory = function(id, content) {
-    localStorage.setItem(`craby_code_${id}`, content);
-};
-
-/* ==========================================
-   2. WINDOW CONTROLS (Minimize, Fullscreen, Delete)
+   1. FILE SYSTEM (Add to Stack)
    ========================================== */
 
-// Hides the editor box
-window.minimizeBox = function(id) {
-    const box = document.getElementById(`box-${id}`);
-    if(box) box.style.display = 'none';
+window.addFileToUI = function(name, id, content = "") {
+    const wrapper = document.getElementById('editor-wrapper');
+    if(!wrapper) return;
+
+    // Check if box already exists to avoid duplicates
+    if(document.getElementById(`box-${id}`)) return;
+
+    const newBox = document.createElement('div');
+    newBox.className = 'editor-box';
+    newBox.id = `box-${id}`;
+    
+    // Simple UI with -, Expand, and Trash as per your photo
+    newBox.innerHTML = `
+        <div class="label">
+            <span>${name.toUpperCase()}</span>
+            <div class="box-controls">
+                <button onclick="minimizeBox('${id}')"><i class="fas fa-minus"></i></button>
+                <button onclick="toggleFullscreen('${id}')"><i class="fas fa-expand-arrows-alt"></i></button>
+                <button onclick="deleteFile('${id}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        <textarea id="${id}-code" spellcheck="false" oninput="saveHistory('${id}', this.value)">${content}</textarea>
+        <button class="exit-full-btn" id="exit-${id}" onclick="toggleFullscreen('${id}')" style="display:none;">EXIT FULLSCREEN</button>
+    `;
+    
+    wrapper.appendChild(newBox);
+    
+    // Add to Sidebar too
+    updateSidebarList(name, id);
+    if(window.updateThemeAndFont) window.updateThemeAndFont();
 };
 
-// Deletes the editor box after confirmation
-window.deleteFile = function(id) {
-    if(confirm(`Are you sure you want to delete ${id}?`)) {
-        const box = document.getElementById(`box-${id}`);
-        const tab = document.getElementById(`tab-${id}`);
-        if(box) box.remove();
-        if(tab) tab.remove();
-        localStorage.removeItem(`craby_code_${id}`);
+function updateSidebarList(name, id) {
+    const fileList = document.getElementById('file-list');
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.id = `tab-${id}`;
+    item.innerHTML = `<i class="fas fa-file-code"></i> ${name}`;
+    item.onclick = () => {
+        // Scroll to that specific box instead of hiding others
+        document.getElementById(`box-${id}`).scrollIntoView({ behavior: 'smooth' });
+    };
+    fileList.appendChild(item);
+}
+
+window.createNewFile = function() {
+    const name = prompt("Enter file name (e.g. script.js):");
+    if(name) {
+        const id = name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+        window.addFileToUI(name, id, "");
     }
 };
 
-// Toggles Fullscreen mode
+/* ==========================================
+   2. WINDOW ACTIONS
+   ========================================== */
+
+window.minimizeBox = function(id) {
+    const area = document.getElementById(`${id}-code`);
+    // Toggle only the textarea height for "Minimize" effect
+    if(area.style.display === 'none') {
+        area.style.display = 'block';
+    } else {
+        area.style.display = 'none';
+    }
+};
+
+window.deleteFile = function(id) {
+    if(confirm("Delete this window?")) {
+        document.getElementById(`box-${id}`).remove();
+        const tab = document.getElementById(`tab-${id}`);
+        if(tab) tab.remove();
+    }
+};
+
 window.toggleFullscreen = function(id) {
     const box = document.getElementById(`box-${id}`);
     const exitBtn = document.getElementById(`exit-${id}`);
-    
     box.classList.toggle('fullscreen-mode');
     exitBtn.style.display = box.classList.contains('fullscreen-mode') ? 'block' : 'none';
 };
 
-// Restores box visibility from sidebar
-window.restoreBox = function(id) {
-    const target = document.getElementById(`box-${id}`);
-    if(target) {
-        // Optional: Hide other boxes if you want single-tab feel
-        document.querySelectorAll('.editor-box').forEach(b => b.style.display = 'none');
-        target.style.display = 'flex';
-    }
-};
-
 /* ==========================================
-   3. CORE ENGINE (Run & UI)
+   3. INITIAL LOAD
    ========================================== */
-
-window.toggleLeftSidebar = function() {
-    document.getElementById('leftSidebar').classList.toggle('open');
-    document.getElementById('shutterBtn').classList.toggle('active');
-};
-
-window.runCode = function() {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const out = document.getElementById('output').contentWindow.document;
-    out.open();
-    out.write(h + c);
-    out.close();
-};
-
-window.closePreview = function() {
-    document.getElementById('preview-overlay').style.display = 'none';
-};
-
-// Initial setup on load
 document.addEventListener('DOMContentLoaded', () => {
-    // Load saved data if exists
-    if(localStorage.getItem('craby_code_html')) {
-        document.getElementById('html-code').value = localStorage.getItem('craby_code_html');
-    }
-    if(localStorage.getItem('craby_code_css')) {
-        document.getElementById('css-code').value = localStorage.getItem('craby_code_css');
-    }
+    // Clear everything first
+    document.getElementById('editor-wrapper').innerHTML = '';
+    document.getElementById('file-list').innerHTML = '';
+
+    // Default Stacks (One below another)
+    window.addFileToUI("index.html", "html", "<h1>Craby Editor</h1>");
+    window.addFileToUI("style.css", "css", "h1 { color: orange; }");
+    window.addFileToUI("main.js", "js", "console.log('Hello');");
 });
