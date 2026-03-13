@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craby Editor Pro</title>
+    <title>Craby Editor Pro | Smart IDE</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> </head>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<div class="sidebar-shutter" onclick="toggleSidebar()" id="shutterBtn">
+<div class="sidebar-shutter" onclick="toggleLeftSidebar()" id="shutterBtn">
     <i class="fas fa-chevron-right"></i>
 </div>
 
@@ -19,11 +20,7 @@
         <span>EXPLORER</span>
         <i class="fas fa-plus" title="New File" onclick="createNewFile()"></i>
     </div>
-    <div class="sidebar-content">
-        <label class="side-label">OPEN EDITORS</label>
-        <div id="file-list" class="file-list">
-            </div>
-    </div>
+    <div id="file-list" class="file-list"></div>
 </div>
 
 <header>
@@ -33,29 +30,44 @@
     <div class="nav-actions">
         <button class="icon-btn" onclick="beautifyCode()"><i class="fas fa-magic"></i> Format</button>
         <button class="icon-btn" onclick="exportCode()"><i class="fas fa-download"></i> Export</button>
-        <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
-        <button class="icon-btn run-btn" onclick="runCode()"><b>RUN</b></button>
+        <button class="icon-btn" onclick="toggleRightSidebar()"><i class="fas fa-cog"></i> Settings</button>
+        <button class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play"></i> RUN</b></button>
     </div>
 </header>
 
 <div class="main-container">
     <div class="editor-section" id="editor-wrapper">
         </div>
-</div>
 
-<div id="preview-overlay" class="preview-overlay" style="display:none;">
-    <div class="preview-navbar">
-        <div class="preview-controls">
-            <button onclick="closePreview()" class="prev-btn"><i class="fas fa-arrow-left"></i> Back</button>
-            <button onclick="refreshPreview()" class="prev-btn"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <div class="settings-panel" id="rightSidebar">
+        <div class="sidebar-header">
+            <span>SETTINGS</span>
+            <i class="fas fa-times" onclick="toggleRightSidebar()"></i>
         </div>
-        <div class="device-toggles">
-            <button onclick="setDevice('desktop')" id="btn-desk" class="active"><i class="fas fa-desktop"></i></button>
-            <button onclick="setDevice('mobile')" id="btn-mob"><i class="fas fa-mobile-alt"></i></button>
+        <div class="sidebar-content" style="padding: 20px; color: white;">
+            <label style="display:block; margin-bottom:10px;">Theme</label>
+            <select id="theme-sel" onchange="updateThemeAndFont()" style="width:100%; padding:8px; background:#0d1117; color:white; border:1px solid var(--accent);">
+                <option value="dark">Dark Mode</option>
+                <option value="light">Light Mode</option>
+                <option value="monokai">Monokai</option>
+            </select>
         </div>
     </div>
-    <div class="iframe-container" id="iframe-container">
-        <iframe id="output"></iframe>
+</div>
+
+<div id="preview-overlay" class="preview-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:3000; flex-direction:column;">
+    <div class="preview-header" style="height:50px; background:#161b22; display:flex; align-items:center; justify-content:space-between; padding:0 20px; border-bottom:1px solid var(--accent);">
+        <div style="display:flex; gap:15px;">
+            <button onclick="closePreview()" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-arrow-left"></i> Back</button>
+            <button onclick="refreshPreview()" style="background:none; border:none; color:white; cursor:pointer;"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+        <div class="device-toggles">
+            <button onclick="setDevice('desktop')" style="color:white; background:none; border:none; margin:0 5px;"><i class="fas fa-desktop"></i></button>
+            <button onclick="setDevice('mobile')" style="color:white; background:none; border:none; margin:0 5px;"><i class="fas fa-mobile-alt"></i></button>
+        </div>
+    </div>
+    <div id="iframe-container" style="flex:1; width:100%;">
+        <iframe id="output" style="width:100%; height:100%; border:none;"></iframe>
     </div>
 </div>
 
