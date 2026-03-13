@@ -6,7 +6,32 @@
     --text: #c9d1d9; 
     --border: rgba(255, 255, 255, 0.1); 
     --header: #010409;
+}/* Update these parts in your style.css */
+
+:root {
+    --current-font: 'Plus Jakarta Sans', sans-serif; /* Default Font */
 }
+
+body {
+    font-family: var(--current-font) !important;
+}
+
+/* Sidebar and Shutter - Now dynamic */
+.action-sidebar, .settings-panel, .label, .file-item {
+    font-family: var(--current-font) !important;
+    color: var(--text);
+}
+
+.file-item span {
+    font-family: var(--current-font);
+}
+
+/* Textarea needs separate font logic usually */
+textarea {
+    font-family: 'Fira Code', monospace; /* Code stays in Monospace */
+    font-size: 14px;
+}
+
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
