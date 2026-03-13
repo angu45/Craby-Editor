@@ -21,18 +21,20 @@ body {
     height: 100vh; 
     display: flex; 
     flex-direction: column; 
-    overflow: hidden; 
+    overflow: hidden; /* Prevents the entire page from scrolling */
 }
 
 /* --- 2. HEADER & NAVIGATION --- */
 header { 
     background: var(--header); 
     padding: 10px 20px; 
+    height: 60px; /* Fixed height for a solid header */
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     border-bottom: 2px solid var(--accent); 
     z-index: 1000; 
+    position: relative; 
 }
 
 .logo-container { 
@@ -92,12 +94,14 @@ header {
     flex: 1; 
     position: relative; 
     overflow: hidden; 
+    height: calc(100vh - 60px); /* Occupies remaining screen height */
 }
 
 .editor-section { 
     flex: 1; 
     display: flex; 
     flex-direction: column; 
+    height: 100%;
 }
 
 .editor-box { 
@@ -106,6 +110,7 @@ header {
     border-bottom: 1px solid var(--border); 
     flex: 1; 
     position: relative; 
+    min-height: 0; /* Prevents flex items from breaking layout */
 }
 
 .label { 
@@ -118,6 +123,7 @@ header {
     display: flex; 
     justify-content: space-between; 
     align-items: center;
+    flex-shrink: 0; /* Keeps label at the top */
 }
 
 textarea { 
@@ -131,6 +137,7 @@ textarea {
     outline: none; 
     font-size: 14px; 
     line-height: 1.6; 
+    overflow-y: auto; /* Only the code area will scroll */
 }
 
 /* --- 4. PREVIEW OVERLAY (FLOW SCREEN) --- */
