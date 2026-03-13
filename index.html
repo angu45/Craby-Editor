@@ -150,20 +150,17 @@
     <button class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center;" onclick="toggleSettings()"><b>SAVE & CLOSE</b></button>
 </div>
 
-<div id="preview-overlay" class="preview-overlay" style="display: none;">
-    <div class="overlay-header">
-        <div class="logo-container">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
-            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
-        </div>
-        <div style="display: flex; gap: 10px;">
+<div id="preview-overlay" class="preview-overlay">
+    <div class="preview-header">
+        <div class="preview-title">Live Preview</div>
+        <div class="device-controls">
             <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
             <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
-            <button class="icon-btn" style="background: #ff4d4d !important; color: white !important; border:none;" onclick="closePreview()"><b>CLOSE</b></button>
         </div>
+        <button class="close-preview" onclick="closePreview()">CLOSE</button>
     </div>
-    <div class="overlay-body">
-        <div id="wrapper" class="iframe-wrapper">
+    <div class="preview-body">
+        <div class="iframe-wrapper">
             <iframe id="output"></iframe>
         </div>
     </div>
