@@ -35,10 +35,9 @@ header {
     z-index: 1000; 
 }
 
-.logo-container { display: flex; align-items: center; gap: 12px; }
 .logo-container img { height: 30px; }
-
 .nav-actions { display: flex; gap: 8px; }
+
 .icon-btn { 
     background: var(--panel); 
     border: 1px solid var(--border); 
@@ -47,72 +46,15 @@ header {
     border-radius: 6px; 
     cursor: pointer; 
     font-size: 0.8rem; 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
     transition: 0.2s;
 }
 .icon-btn:hover { border-color: var(--accent); background: rgba(255,180,0,0.1); }
 .run-btn { background: var(--accent) !important; color: #000 !important; font-weight: 800; }
 
-/* --- 3. LEFT SHUTTER & SIDEBAR --- */
-.action-sidebar {
-    position: fixed;
-    left: -280px;
-    top: 0;
-    width: 280px;
-    height: 100%;
-    background: var(--panel);
-    border-right: 1px solid var(--border);
-    z-index: 2000;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 70px 20px 20px 20px; /* Header खाली जागा सोडली */
-}
-
-.action-sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
-
-.sidebar-shutter {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 60px;
-    background: var(--accent);
-    cursor: pointer;
-    z-index: 2001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0 8px 8px 0;
-    transition: 0.3s;
-    color: #000;
-}
-
-.sidebar-shutter.active { left: 280px; }
-
-.file-list { margin-top: 20px; }
-.file-item {
-    padding: 12px;
-    margin-bottom: 8px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    transition: 0.2s;
-    border: 1px solid transparent;
-}
-.file-item:hover { background: rgba(255,180,0,0.1); border-color: var(--accent); }
-.file-item i { color: var(--accent); }
-
-/* --- 4. EDITOR MAIN AREA --- */
+/* --- 3. EDITOR MAIN AREA (Stacked Layout) --- */
 .main-container { 
     display: flex; 
     flex: 1; 
-    position: relative; 
     overflow: hidden; 
 }
 
@@ -120,95 +62,98 @@ header {
     flex: 1; 
     display: flex; 
     flex-direction: column; 
-    width: 100%;
+    overflow-y: auto; /* सर्व डबे एकाखाली एक दिसण्यासाठी स्क्रोलिंग */
+    padding-bottom: 50px;
 }
 
 .editor-box { 
     display: flex; 
     flex-direction: column; 
-    flex: 1; 
-    border-bottom: 1px solid var(--border); 
+    width: 100%;
+    min-height: 250px; /* डब्याची किमान उंची */
+    border-bottom: 2px solid var(--border); 
     background: var(--bg);
 }
 
 .label { 
-    background: rgba(0,0,0,0.3); 
-    padding: 8px 15px; 
-    font-size: 11px; 
+    background: #010409; 
+    padding: 10px 15px; 
+    font-size: 12px; 
     font-weight: 800; 
     color: var(--accent); 
     text-transform: uppercase;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    position: sticky; /* टायटल बार नेहमी वर राहण्यासाठी */
+    top: 0;
+    z-index: 10;
+}
+
+/* Window Buttons Style (Minimize, Fullscreen, Delete) */
+.box-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.box-controls button {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.box-controls button:hover {
+    opacity: 1;
+    color: var(--accent);
 }
 
 textarea { 
-    flex: 1; 
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
     background: transparent; 
     border: none; 
     color: #9cdcfe; 
     font-family: 'Fira Code', monospace; 
-    padding: 20px; 
+    padding: 15px; 
     resize: none; 
     outline: none; 
     line-height: 1.6; 
 }
 
-/* --- 5. SETTINGS PANEL --- */
-.settings-panel { 
-    position: fixed; 
-    right: -350px; 
-    top: 0; 
-    width: 320px; 
-    height: 100%; 
-    background: var(--panel); 
-    border-left: 2px solid var(--accent); 
-    z-index: 3000; 
-    padding: 30px; 
-    transition: 0.4s ease; 
-    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-    visibility: hidden;
+/* --- 4. SIDEBAR & SHUTTER --- */
+.action-sidebar {
+    position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
+    background: var(--panel); border-right: 1px solid var(--border);
+    z-index: 2000; transition: 0.3s; padding-top: 60px;
+}
+.action-sidebar.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+
+.sidebar-shutter {
+    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+    width: 25px; height: 50px; background: var(--accent);
+    cursor: pointer; z-index: 2001; border-radius: 0 5px 5px 0;
+    display: flex; align-items: center; justify-content: center; color: #000;
+}
+.sidebar-shutter.active { left: 280px; }
+
+/* --- 5. FULLSCREEN MODE --- */
+.editor-box.fullscreen-mode {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 9999; background: var(--bg);
 }
 
-.settings-panel.open { right: 0; visibility: visible; }
-
-.s-group { margin-bottom: 25px; }
-.s-group label { display: block; font-size: 12px; margin-bottom: 10px; color: var(--accent); }
-.s-group select, .s-group input[type="range"] { width: 100%; }
-
-.s-group select {
-    padding: 10px;
-    background: var(--bg);
-    color: white;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+.exit-full-btn {
+    position: absolute; bottom: 20px; right: 20px;
+    background: #ff4d4d; color: white; border: none;
+    padding: 10px 15px; border-radius: 5px; cursor: pointer;
 }
 
-/* --- 6. PREVIEW OVERLAY --- */
-.preview-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #f1f5f9; z-index: 4000; display: none; flex-direction: column;
-}
-
-.overlay-header {
-    background: var(--header); padding: 12px 25px; display: flex;
-    justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent);
-}
-
-.overlay-body { flex: 1; display: flex; justify-content: center; padding: 20px; background: #ddd; }
-.iframe-wrapper { width: 100%; height: 100%; background: white; border-radius: 4px; overflow: hidden; }
-.iframe-wrapper.mobile { width: 375px; height: 667px; border: 15px solid #222; border-radius: 30px; }
-
-/* --- 7. AUTO-COMPLETE BOX --- */
-#suggestion-box {
-    position: fixed; background: #1c2128; border: 1px solid var(--accent);
-    color: white; z-index: 5000; display: none; border-radius: 4px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5); min-width: 150px;
-}
-.suggestion-item { padding: 8px 12px; cursor: pointer; font-size: 13px; }
-.suggestion-item.active, .suggestion-item:hover { background: var(--accent); color: #000; }
-
-/* Scrollbar */
+/* Scrollbar Styling */
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
