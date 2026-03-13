@@ -15,9 +15,8 @@ const dictionary = {
 const sBox = document.getElementById('suggestion-box');
 let selectedIdx = 0;
 
-// --- 2. SIDEBAR LOGIC (Left & Right) ---
-
-function toggleLeftSidebar() {
+// --- 1. SIDEBAR LOGIC ---
+function toggleSidebar() {
     const sb = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
     sb.classList.toggle('open');
@@ -25,10 +24,71 @@ function toggleLeftSidebar() {
     shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
 }
 
-function toggleRightSidebar() {
-    document.getElementById('rightSidebar').classList.toggle('open');
+// --- 2. FILE & EDITOR SYSTEM ---
+function addFileToUI(name, id, content = "") {
+    // Sidebar Tab
+    const fileList = document.getElementById('file-list');
+    const newTab = document.createElement('div');
+    newTab.className = 'file-item';
+    newTab.id = `tab-${id}`;
+    newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span>`;
+    newTab.onclick = () => focusEditor(id);
+    fileList.appendChild(newTab);
+
+    // Editor Box
+    const wrapper = document.getElementById('editor-wrapper');
+    const newBox = document.createElement('div');
+    newBox.className = 'editor-box';
+    newBox.id = `box-${id}`;
+    newBox.innerHTML = `
+        <div class="label">
+            <span>${name}</span>
+            <div class="window-controls">
+                <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
+                <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
+                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
+            </div>
+        </div>
+        <textarea id="${id}-code" spellcheck="false">${content}</textarea>
+    `;
+    wrapper.appendChild(newBox);
 }
 
+// --- 3. RUN SCREEN LOGIC ---
+function runCode() {
+    document.getElementById('preview-overlay').style.display = 'flex';
+    refreshPreview();
+}
+
+function refreshPreview() {
+    const html = document.querySelector('[id*="html-code"]')?.value || "";
+    const css = `<style>${document.querySelector('[id*="css-code"]')?.value || ""}</style>`;
+    const out = document.getElementById('output').contentWindow.document;
+    out.open();
+    out.write(html + css);
+    out.close();
+}
+
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+}
+
+function setDevice(mode) {
+    const container = document.getElementById('iframe-container');
+    if(mode === 'mobile') {
+        container.style.width = '375px';
+        container.style.margin = '20px auto';
+    } else {
+        container.style.width = '100%';
+        container.style.margin = '0';
+    }
+}
+
+// Initial Load
+window.onload = () => {
+    addFileToUI("index.html", "html", "<h1>Welcome to Craby Editor</h1>");
+    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
+};
 // --- 3. FILE SYSTEM LOGIC ---
 
 function createNewFile() {
