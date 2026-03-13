@@ -1,4 +1,4 @@
-/* --- 1. CORE RESET & MOBILE KEYBOARD FIX --- */
+/* --- 1. VARIABLES & RESET --- */
 :root {
     --bg: #0d1117; 
     --panel: #161b22; 
@@ -11,10 +11,10 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
-    height: 100dvh; /* Dynamic viewport height for mobile */
+    height: 100dvh; 
     width: 100%;
     overflow: hidden;
-    position: fixed; /* Prevents layout jump when keyboard appears */
+    position: fixed; 
     background: var(--bg);
     color: var(--text);
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -22,7 +22,7 @@ html, body {
 
 body { display: flex; flex-direction: column; }
 
-/* --- 2. HEADER SECTION --- */
+/* --- 2. HEADER --- */
 header { 
     height: 60px;
     background: var(--header); 
@@ -31,7 +31,7 @@ header {
     justify-content: space-between; 
     align-items: center; 
     border-bottom: 2px solid var(--accent); 
-    z-index: 2000;
+    z-index: 1000;
     flex-shrink: 0; 
 }
 
@@ -47,7 +47,6 @@ header {
     cursor: pointer; 
     font-size: 0.8rem; 
 }
-
 .run-btn { background: var(--accent) !important; color: #000 !important; font-weight: 800; }
 
 /* --- 3. EDITOR MAIN AREA --- */
@@ -55,7 +54,6 @@ header {
     flex: 1;
     display: flex; 
     overflow: hidden; 
-    height: calc(100dvh - 60px);
 }
 
 .editor-section { 
@@ -69,12 +67,11 @@ header {
     display: flex; 
     flex-direction: column; 
     width: 100%;
-    flex-grow: 1; /* Shared equal height */
+    flex-grow: 1;
     flex-shrink: 0;
     min-height: 200px; 
     border-bottom: 2px solid var(--border); 
     background: var(--bg);
-    transition: all 0.3s ease;
 }
 
 .label { 
@@ -89,8 +86,7 @@ header {
 }
 
 .box-controls { display: flex; gap: 15px; }
-.box-controls button { background: transparent; border: none; color: var(--text); cursor: pointer; font-size: 14px; opacity: 0.7; }
-.box-controls button:hover { opacity: 1; color: var(--accent); }
+.box-controls button { background: transparent; border: none; color: var(--text); cursor: pointer; }
 
 textarea { 
     width: 100%;
@@ -102,14 +98,14 @@ textarea {
     padding: 15px; 
     resize: none; 
     outline: none; 
-    line-height: 1.5;
 }
 
-/* --- 4. SIDEBAR & SHUTTERS --- */
+/* --- 4. SHUTTERS (LEFT & RIGHT) --- */
+/* Left Sidebar */
 .action-sidebar {
     position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
     background: var(--panel); border-right: 1px solid var(--border);
-    z-index: 5000; transition: 0.3s; padding-top: 70px;
+    z-index: 5000; transition: 0.3s ease; padding-top: 70px;
 }
 .action-sidebar.open { left: 0; }
 
@@ -121,13 +117,23 @@ textarea {
 }
 .sidebar-shutter.active { left: 280px; }
 
-.file-item {
-    padding: 12px; margin: 5px 15px; background: rgba(255,255,255,0.03);
-    border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 13px;
+/* Right Settings Panel (FIXED) */
+.settings-panel { 
+    position: fixed; 
+    right: -350px; 
+    top: 0; 
+    width: 320px; 
+    height: 100%; 
+    background: var(--panel); 
+    border-left: 2px solid var(--accent); 
+    z-index: 6000; 
+    padding: 30px; 
+    transition: 0.3s ease; 
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
 }
-.file-item:hover { background: rgba(255,180,0,0.1); border-left: 3px solid var(--accent); }
+.settings-panel.open { right: 0; }
 
-/* --- 5. OUTPUT SCREEN (PREVIEW OVERLAY) --- */
+/* --- 5. PREVIEW OVERLAY --- */
 .preview-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
     background: #1a1a1a; z-index: 8000; display: none; flex-direction: column;
@@ -140,10 +146,8 @@ textarea {
 }
 
 .preview-body { flex: 1; display: flex; justify-content: center; align-items: center; background: #2d2d2d; padding: 15px; }
-
-.iframe-wrapper { width: 100%; height: 100%; background: #fff; border-radius: 8px; transition: 0.3s; }
-.iframe-wrapper.mobile { width: 375px; height: 667px; border: 12px solid #000; border-radius: 30px; }
+.iframe-wrapper { width: 100%; height: 100%; background: #fff; border-radius: 8px; }
+.iframe-wrapper.mobile { width: 375px; height: 667px; border: 10px solid #000; border-radius: 20px; }
 
 iframe#output { width: 100%; height: 100%; border: none; border-radius: inherit; }
-
-.close-preview { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+.close-preview { background: #ff4d4d; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
