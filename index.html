@@ -68,34 +68,8 @@
 </header>
 
 <div class="main-container">
-    <div class="editor-section" id="editor-wrapper" style="display: flex; flex-direction: column; width: 100%;">    <div class="editor-box">
-            <div class="label">HTML <i class="fas fa-code"></i></div>
-            <textarea id="html-code" spellcheck="false"><!DOCTYPE html>
-<html>
-<head>
-    <title>Craby Editor</title>
-</head>
-<body>
-    <h1>Welcome to Craby Editor</h1>
-</body>
-</html>
-</textarea>
+    <div class="editor-section" id="editor-wrapper" style="display: flex; flex-direction: column; width: 100%;">
         </div>
-        <div class="editor-box">
-            <div class="label">CSS <i class="fab fa-css3-alt"></i></div>
-            <textarea id="css-code" spellcheck="false">
-h1 {  
-    color: #ffb400; 
-    text-align: center; 
-    font-family: sans-serif;
-}
-            </textarea>
-        </div>
-        <div class="editor-box">
-            <div class="label">JAVASCRIPT <i class="fab fa-js"></i></div>
-            <textarea id="js-code" spellcheck="false">console.log('Running...');</textarea>
-        </div>
-    </div>
 </div>
 
 <div class="settings-panel" id="settingsPanel">
@@ -168,6 +142,10 @@ h1 {
     </div>
 </div>
 
+<script src="font-settings.js"></script>
+<script src="shutter-system.js"></script>
+<script src="core-engine.js"></script>
+
 <script>
 // Internal function to sync UI with Script.js themes
 function updateThemeAndFont() {
@@ -176,6 +154,7 @@ function updateThemeAndFont() {
     const fontSize = document.getElementById('font-size-bar').value;
     document.getElementById('fs-display').innerText = fontSize + "px"; 
 
+    // Accessing themes from font-settings.js
     const theme = (typeof themes !== 'undefined') ? (themes[themeKey] || themes.dark) : null;
 
     if (theme) {
@@ -202,10 +181,7 @@ function updateThemeAndFont() {
         });
     }
 }
-</script><script src="font-settings.js"></script>
-<script src="shutter-system.js"></script>
-<script src="core-engine.js"></script>
-
+</script>
 
 </body>
 </html>
