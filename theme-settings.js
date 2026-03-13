@@ -90,4 +90,47 @@ document.addEventListener('click', (e) => {
         !settings.contains(e.target) && !e.target.closest('.icon-btn')) {
         window.toggleSettings();
     }
+});// --- SHUTTER & MENU LOGIC ---
+
+// 1. Left Sidebar (Shutter) Toggle
+// जेव्हा तू पिवळ्या शटर बटणवर क्लिक करशील, तेव्हा फाईल लिस्ट उघडेल/बंद होईल
+window.toggleLeftSidebar = () => {
+    const sidebar = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+
+    if (sidebar && shutter) {
+        sidebar.classList.toggle('open');    // Sidebar उघडण्यासाठी/बंद करण्यासाठी
+        shutter.classList.toggle('active');  // शटर बटणची जागा बदलण्यासाठी
+    }
+};
+
+// 2. Settings Panel (Menu) Toggle
+// जेव्हा तू सेटिंग आयकॉनवर क्लिक करशील, तेव्हा उजव्या बाजूचे पॅनल उघडेल
+window.toggleSettings = () => {
+    const settings = document.getElementById('settingsPanel');
+    
+    if (settings) {
+        settings.classList.toggle('open'); // Settings Panel उघडण्यासाठी/बंद करण्यासाठी
+    }
+};
+
+// 3. Close On Outside Click (Optional पण कामाचं)
+// स्क्रीनवर कुठेही बाहेर क्लिक केल्यावर पॅनल बंद व्हावेत असं वाटत असेल तर:
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('leftSidebar');
+    const settings = document.getElementById('settingsPanel');
+    const shutter = document.getElementById('shutterBtn');
+
+    // जर क्लिक साईडबार किंवा बटणच्या बाहेर असेल तर बंद करा
+    if (sidebar && sidebar.classList.contains('open') && 
+        !sidebar.contains(e.target) && !shutter.contains(e.target)) {
+        window.toggleLeftSidebar();
+    }
+
+    // जर क्लिक सेटिंग पॅनलच्या बाहेर असेल तर बंद करा
+    if (settings && settings.classList.contains('open') && 
+        !settings.contains(e.target) && !e.target.closest('.icon-btn')) {
+        window.toggleSettings();
+    }
 });
+
