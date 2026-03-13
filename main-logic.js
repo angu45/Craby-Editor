@@ -2,17 +2,24 @@
 window.saveHistory = (id, content) => localStorage.setItem(`craby_code_${id}`, content);
 
 /* --- 2. SHUTTERS (LEFT & RIGHT) --- */
+
+// Left Explorer Shutter
 window.toggleLeftSidebar = () => {
     const sb = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+    if(sb && shutter) {
+        sb.classList.toggle('open');
+        shutter.classList.toggle('active');
+        shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+    }
 };
 
+// Right Settings Shutter (FIXED)
 window.toggleSettings = () => {
     const panel = document.getElementById('settingsPanel');
-    panel.classList.toggle('open');
+    if(panel) {
+        panel.classList.toggle('open');
+    }
 };
 
 /* --- 3. DYNAMIC STACKED WINDOWS --- */
@@ -21,7 +28,7 @@ window.addFileToUI = function(name, id, content = "") {
     const fileList = document.getElementById('file-list');
     if(!wrapper || document.getElementById(`box-${id}`)) return;
 
-    // Sidebar Item
+    // Add to Sidebar
     const item = document.createElement('div');
     item.className = 'file-item';
     item.id = `tab-${id}`;
@@ -29,7 +36,7 @@ window.addFileToUI = function(name, id, content = "") {
     item.onclick = () => document.getElementById(`box-${id}`).scrollIntoView({ behavior: 'smooth' });
     fileList.appendChild(item);
 
-    // Stacked Editor Box
+    // Add Editor Box
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
@@ -57,7 +64,7 @@ window.createNewFile = () => {
 /* --- 4. WINDOW CONTROLS --- */
 window.minimizeBox = (id) => {
     const el = document.getElementById(`${id}-code`);
-    el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+    if(el) el.style.display = (el.style.display === 'none') ? 'block' : 'none';
 };
 
 window.deleteFile = (id) => {
@@ -70,13 +77,16 @@ window.deleteFile = (id) => {
 
 window.toggleFullscreen = (id) => {
     const box = document.getElementById(`box-${id}`);
-    box.classList.toggle('fullscreen-mode');
-    document.getElementById(`exit-${id}`).style.display = box.classList.contains('fullscreen-mode') ? 'block' : 'none';
+    if(box) {
+        box.classList.toggle('fullscreen-mode');
+        document.getElementById(`exit-${id}`).style.display = box.classList.contains('fullscreen-mode') ? 'block' : 'none';
+    }
 };
 
 /* --- 5. RUN ENGINE --- */
 window.runCode = () => {
-    document.getElementById('preview-overlay').style.display = 'flex';
+    const overlay = document.getElementById('preview-overlay');
+    overlay.style.display = 'flex';
     const h = document.getElementById('html-code')?.value || '';
     const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
     const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
@@ -85,7 +95,6 @@ window.runCode = () => {
 };
 
 window.closePreview = () => document.getElementById('preview-overlay').style.display = 'none';
-window.setDevice = (m) => document.getElementById('wrapper').className = (m === 'mobile' ? 'iframe-wrapper mobile' : 'iframe-wrapper');
 
 /* --- 6. INITIAL LOAD --- */
 document.addEventListener('DOMContentLoaded', () => {
