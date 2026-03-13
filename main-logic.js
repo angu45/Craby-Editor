@@ -27,38 +27,16 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. SIDEBARS & SETTINGS LOGIC ---
-function toggleLeftSidebar() {
-    const sb = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
-}
-
-function toggleSettings() {
-    document.getElementById('settingsPanel').classList.toggle('open');
-}
-
+// --- 2. THEME & VISIBILITY LOGIC ---
 function updateVisibility() {
-    // Shutter मधील फाईल्सच्या निवडीनुसार एडिटर दाखवणे/लपवणे
-    const editors = {
-        'html': document.getElementById('box-html'),
-        'css': document.getElementById('box-css'),
-        'js': document.getElementById('box-js')
-    };
-    
-    if(document.getElementById('chk-html')) editors.html.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
-    if(document.getElementById('chk-css')) editors.css.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
-    if(document.getElementById('chk-js')) editors.js.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+    document.getElementById('html-code').closest('.editor-box').style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    document.getElementById('css-code').closest('.editor-box').style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    document.getElementById('js-code').closest('.editor-box').style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
 }
 
 function updateThemeAndFont() {
     const themeKey = document.getElementById('theme-sel').value;
     const font = document.getElementById('font-family-sel').value;
-    const fontSize = document.getElementById('font-size-bar').value;
-    
-    document.getElementById('fs-display').innerText = fontSize + "px"; 
     const theme = themes[themeKey] || themes.dark;
 
     document.documentElement.style.setProperty('--bg', theme.bg);
@@ -68,9 +46,9 @@ function updateThemeAndFont() {
     
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px"; // Slider fix applied here
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
+        tx.closest('.editor-box').style.borderColor = theme.border;
     });
 
     document.querySelectorAll('.label').forEach(label => {
@@ -83,51 +61,8 @@ function updateThemeAndFont() {
     });
 }
 
-// --- 3. FILE SYSTEM & EDITOR CREATION ---
-function addFileToUI(name, id, content = "") {
-    // Shutter Explorer मध्ये फाईल ॲड करणे
-    const fileList = document.getElementById('file-list');
-    const newTab = document.createElement('div');
-    newTab.className = 'file-item';
-    newTab.id = `tab-${id}`;
-    newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent)">(min)</small>`;
-    newTab.onclick = () => restoreBox(id);
-    fileList.appendChild(newTab);
-
-    // Editor Wrapper मध्ये बॉक्स ॲड करणे
-    const wrapper = document.getElementById('editor-wrapper');
-    const newBox = document.createElement('div');
-    newBox.className = 'editor-box';
-    newBox.id = `box-${id}`;
-    newBox.innerHTML = `
-        <div class="label">
-            <span>${name.toUpperCase()} <i class="fas fa-code"></i></span>
-            <div class="window-controls">
-                <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
-                <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
-                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
-            </div>
-        </div>
-        <textarea id="${id}-code" spellcheck="false">${content}</textarea>
-    `;
-    wrapper.appendChild(newBox);
-    
-    const txt = document.getElementById(`${id}-code`);
-    attachInputListeners(txt);
-}
-
-function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; document.getElementById(`status-${id}`).style.display = 'inline'; }
-function restoreBox(id) { document.getElementById(`box-${id}`).style.display = 'flex'; document.getElementById(`status-${id}`).style.display = 'none'; }
-function expandBox(id) {
-    const boxes = document.querySelectorAll('.editor-box');
-    const current = document.getElementById(`box-${id}`);
-    if (current.style.flex === "10") { boxes.forEach(b => b.style.flex = "1"); }
-    else { boxes.forEach(b => b.style.flex = "0.1"); current.style.flex = "10"; current.style.display = "flex"; }
-}
-function deleteBox(id) { if(confirm("Delete this file?")) { document.getElementById(`box-${id}`).remove(); document.getElementById(`tab-${id}`).remove(); } }
-
-// --- 4. EDITOR CORE & AUTO-COMPLETE ---
-function attachInputListeners(txt) {
+// --- 3. EDITOR CORE LOGIC ---
+document.querySelectorAll('textarea').forEach(txt => {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const val = txt.value;
@@ -149,7 +84,7 @@ function attachInputListeners(txt) {
         showSuggestions(txt);
     });
     txt.addEventListener('keydown', (e) => handleNav(e, txt));
-}
+});
 
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
@@ -158,37 +93,67 @@ function showSuggestions(txt) {
     const lastWord = words[words.length - 1].toLowerCase();
 
     if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
+
     const matches = dictionary[currentLang].filter(word => word.startsWith(lastWord));
 
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 35}px`; 
-        sBox.style.left = `${rect.left + 40}px`;
+        sBox.style.top = `${rect.top + 40}px`; 
+        sBox.style.left = `${rect.left + 50}px`;
         sBox.style.display = 'block';
 
-        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
-            <b>${m}</b> <small>${currentLang}</small>
-        </div>`).join('');
+        sBox.innerHTML = matches.map((m, i) => {
+            const themeKey = document.getElementById('theme-sel').value;
+            let color = themeKey === 'light' ? "#1e40af" : "#79c0ff"; 
+            if (currentLang === 'html') color = themeKey === 'light' ? "#b91c1c" : "#ff7b72"; 
+            if (currentLang === 'css') color = themeKey === 'light' ? "#7e22ce" : "#d2a8ff";  
+
+            return `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
+                <span style="color: ${color}; font-weight: bold;">${m}</span> 
+                <small style="color: #64748b; margin-left:10px;">${currentLang}</small>
+            </div>`;
+        }).join('');
     } else { sBox.style.display = 'none'; }
 }
 
+// SMART INSERT WORD (TAG AUTOCOMPLETE)
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
+
     let wordToInsert = word;
 
     if (currentLang === 'html') {
-        const selfClosing = ['img', 'br', 'hr', 'input'];
-        if (selfClosing.includes(word.toLowerCase())) wordToInsert = `<${word}>`;
-        else if (['class', 'id', 'href', 'src'].includes(word)) wordToInsert = `${word}=""`;
-        else wordToInsert = `<${word}></${word}>`;
-    } else if (currentLang === 'css') wordToInsert = `${word}: ;`;
+        const selfClosingTags = ['img', 'br', 'hr', 'input', 'link', 'meta'];
+        if (selfClosingTags.includes(word.toLowerCase())) {
+            wordToInsert = `<${word}>`;
+        } else if (['class', 'id', 'href', 'src', 'type', 'style'].includes(word)) {
+            wordToInsert = `${word}=""`;
+        } else {
+            // Recommendation select kelyavar: <h1></h1> print hoil
+            wordToInsert = `<${word}></${word}>`;
+        }
+    } 
+    else if (currentLang === 'css') {
+        wordToInsert = `${word}: ;`;
+    }
 
     txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
+    
+    // Cursor position thik karne
+    if (currentLang === 'html' && wordToInsert.includes('></')) {
+        const newPos = startPos + word.length + 2; 
+        txt.selectionStart = txt.selectionEnd = newPos;
+    } else if (wordToInsert.endsWith('=""') || wordToInsert.endsWith(': ;')) {
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
+    } else {
+        txt.selectionStart = txt.selectionEnd = startPos + wordToInsert.length;
+    }
+
     sBox.style.display = 'none';
     txt.focus();
 }
@@ -199,43 +164,81 @@ function handleNav(e, txt) {
         if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
         else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
         else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+        else if (e.key === 'Escape') { sBox.style.display = 'none'; }
     }
 }
+
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
-// --- 5. TOOLBAR ACTIONS ---
+// --- 4. TOOLBAR ACTIONS ---
 function runCode() {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    const overlay = document.getElementById('preview-overlay');
+    overlay.style.display = 'flex';
+    const h = document.getElementById('html-code').value;
+    const c = `<style>${document.getElementById('css-code').value}</style>`;
+    const j = `<script>${document.getElementById('js-code').value}<\/script>`;
     const out = document.getElementById('output').contentWindow.document;
     out.open(); out.write(h + c + j); out.close();
 }
 
 function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('open'); }
 function setDevice(m) { document.getElementById('wrapper').className = 'iframe-wrapper ' + (m==='mobile'?'mobile':''); }
 
 function beautifyCode() {
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
+    // 1. HTML Beautify (Proper Indentation logic)
+    const htmlField = document.getElementById('html-code');
+    let html = htmlField.value.replace(/>\s+</g, '><'); // saglya extra spaces kadha
+    let tab = '  '; // 2 spaces for indentation
+    let result = '';
+    let indent = '';
+
+    html.split(/>/).forEach(element => {
+        if (element.match(/^\/\w/)) {
+            indent = indent.substring(tab.length);
+        }
+        result += indent + element + '>\n';
+        if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input") && !element.startsWith("img") && !element.startsWith("br")) {
+            indent += tab;
+        }
     });
+    htmlField.value = result.substring(0, result.lastIndexOf('>') + 1).trim();
+
+    // 2. CSS Beautify
+    const cssField = document.getElementById('css-code');
+    let css = cssField.value
+        .replace(/\s*([\{\}\:\;\,])\s*/g, "$1") // extra spaces kadha
+        .replace(/\{/g, " {\n  ")
+        .replace(/\;/g, ";\n  ")
+        .replace(/\s*\}\s*/g, "\n}\n\n")
+        .replace(/\,\s*/g, ", ");
+    cssField.value = css.trim();
+
+    // 3. JS Beautify (Basic Formatting)
+    const jsField = document.getElementById('js-code');
+    let js = jsField.value
+        .replace(/\s*([\{\}\(\)\=\+\-\*\/\,])\s*/g, "$1")
+        .replace(/\{/g, " {\n  ")
+        .replace(/\}/g, "\n}\n")
+        .replace(/\;/g, ";\n  ")
+        .replace(/\( /g, "(").replace(/ \)/g, ")");
+    jsField.value = js.trim();
 }
 
 function exportCode() {
-    const blob = new Blob([document.getElementById('html-code').value], {type: "text/html"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
+    const content = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
+    const blob = new Blob([content], {type: "text/html"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-// --- 6. INITIAL LOAD (Default 2 Files) ---
+// --- 5. INITIALIZATION ---
 window.onload = () => { 
-    // डिफॉल्ट फक्त १ HTML आणि १ CSS
-    addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
-    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; font-family: sans-serif; }");
-    
-    // Theme आणि Slider रिफ्रेश
+    updateVisibility(); 
     document.getElementById('theme-sel').value = 'dark'; 
     updateThemeAndFont(); 
 };
 
-document.addEventListener('mousedown', (e) => { if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none'; });
+document.addEventListener('mousedown', (e) => {
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
+});
