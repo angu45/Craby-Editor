@@ -3,23 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🦀 Craby Editor Pro | Smart IDE</title>
+    <title>Craby Editor Pro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z0BGJ1913H');
-    </script>
-</head>
-<body data-theme="dark">
-
-<div class="sidebar-shutter" onclick="toggleLeftSidebar()" id="shutterBtn">
+<div class="sidebar-shutter" onclick="toggleSidebar()" id="shutterBtn">
     <i class="fas fa-chevron-right"></i>
 </div>
 
@@ -30,48 +21,29 @@
     </div>
     <div class="sidebar-content">
         <label class="side-label">OPEN EDITORS</label>
-        <div id="file-list" class="file-list"></div>
-    </div>
-    <div class="sidebar-footer">
-        <button class="side-btn" onclick="undoCode()"><i class="fas fa-undo"></i></button>
-        <button class="side-btn" onclick="redoCode()"><i class="fas fa-redo"></i></button>
+        <div id="file-list" class="file-list">
+            </div>
     </div>
 </div>
 
 <header>
-    <div class="logo"><i class="fas fa-crab"></i><span>CRABY EDITOR</span></div>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
+    </div>
     <div class="nav-actions">
         <button class="icon-btn" onclick="beautifyCode()"><i class="fas fa-magic"></i> Format</button>
-        <button class="icon-btn" onclick="exportCode()"><i class="fas fa-file-export"></i> Export</button>
-        <button class="icon-btn" onclick="toggleRightSidebar()"><i class="fas fa-cog"></i></button>
-        <button class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play"></i> RUN</b></button>
+        <button class="icon-btn" onclick="exportCode()"><i class="fas fa-download"></i> Export</button>
+        <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+        <button class="icon-btn run-btn" onclick="runCode()"><b>RUN</b></button>
     </div>
 </header>
 
 <div class="main-container">
     <div class="editor-section" id="editor-wrapper">
         </div>
-
-    <div class="settings-panel" id="rightSidebar">
-        <h3>Editor Settings</h3>
-        <hr style="margin: 15px 0; border: 0.5px solid var(--border);">
-        <label>Choose Theme</label>
-        <select id="theme-sel" onchange="updateThemeAndFont()">
-            <option value="dark">Dark Mode</option>
-            <option value="light">Light Mode</option>
-            <option value="monokai">Monokai</option>
-            <option value="dracula">Dracula</option>
-            <option value="matrix">Matrix</option>
-        </select>
-        <br><br>
-        <label>Font Size</label>
-        <input type="range" id="font-size-bar" min="12" max="30" value="16" oninput="updateThemeAndFont()">
-        <br><br>
-        <button class="icon-btn" style="width:100%;" onclick="toggleRightSidebar()">Close Settings</button>
-    </div>
 </div>
 
-<div id="preview-overlay" class="preview-overlay">
+<div id="preview-overlay" class="preview-overlay" style="display:none;">
     <div class="preview-navbar">
         <div class="preview-controls">
             <button onclick="closePreview()" class="prev-btn"><i class="fas fa-arrow-left"></i> Back</button>
@@ -81,16 +53,12 @@
             <button onclick="setDevice('desktop')" id="btn-desk" class="active"><i class="fas fa-desktop"></i></button>
             <button onclick="setDevice('mobile')" id="btn-mob"><i class="fas fa-mobile-alt"></i></button>
         </div>
-        <div class="preview-title">Live Preview</div>
     </div>
     <div class="iframe-container" id="iframe-container">
         <iframe id="output"></iframe>
     </div>
 </div>
 
-<div id="suggestion-box"></div>
-
 <script src="Script.js"></script>
 </body>
 </html>
-
