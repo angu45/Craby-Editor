@@ -184,4 +184,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Sync Settings
     window.applySettings();
-});
+});/* --- DOWNLOAD LOGIC FIX --- */
+window.downloadCode = () => {
+    // गेट व्हॅल्यूज फ्रॉम टेक्स्टएरिया
+    const htmlCode = document.getElementById('html-code')?.value || "";
+    const cssCode = `<style>${document.getElementById('css-code')?.value || ""}</style>`;
+    const jsCode = `<script>${document.getElementById('js-code')?.value || ""}<\/script>`;
+
+    // कम्बाईन कोड
+    const fullContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craby Project</title>
+    ${cssCode}
+</head>
+<body>
+    ${htmlCode}
+    ${jsCode}
+</body>
+</html>`;
+
+    // क्रिएटिंग ब्लॉब फॉर डाऊनलोड
+    const blob = new Blob([fullContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    
+    a.href = url;
+    a.download = "index.html"; // फाईल नाव
+    document.body.appendChild(a);
+    a.click();
+    
+    // क्लिनअप
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
+};
+
+/* --- RUN LOGIC --- */
+window.runCode = () => {
+    document.getElementById('preview-overlay').style.display = 'flex';
+    const h = document.getElementById('html-code').value;
+    const c = "<style>" + document.getElementById('css-code').value + "</style>";
+    const j = "<script>" + document.getElementById('js-code').value + "<\/script>";
+    
+    const output = document.getElementById('output').contentWindow.document;
+    output.open();
+    output.write(h + c + j);
+    output.close();
+};
+
