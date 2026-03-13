@@ -7,6 +7,56 @@
     --border: rgba(255, 255, 255, 0.1); 
     --header: #010409;
 }
+/* Sidebar ची मूळ स्थिती (Hidden) */
+.action-sidebar {
+    position: fixed;
+    left: -280px; /* सुरुवातीला बाहेर ठेवण्यासाठी */
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: #161b22;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 2000;
+    transition: 0.3s ease;
+    padding: 20px;
+}
+
+/* Sidebar Open झाल्यावर */
+.action-sidebar.open {
+    left: 0;
+}
+
+/* Shutter बटन स्टाइल */
+.sidebar-shutter {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 50px;
+    background: #ffb400; /* तुझा Accent Color */
+    cursor: pointer;
+    z-index: 2001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 5px 5px 0;
+    transition: 0.3s ease;
+}
+
+/* Shutter बटन Sidebar सोबत हलण्यासाठी */
+.sidebar-shutter.active {
+    left: 280px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffb400;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
 
 * { 
     margin: 0; 
