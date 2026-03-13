@@ -1,3 +1,4 @@
+// --- 1. SETTINGS & THEMES ---
 window.applySettings = () => {
     const font = localStorage.getItem('craby_font') || "'Plus Jakarta Sans', sans-serif";
     const theme = localStorage.getItem('craby_theme') || "dark";
@@ -12,6 +13,7 @@ window.applySettings = () => {
     if(document.getElementById('size-select')) document.getElementById('size-select').value = fontSize;
 };
 
+// --- 2. DYNAMIC LAYOUT (DIVIDE BODY) ---
 window.updateLayout = () => {
     const wrapper = document.getElementById('editor-wrapper');
     const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none');
@@ -25,6 +27,7 @@ window.updateLayout = () => {
     }
 };
 
+// --- 3. FILE LOGIC (MINIMIZE/DELETE) ---
 window.addFileToUI = (name, id, content = "") => {
     const wrapper = document.getElementById('editor-wrapper');
     const fileList = document.getElementById('file-list');
@@ -77,45 +80,86 @@ window.deleteFile = (id) => {
     }
 };
 
+// --- 4. RUN & PREVIEW FIX (Close, Desktop, Phone) ---
+window.runCode = () => {
+    const overlay = document.getElementById('preview-overlay');
+    overlay.style.display = 'flex';
+
+    const h = document.getElementById('html-code')?.value || '';
+    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
+    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    
+    const out = document.getElementById('output').contentWindow.document;
+    out.open();
+    out.write(h + c + j);
+    out.close();
+};
+
+// प्रिव्ह्यू बंद करण्यासाठी
+window.closePreview = () => {
+    document.getElementById('preview-overlay').style.display = 'none';
+};
+
+// प्रिव्ह्यू मोड बदलण्यासाठी (Desktop/Mobile)
+window.setPreviewMode = (mode) => {
+    const iframe = document.getElementById('output');
+    if(mode === 'mobile') {
+        iframe.style.width = '375px';
+        iframe.style.margin = 'auto';
+    } else {
+        iframe.style.width = '100%';
+    }
+};
+
+// --- 5. DOWNLOAD FIX (Durable Logic) ---
+window.downloadCode = () => {
+    const h = document.getElementById('html-code')?.value || "";
+    const c = document.getElementById('css-code')?.value || "";
+    const j = document.getElementById('js-code')?.value || "";
+
+    const fullCode = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${c}</style>
+</head>
+<body>
+    ${h}
+    <script>${j}<\/script>
+</body>
+</html>`;
+
+    const blob = new Blob([fullCode], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = "index.html";
+    document.body.appendChild(a);
+    a.click();
+    
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+};
+
+// --- 6. UI TOGGLES & INIT ---
 window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('open');
 window.toggleLeftSidebar = () => {
     document.getElementById('leftSidebar').classList.toggle('open');
     document.getElementById('shutterBtn').classList.toggle('active');
 };
 
-window.runCode = () => {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
-    const out = document.getElementById('output').contentWindow.document;
-    out.open(); out.write(h + c + j); out.close();
-};
-
-window.downloadCode = () => {
-    const h = document.getElementById('html-code')?.value || '';
-    const c = document.getElementById('css-code')?.value || '';
-    const j = document.getElementById('js-code')?.value || '';
-    const full = `<!DOCTYPE html><html><head><style>${c}</style></head><body>${h}<script>${j}<\/script></body></html>`;
-    const blob = new Blob([full], { type: 'text/html' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "index.html";
-    a.click();
-};
-
-window.resetAllSettings = () => {
-    if(confirm("Reset all settings?")) {
-        localStorage.clear();
-        location.reload();
-    }
-};
-
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('editor-wrapper').innerHTML = '';
     document.getElementById('file-list').innerHTML = '';
+    
     window.addFileToUI("index.html", "html", localStorage.getItem('craby_code_html') || "<h1>Craby Editor</h1>");
     window.addFileToUI("style.css", "css", localStorage.getItem('craby_code_css') || "h1 { color: orange; }");
-    window.addFileToUI("main.js", "js", localStorage.getItem('craby_code_js') || "console.log('Started');");
+    window.addFileToUI("main.js", "js", localStorage.getItem('craby_code_js') || "console.log('Live');");
+    
     window.applySettings();
 });
