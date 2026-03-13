@@ -1,32 +1,23 @@
-/* --- 1. CORE VARIABLES --- */
+/* --- 1. STORAGE --- */
 window.saveHistory = (id, content) => localStorage.setItem(`craby_code_${id}`, content);
 
-/* --- 2. SHUTTERS --- */
-window.toggleLeftSidebar = () => {
-    const sb = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
-};
-
-window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('open');
-
-/* --- 3. DYNAMIC WINDOWS & AUTO-HEIGHT --- */
+/* --- 2. NEW FILE & WINDOW GENERATION (FIXED) --- */
 window.addFileToUI = function(name, id, content = "") {
     const wrapper = document.getElementById('editor-wrapper');
     const fileList = document.getElementById('file-list');
+    
+    // Safety check
     if(!wrapper || document.getElementById(`box-${id}`)) return;
 
-    // Pro Look Sidebar Item
+    // 1. Sidebar Item
     const item = document.createElement('div');
     item.className = 'file-item';
     item.id = `tab-${id}`;
     item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
-    item.onclick = () => window.restoreBox(id); // Clicking here restores the file
+    item.onclick = () => window.restoreBox(id);
     fileList.appendChild(item);
 
-    // Editor Box
+    // 2. Editor Box
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
@@ -34,40 +25,47 @@ window.addFileToUI = function(name, id, content = "") {
         <div class="label">
             <span>${name.toUpperCase()}</span>
             <div class="box-controls">
-                <button onclick="minimizeBox('${id}')" title="Minimize"><i class="fas fa-minus"></i></button>
-                <button onclick="toggleFullscreen('${id}')" title="Fullscreen"><i class="fas fa-expand-arrows-alt"></i></button>
-                <button onclick="deleteFile('${id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                <button onclick="minimizeBox('${id}')"><i class="fas fa-minus"></i></button>
+                <button onclick="toggleFullscreen('${id}')"><i class="fas fa-expand-arrows-alt"></i></button>
+                <button onclick="deleteFile('${id}')"><i class="fas fa-trash-alt"></i></button>
             </div>
         </div>
         <textarea id="${id}-code" spellcheck="false" oninput="saveHistory('${id}', this.value)">${content}</textarea>
         <button class="exit-full-btn" id="exit-${id}" onclick="toggleFullscreen('${id}')" style="display:none;">EXIT</button>
     `;
     wrapper.appendChild(newBox);
+    
+    // Apply theme and font settings
     if(window.updateThemeAndFont) window.updateThemeAndFont();
 };
 
-/* --- 4. SMART CONTROLS --- */
+// FIXED: Function to create a brand new file
+window.createNewFile = function() {
+    let fileName = prompt("Enter file name (e.g. script.js):");
+    if (fileName) {
+        // Clean the ID (remove dots and spaces)
+        let fileId = fileName.replace(/\./g, '-').replace(/\s+/g, '-').toLowerCase();
+        
+        if (document.getElementById(`box-${fileId}`)) {
+            alert("File already exists!");
+        } else {
+            window.addFileToUI(fileName, fileId, "");
+            window.restoreBox(fileId); // Focus on new file
+        }
+    }
+};
 
-// Minimize: Totally hide from screen
+/* --- 3. CONTROLS --- */
 window.minimizeBox = (id) => {
     const box = document.getElementById(`box-${id}`);
     if(box) box.style.display = 'none';
 };
 
-// Restore: Bring back to screen from Shutter
 window.restoreBox = (id) => {
     const box = document.getElementById(`box-${id}`);
     if(box) {
-        box.style.display = 'flex'; // Bring back
-        box.scrollIntoView({ behavior: 'smooth' });
-    }
-};
-
-window.deleteFile = (id) => {
-    if(confirm(`Delete ${id}?`)) {
-        document.getElementById(`box-${id}`).remove();
-        document.getElementById(`tab-${id}`).remove();
-        localStorage.removeItem(`craby_code_${id}`);
+        box.style.display = 'flex';
+        box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
 
@@ -77,24 +75,19 @@ window.toggleFullscreen = (id) => {
     document.getElementById(`exit-${id}`).style.display = box.classList.contains('fullscreen-mode') ? 'block' : 'none';
 };
 
-/* --- 5. RUN & INIT --- */
-window.runCode = () => {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
-    const out = document.getElementById('output').contentWindow.document;
-    out.open(); out.write(h + c + j); out.close();
+window.toggleLeftSidebar = () => {
+    document.getElementById('leftSidebar').classList.toggle('open');
+    document.getElementById('shutterBtn').classList.toggle('active');
 };
 
-window.closePreview = () => document.getElementById('preview-overlay').style.display = 'none';
+window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('open');
 
+/* --- 4. INIT --- */
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('editor-wrapper').innerHTML = '';
     document.getElementById('file-list').innerHTML = '';
-    const getCode = (k, def) => localStorage.getItem(`craby_code_${k}`) || def;
-
-    window.addFileToUI("index.html", "html", getCode('html', "<h1>Craby Smart Layout</h1>"));
-    window.addFileToUI("style.css", "css", getCode('css', "h1 { color: #ffb400; }"));
-    window.addFileToUI("main.js", "js", getCode('js', "console.log('Smart Height Active');"));
+    
+    // Load default files
+    window.addFileToUI("index.html", "html", localStorage.getItem('craby_code_html') || "<h1>Ready</h1>");
+    window.addFileToUI("style.css", "css", localStorage.getItem('craby_code_css') || "h1 { color: orange; }");
 });
