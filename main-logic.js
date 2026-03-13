@@ -1,31 +1,49 @@
-/* CRABY EDITOR - FULL JAVASCRIPT LOGIC
-   Features: Persistence, File Management, Download, and UI Toggles
+/* CRABY EDITOR - DYNAMIC LAYOUT & DOWNLOAD FIX
+   हे लॉजिक स्क्रीनवर जेवढे टेक्स्टएरिया आहेत, त्याप्रमाणे बॉडीची जागा डिवाइड करेल.
 */
 
-// --- 1. SETTINGS & THEME PERSISTENCE ---
+// --- 1. SETTINGS MANAGEMENT ---
 window.applySettings = () => {
-    // LocalStorage मधून डेटा मिळवणे किंवा Default व्हॅल्यू वापरणे
     const font = localStorage.getItem('craby_font') || "'Plus Jakarta Sans', sans-serif";
     const theme = localStorage.getItem('craby_theme') || "dark";
     const fontSize = localStorage.getItem('craby_font_size') || "14px";
 
-    // CSS Variables आणि Body Class अपडेट करणे
     document.documentElement.style.setProperty('--current-font', font);
     document.body.className = `theme-${theme}`;
     
-    // सर्व Textareas ची फॉन्ट साईज अपडेट करणे
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontSize = fontSize;
     });
-/* --- DYNAMIC FILE LOGIC --- */
 
+    if(document.getElementById('font-select')) document.getElementById('font-select').value = font;
+    if(document.getElementById('theme-select')) document.getElementById('theme-select').value = theme;
+    if(document.getElementById('size-select')) document.getElementById('size-select').value = fontSize;
+};
+
+// --- 2. DYNAMIC LAYOUT ENGINE (Divide Body Screen) ---
+window.updateLayout = () => {
+    const wrapper = document.getElementById('editor-wrapper');
+    // फक्त तेच बॉक्सेस मोजा जे 'display: none' नाहीत
+    const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none');
+    const count = visibleBoxes.length;
+
+    if (count > 0) {
+        const percentage = 100 / count;
+        visibleBoxes.forEach(box => {
+            box.style.flex = `1 1 ${percentage}%`;
+            box.style.height = `${percentage}%`;
+        });
+    }
+};
+
+// --- 3. FILE & TEXTAREA LOGIC ---
 window.addFileToUI = function(name, id, content = "") {
     const wrapper = document.getElementById('editor-wrapper');
     const fileList = document.getElementById('file-list');
     
     if(!wrapper || document.getElementById(`box-${id}`)) return;
 
-    // 1. Sidebar Item
+    // Sidebar Tab
     const item = document.createElement('div');
     item.className = 'file-item';
     item.id = `tab-${id}`;
@@ -33,14 +51,10 @@ window.addFileToUI = function(name, id, content = "") {
     item.onclick = () => window.restoreBox(id);
     fileList.appendChild(item);
 
-    // 2. Editor Box
+    // Editor Box
     const newBox = document.createElement('div');
     newBox.className = 'editor-box';
     newBox.id = `box-${id}`;
-    
-    // flex: 1 मुळे हा बॉक्स उपलब्ध जागेचा समान हिस्सा घेईल
-    newBox.style.flex = "1 1 0"; 
-
     newBox.innerHTML = `
         <div class="label">
             <span>${name.toUpperCase()}</span>
@@ -49,182 +63,95 @@ window.addFileToUI = function(name, id, content = "") {
                 <button onclick="deleteFile('${id}')"><i class="fas fa-trash-alt"></i></button>
             </div>
         </div>
-        <textarea id="${id}-code" spellcheck="false" oninput="saveHistory('${id}', this.value)">${content}</textarea>
+        <textarea id="${id}-code" spellcheck="false" oninput="localStorage.setItem('craby_code_${id}', this.value)">${content}</textarea>
     `;
     
     wrapper.appendChild(newBox);
     window.applySettings();
-};
-
-// जेव्हा तुम्ही फाईल डिलीट कराल, तेव्हा उरलेल्या फाईल्स आपोआप मोठी जागा घेतील
-window.deleteFile = (id) => {
-    if(confirm(`Delete ${name}?`)) {
-        const box = document.getElementById(`box-${id}`);
-        const tab = document.getElementById(`tab-${id}`);
-        if(box) box.remove();
-        if(tab) tab.remove();
-        localStorage.removeItem(`craby_code_${id}`);
-        // No extra code needed, CSS flex will handle the rest!
-    }
+    window.updateLayout(); // जागा डिवाइड करण्यासाठी कॉल करा
 };
 
 window.minimizeBox = (id) => {
     const box = document.getElementById(`box-${id}`);
-    if(box.style.display === 'none') {
-        box.style.display = 'flex'; // Restore
-    } else {
-        box.style.display = 'none'; // Hide and share space
-    }
-};
-
-
-    // Settings Panel मधील UI सिंक करणे
-    if(document.getElementById('font-select')) document.getElementById('font-select').value = font;
-    if(document.getElementById('theme-select')) document.getElementById('theme-select').value = theme;
-    if(document.getElementById('size-select')) document.getElementById('size-select').value = fontSize;
-};
-
-// सेटिंग्ज बदलण्यासाठी फंक्शन्स
-window.changeFont = (font) => { localStorage.setItem('craby_font', font); window.applySettings(); };
-window.changeTheme = (theme) => { localStorage.setItem('craby_theme', theme); window.applySettings(); };
-window.changeFontSize = (size) => { localStorage.setItem('craby_font_size', size); window.applySettings(); };
-
-// Reset All Settings
-window.resetAllSettings = () => {
-    if(confirm("सर्व सेटिंग्ज पहिल्यासारख्या (Default) करायच्या आहेत का?")) {
-        localStorage.removeItem('craby_font');
-        localStorage.removeItem('craby_theme');
-        localStorage.removeItem('craby_font_size');
-        location.reload(); // पेज रिफ्रेश करून डिफॉल्ट अप्लाय करणे
-    }
-};
-
-// --- 2. TEXTAREA & FILE LOGIC ---
-window.saveHistory = (id, content) => {
-    localStorage.setItem(`craby_code_${id}`, content);
-};
-
-window.addFileToUI = function(name, id, content = "") {
-    const wrapper = document.getElementById('editor-wrapper');
-    const fileList = document.getElementById('file-list');
-    
-    if(!wrapper || document.getElementById(`box-${id}`)) return;
-
-    // Sidebar (Slider) मध्ये फाईल आयटम ॲड करणे
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    item.id = `tab-${id}`;
-    item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
-    item.onclick = () => window.restoreBox(id);
-    fileList.appendChild(item);
-
-    // मुख्य एडिटर बॉक्स (Textarea सह) तयार करणे
-    const newBox = document.createElement('div');
-    newBox.className = 'editor-box';
-    newBox.id = `box-${id}`;
-    newBox.innerHTML = `
-        <div class="label">
-            <span>${name.toUpperCase()}</span>
-            <div class="box-controls">
-                <button onclick="minimizeBox('${id}')" title="Minimize"><i class="fas fa-minus"></i></button>
-                <button onclick="toggleFullscreen('${id}')" title="Fullscreen"><i class="fas fa-expand-arrows-alt"></i></button>
-                <button onclick="deleteFile('${id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
-            </div>
-        </div>
-        <textarea id="${id}-code" spellcheck="false" oninput="saveHistory('${id}', this.value)">${content}</textarea>
-    `;
-    wrapper.appendChild(newBox);
-    window.applySettings(); // नवीन टेक्स्टएरियाला फॉन्ट साईज अप्लाय करणे
-};
-
-// Minimize, Restore आणि Delete
-window.minimizeBox = (id) => {
-    document.getElementById(`box-${id}`).style.display = 'none';
+    box.style.display = 'none';
+    window.updateLayout(); // एक बॉक्स कमी झाला की बाकीचे जागा पसरवून घेतील
 };
 
 window.restoreBox = (id) => {
     const box = document.getElementById(`box-${id}`);
     if(box) {
         box.style.display = 'flex';
-        box.scrollIntoView({ behavior: 'smooth' });
+        window.updateLayout(); // बॉक्स परत आला की जागा पुन्हा डिवाइड होईल
     }
 };
 
 window.deleteFile = (id) => {
-    if(confirm(`तुम्हाला '${id}' फाईल कायमची डिलीट करायची आहे का?`)) {
+    if(confirm(`Delete ${id}?`)) {
         document.getElementById(`box-${id}`).remove();
         document.getElementById(`tab-${id}`).remove();
         localStorage.removeItem(`craby_code_${id}`);
+        window.updateLayout(); // फाईल गेल्यावर जागा री-मॅनेज करा
     }
 };
 
-window.toggleFullscreen = (id) => {
-    document.getElementById(`box-${id}`).classList.toggle('fullscreen-mode');
-};
-
-// --- 3. UI SLIDER & SIDEBAR TOGGLES ---
-window.toggleLeftSidebar = () => {
-    document.getElementById('leftSidebar').classList.toggle('open');
-    document.getElementById('shutterBtn').classList.toggle('active');
-};
-
-window.toggleSettings = () => {
-    document.getElementById('settingsPanel').classList.toggle('open');
-};
-
-// --- 4. RUN & DOWNLOAD LOGIC ---
-window.runCode = () => {
-    document.getElementById('preview-overlay').style.display = 'flex';
-    const html = document.getElementById('html-code')?.value || '';
-    const css = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const js = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
-    
-    const output = document.getElementById('output').contentWindow.document;
-    output.open();
-    output.write(html + css + js);
-    output.close();
-};
-
-window.closePreview = () => {
-    document.getElementById('preview-overlay').style.display = 'none';
-};
-
+// --- 4. DOWNLOAD BUTTON FIX (Tested) ---
 window.downloadCode = () => {
+    // व्हॅल्यूज गोळा करा
     const html = document.getElementById('html-code')?.value || '';
-    const css = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const js = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    const css = document.getElementById('css-code')?.value || '';
+    const js = document.getElementById('js-code')?.value || '';
     
-    const fullCode = `<!DOCTYPE html>\n<html>\n<head>\n${css}\n</head>\n<body>\n${html}\n${js}\n</body>\n</html>`;
-    
-    const blob = new Blob([fullCode], { type: 'text/html' });
+    // पूर्ण फाईल स्ट्रक्चर तयार करा
+    const fullContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craby Project</title>
+    <style>
+    ${css}
+    </style>
+</head>
+<body>
+    ${html}
+    <script>
+    ${js}
+    </script>
+</body>
+</html>`;
+
+    const blob = new Blob([fullContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'craby_project.html';
+    
+    a.href = url;
+    a.download = "index.html"; // डाऊनलोड होणाऱ्या फाईलचे नाव
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
+    
+    // क्लीनअप
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
 };
 
-// --- 5. INITIALIZATION ON LOAD ---
+// --- 5. INITIALIZE ---
 document.addEventListener('DOMContentLoaded', () => {
-    // जुना कचरा साफ करणे
     document.getElementById('editor-wrapper').innerHTML = '';
     document.getElementById('file-list').innerHTML = '';
 
-    // डिफॉल्ट फाईल्स लोड करणे (LocalStorage चेक करून)
-    const defaultHTML = localStorage.getItem('craby_code_html') || "<h1>Craby Editor Ready!</h1>";
-    const defaultCSS = localStorage.getItem('craby_code_css') || "h1 { color: #ffb400; text-align: center; }";
-    const defaultJS = localStorage.getItem('craby_code_js') || "console.log('Hello from Craby!');";
-
-    window.addFileToUI("index.html", "html", defaultHTML);
-    window.addFileToUI("style.css", "css", defaultCSS);
-    window.addFileToUI("main.js", "js", defaultJS);
-
-    // युजरच्या जुन्या सेटिंग्ज अप्लाय करणे
+    window.addFileToUI("index.html", "html", localStorage.getItem('craby_code_html') || "<h1>Craby Editor</h1>");
+    window.addFileToUI("style.css", "css", localStorage.getItem('craby_code_css') || "h1 { color: #ffb400; }");
+    window.addFileToUI("main.js", "js", localStorage.getItem('craby_code_js') || "console.log('Ready');");
+    
     window.applySettings();
 });
 
-// फाईल रिफ्रेश करताना वॉर्निंग देणे
-window.onbeforeunload = function() {
-    return "तुमचा कोड सेव्ह झाला आहे का? पेज रिफ्रेश केल्यास बदल जाण्याची शक्यता आहे.";
+// UI Toggles
+window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('open');
+window.toggleLeftSidebar = () => {
+    document.getElementById('leftSidebar').classList.toggle('open');
+    document.getElementById('shutterBtn').classList.toggle('active');
 };
