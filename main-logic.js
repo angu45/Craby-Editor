@@ -1,139 +1,176 @@
-/* --- 1. SETTINGS & PERSISTENCE --- */
+/* CRABY EDITOR - MASTER LOGIC 
+   Features: Shutter, Settings, Dynamic Layout, Download & Persistence
+*/
+
+// --- 1. CORE SETTINGS & THEMES ---
 window.applySettings = () => {
-    const font = localStorage.getItem('craby_font') || "'Fira Code', monospace";
+    const font = localStorage.getItem('craby_font') || "'Plus Jakarta Sans', sans-serif";
     const theme = localStorage.getItem('craby_theme') || "dark";
-    const fontSize = localStorage.getItem('craby_font_size') || "16px";
+    const fontSize = localStorage.getItem('craby_font_size') || "14px";
 
+    document.documentElement.style.setProperty('--current-font', font);
     document.body.className = `theme-${theme}`;
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize;
-    });
+    document.querySelectorAll('textarea').forEach(tx => tx.style.fontSize = fontSize);
 
-    // Update UI controls if they exist
-    if(document.getElementById('font-family-sel')) document.getElementById('font-family-sel').value = font;
-    if(document.getElementById('theme-sel')) document.getElementById('theme-sel').value = theme;
-    if(document.getElementById('font-size-bar')) document.getElementById('font-size-bar').value = parseInt(fontSize);
-    if(document.getElementById('fs-display')) document.getElementById('fs-display').innerText = fontSize;
+    // Sync UI elements
+    const fontEl = document.getElementById('font-select');
+    const themeEl = document.getElementById('theme-select');
+    const sizeEl = document.getElementById('size-select');
+    if(fontEl) fontEl.value = font;
+    if(themeEl) themeEl.value = theme;
+    if(sizeEl) sizeEl.value = fontSize;
 };
 
-/* --- 2. DYNAMIC PARTITIONING & VISIBILITY --- */
-window.updateVisibility = () => {
-    const boxes = document.querySelectorAll('.editor-box');
-    const visibleBoxes = Array.from(boxes).filter(box => box.style.display !== 'none');
+// --- 2. DYNAMIC LAYOUT ENGINE (Divide Screen) ---
+window.updateLayout = () => {
+    const wrapper = document.getElementById('editor-wrapper');
+    if (!wrapper) return;
     
-    // Equal height division: 100 / number of visible boxes
-    const height = visibleBoxes.length > 0 ? (100 / visibleBoxes.length) + '%' : '100%';
+    const visibleBoxes = Array.from(wrapper.children).filter(box => box.style.display !== 'none');
+    const count = visibleBoxes.length;
+
+    if (count > 0) {
+        const heightPercentage = 100 / count;
+        visibleBoxes.forEach(box => {
+            box.style.flex = `1 1 ${heightPercentage}%`;
+            box.style.height = `${heightPercentage}%`;
+        });
+    }
+};
+
+// --- 3. WINDOW CONTROLS (Add, Minimize, Delete) ---
+window.addFileToUI = (name, id, content = "") => {
+    const wrapper = document.getElementById('editor-wrapper');
+    const fileList = document.getElementById('file-list');
+    if(!wrapper || document.getElementById(`box-${id}`)) return;
+
+    // Sidebar Tab
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.id = `tab-${id}`;
+    item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
+    item.onclick = () => window.restoreBox(id);
+    if(fileList) fileList.appendChild(item);
+
+    // Editor Box
+    const newBox = document.createElement('div');
+    newBox.className = 'editor-box';
+    newBox.id = `box-${id}`;
+    newBox.innerHTML = `
+        <div class="label">
+            <span>${name.toUpperCase()}</span>
+            <div class="box-controls">
+                <button onclick="window.minimizeBox('${id}')"><i class="fas fa-minus"></i></button>
+                <button onclick="window.deleteFile('${id}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        <textarea id="${id}-code" spellcheck="false" oninput="localStorage.setItem('craby_code_${id}', this.value)">${content}</textarea>`;
     
-    visibleBoxes.forEach(box => {
-        box.style.height = height;
-    });
+    wrapper.appendChild(newBox);
+    window.applySettings();
+    window.updateLayout();
 };
 
 window.minimizeBox = (id) => {
     const box = document.getElementById(`box-${id}`);
-    const checkbox = document.getElementById(`chk-${id}`);
-    if (box) box.style.display = 'none';
-    if (checkbox) checkbox.checked = false;
-    window.updateVisibility();
+    if(box) box.style.display = 'none';
+    window.updateLayout();
 };
 
 window.restoreBox = (id) => {
     const box = document.getElementById(`box-${id}`);
-    const checkbox = document.getElementById(`chk-${id}`);
-    if (box) box.style.display = 'flex';
-    if (checkbox) checkbox.checked = true;
-    window.updateVisibility();
-};
-
-/* --- 3. FULLSCREEN LOGIC --- */
-window.toggleFullscreen = (id) => {
-    const box = document.getElementById(`box-${id}`);
-    const btn = document.getElementById(`exit-${id}`);
-    
-    if (!box.classList.contains('fullscreen')) {
-        // Enter Fullscreen
-        box.classList.add('fullscreen');
-        if(btn) btn.style.display = 'block';
-    } else {
-        // Exit Fullscreen
-        box.classList.remove('fullscreen');
-        if(btn) btn.style.display = 'none';
-        window.updateVisibility();
+    if(box) {
+        box.style.display = 'flex';
+        window.updateLayout();
     }
 };
 
-/* --- 4. SIDEBAR & SHUTTER --- */
+window.deleteFile = (id) => {
+    if(confirm(`Are you sure you want to delete ${id}?`)) {
+        const box = document.getElementById(`box-${id}`);
+        const tab = document.getElementById(`tab-${id}`);
+        if(box) box.remove();
+        if(tab) tab.remove();
+        localStorage.removeItem(`craby_code_${id}`);
+        window.updateLayout();
+    }
+};
+
+// --- 4. SHUTTER & MENU LOGIC (As requested) ---
 window.toggleLeftSidebar = () => {
     const sidebar = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
-    sidebar.classList.toggle('active');
-    shutter.classList.toggle('active');
-    
-    // Rotate the arrow icon
-    const icon = shutter.querySelector('i');
-    if(sidebar.classList.contains('active')) {
-        icon.className = 'fas fa-chevron-left';
-    } else {
-        icon.className = 'fas fa-chevron-right';
+    if (sidebar && shutter) {
+        sidebar.classList.toggle('open');
+        shutter.classList.toggle('active');
     }
 };
 
 window.toggleSettings = () => {
-    document.getElementById('settingsPanel').classList.toggle('active');
+    const settings = document.getElementById('settingsPanel');
+    if (settings) settings.classList.toggle('open');
 };
 
-/* --- 5. RUN & EXPORT --- */
-window.runCode = () => {
-    const html = document.getElementById('html-code').value;
-    const css = `<style>${document.getElementById('css-code').value}</style>`;
-    const js = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
-    
-    const preview = document.getElementById('preview-overlay');
-    const iframe = document.getElementById('output');
-    
-    preview.style.display = 'flex';
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    doc.open();
-    doc.write(html + css + js);
-    doc.close();
-};
+// Outside click to close
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('leftSidebar');
+    const settings = document.getElementById('settingsPanel');
+    const shutter = document.getElementById('shutterBtn');
 
-window.closePreview = () => {
-    document.getElementById('preview-overlay').style.display = 'none';
-};
-
-window.setDevice = (mode) => {
-    const wrapper = document.querySelector('.iframe-wrapper');
-    if(mode === 'mobile') {
-        wrapper.style.width = '375px';
-        wrapper.style.maxWidth = '90%';
-    } else {
-        wrapper.style.width = '100%';
+    if (sidebar?.classList.contains('open') && !sidebar.contains(e.target) && !shutter.contains(e.target)) {
+        window.toggleLeftSidebar();
     }
+    if (settings?.classList.contains('open') && !settings.contains(e.target) && !e.target.closest('.icon-btn')) {
+        window.toggleSettings();
+    }
+});
+
+// --- 5. PREVIEW & DEVICE TOGGLE ---
+window.runCode = () => {
+    document.getElementById('preview-overlay').style.display = 'flex';
+    const h = document.getElementById('html-code')?.value || '';
+    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
+    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    
+    const out = document.getElementById('output').contentWindow.document;
+    out.open();
+    out.write(h + c + j);
+    out.close();
 };
 
-window.exportCode = () => {
-    const html = document.getElementById('html-code').value;
-    const css = `<style>${document.getElementById('css-code').value}</style>`;
-    const js = `<script>${document.getElementById('js-code').value}<\/script>`;
-    const blob = new Blob([`<html><head>${css}</head><body>${html}${js}</body></html>`], {type: 'text/html'});
+window.closePreview = () => document.getElementById('preview-overlay').style.display = 'none';
+
+window.setPreviewMode = (mode) => {
+    const iframe = document.getElementById('output');
+    if(!iframe) return;
+    iframe.style.width = (mode === 'mobile') ? '375px' : '100%';
+    iframe.style.margin = 'auto';
+};
+
+// --- 6. DOWNLOAD FIX ---
+window.downloadCode = () => {
+    const h = document.getElementById('html-code')?.value || '';
+    const c = document.getElementById('css-code')?.value || '';
+    const j = document.getElementById('js-code')?.value || '';
+    
+    const full = `<!DOCTYPE html><html><head><style>${c}</style></head><body>${h}<script>${j}<\/script></body></html>`;
+    const blob = new Blob([full], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'index.html';
+    a.download = "index.html";
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
 };
 
-/* --- 6. INITIALIZATION --- */
-window.saveHistory = (id, val) => {
-    localStorage.setItem(`craby_code_${id}`, val);
-};
-
+// --- 7. INITIALIZE ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Load saved code
-    if(localStorage.getItem('craby_code_html')) document.getElementById('html-code').value = localStorage.getItem('craby_code_html');
-    if(localStorage.getItem('craby_code_css')) document.getElementById('css-code').value = localStorage.getItem('craby_code_css');
+    const wrapper = document.getElementById('editor-wrapper');
+    if(wrapper) wrapper.innerHTML = '';
+    
+    window.addFileToUI("index.html", "html", localStorage.getItem('craby_code_html') || "<h1>Ready</h1>");
+    window.addFileToUI("style.css", "css", localStorage.getItem('craby_code_css') || "h1 { color: orange; }");
+    window.addFileToUI("main.js", "js", localStorage.getItem('craby_code_js') || "");
     
     window.applySettings();
-    window.updateVisibility();
 });
