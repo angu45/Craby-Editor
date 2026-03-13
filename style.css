@@ -1,4 +1,4 @@
-/* --- 1. BASE & ANIMATIONS --- */
+/* --- 1. BASE SETUP (Back to Original) --- */
 :root {
     --bg: #0d1117; 
     --panel: #161b22; 
@@ -14,12 +14,9 @@ body {
     height: 100dvh; width: 100%; overflow: hidden; position: fixed;
     background: var(--bg); color: var(--text);
     font-family: 'Plus Jakarta Sans', sans-serif;
-    animation: fadeIn 0.4s ease-out;
 }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* --- 2. HEADER & LOGO FIX --- */
+/* --- 2. HEADER & LOGO (New Styled) --- */
 header { 
     height: 60px; background: var(--header); 
     display: flex; justify-content: space-between; align-items: center; 
@@ -27,98 +24,98 @@ header {
     z-index: 2000;
 }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    max-width: 150px; /* लोगो जास्त पसरणार नाही */
-}
-
-.logo-container img { 
-    height: 35px; /* परफेक्ट हाईट */
-    width: auto;
-    object-fit: contain;
-}
+.logo-container { display: flex; align-items: center; max-width: 150px; }
+.logo-container img { height: 35px; width: auto; object-fit: contain; }
 
 .nav-actions { display: flex; gap: 8px; }
 
+/* Buttons: New & Animated */
 .icon-btn { 
     background: var(--panel); border: 1px solid var(--border); 
-    color: var(--text); padding: 8px 12px; border-radius: 6px; 
-    cursor: pointer; font-size: 13px; transition: 0.2s;
+    color: var(--text); padding: 8px 14px; border-radius: 8px; 
+    cursor: pointer; font-size: 13px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; align-items: center; gap: 5px;
 }
+.icon-btn:hover { background: var(--accent); color: #000; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,180,0,0.3); }
+.run-btn { background: var(--accent) !important; color: #000 !important; font-weight: 800; }
 
-.icon-btn:hover { background: var(--accent); color: #000; transform: translateY(-2px); }
-
-/* --- 3. SMART EDITOR LAYOUT --- */
+/* --- 3. EDITOR LAYOUT (Back to Your Original Logic) --- */
 .main-container { 
     height: calc(100dvh - 60px); 
-    display: flex; flex-direction: column; overflow-y: auto; 
+    display: flex; flex-direction: column; /* Stacked vertically like old one */
+    overflow-y: auto; 
 }
 
 .editor-box { 
-    width: 100%; min-height: 250px;
-    display: flex; flex-direction: column; 
+    width: 100%; 
+    min-height: 250px; /* Original Height */
+    display: flex; 
+    flex-direction: column; 
     border-bottom: 2px solid var(--border);
+    background: var(--bg);
 }
 
 .label { 
-    background: #010409; padding: 10px 15px; 
-    font-size: 11px; font-weight: 800; color: var(--accent); 
-    display: flex; justify-content: space-between; align-items: center;
+    background: #010409; 
+    padding: 10px 15px; 
+    font-size: 11px; 
+    font-weight: 800; 
+    color: var(--accent); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
 }
+
+.box-controls button {
+    background: none; border: none; color: #fff; 
+    margin-left: 12px; cursor: pointer; opacity: 0.7; transition: 0.2s;
+}
+.box-controls button:hover { opacity: 1; color: var(--accent); }
 
 textarea { 
-    width: 100%; flex: 1; background: transparent; border: none; 
-    color: #9cdcfe; font-family: 'Fira Code', monospace; 
-    padding: 15px; resize: none; outline: none; font-size: 14px;
+    width: 100%; 
+    flex: 1; 
+    background: transparent; 
+    border: none; 
+    color: #9cdcfe; 
+    font-family: 'Fira Code', monospace; 
+    padding: 15px; 
+    resize: none; 
+    outline: none; 
+    font-size: 14px;
+    line-height: 1.5;
 }
 
-/* --- 4. SETTINGS PANEL (FIXED BUTTON GAPS) --- */
+/* --- 4. SETTINGS PANEL (Improved Spacing) --- */
 .settings-panel { 
     position: fixed; right: -320px; top: 0; width: 300px; height: 100%; 
     background: var(--panel); border-left: 2px solid var(--accent); 
-    z-index: 6000; padding: 30px 20px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* सर्व आयटम्समध्ये गॅप */
+    z-index: 6000; padding: 35px 20px; transition: 0.4s ease;
+    display: flex; flex-direction: column; gap: 25px; /* Added Gap */
 }
-
 .settings-panel.open { right: 0; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
 
-.settings-item { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 10px; /* Label आणि Select मध्ये गॅप */
-}
-
-.settings-item label { font-size: 12px; color: var(--accent); font-weight: bold; }
+.settings-item { display: flex; flex-direction: column; gap: 10px; }
+.settings-item label { font-size: 12px; color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
 
 .settings-item select {
-    width: 100%; padding: 10px; background: var(--bg); 
-    color: #fff; border: 1px solid var(--border); border-radius: 6px;
+    width: 100%; padding: 12px; background: var(--bg); 
+    color: #fff; border: 1px solid var(--border); border-radius: 8px;
+    outline: none; cursor: pointer;
 }
 
 .reset-btn {
-    margin-top: auto; /* रिसेट बटण एकदम खाली ढकलण्यासाठी */
-    width: 100%; padding: 12px; background: #ff4d4d; border: none;
-    color: white; border-radius: 8px; font-weight: bold; cursor: pointer;
-    transition: 0.2s;
+    margin-top: auto; width: 100%; padding: 14px; 
+    background: #ff4d4d; border: none; color: white; 
+    border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;
 }
+.reset-btn:hover { background: #ff1a1a; box-shadow: 0 0 15px rgba(255,77,77,0.4); }
 
-.reset-btn:hover { background: #ff3333; transform: scale(0.98); }
-
-/* --- 5. THEME-MATCHED PREVIEW --- */
+/* --- 5. PREVIEW OVERLAY (Themed) --- */
 .preview-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
     background: var(--bg); z-index: 9000; display: none; flex-direction: column;
 }
-
-.preview-header { 
-    height: 60px; background: var(--header); 
-    display: flex; justify-content: space-between; align-items: center; padding: 0 20px; 
-    border-bottom: 2px solid var(--accent);
-}
-
+.preview-header { height: 60px; background: var(--header); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 2px solid var(--accent); }
 .preview-body { flex: 1; padding: 15px; background: #1a1a1a; display: flex; justify-content: center; align-items: center; }
-
-iframe#output { width: 100%; height: 100%; background: #fff; border-radius: 8px; border: none; }
+iframe#output { width: 100%; height: 100%; background: #fff; border-radius: 10px; border: none; }
