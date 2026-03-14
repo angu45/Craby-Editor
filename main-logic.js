@@ -1,4 +1,4 @@
-// --- 1. WINDOW CONTROLS LOGIC ---
+// --- Window Controls Logic ---
 window.initWindowControls = () => {
     document.querySelectorAll('.editor-box').forEach(box => {
         const label = box.querySelector('.label');
@@ -21,8 +21,9 @@ window.controlWindow = (btn, action) => {
     const lang = txt.id.split('-')[0];
 
     if (action === 'min') {
-        txt.style.display = txt.style.display === 'none' ? 'block' : 'none';
-        box.style.minHeight = txt.style.display === 'none' ? "45px" : "300px";
+        const isHidden = txt.style.display === 'none';
+        txt.style.display = isHidden ? 'block' : 'none';
+        box.style.minHeight = isHidden ? "250px" : "40px";
     } else if (action === 'full') {
         box.classList.toggle('fullscreen-editor');
     } else if (action === 'del') {
@@ -32,22 +33,21 @@ window.controlWindow = (btn, action) => {
     updateFileList();
 };
 
-// --- 2. SHUTTER & FILE LIST LOGIC ---
+// --- Shutter Logic ---
 window.updateFileList = () => {
     const container = document.getElementById('file-list-container');
     if (!container) return;
     const names = { html: 'index.html', css: 'style.css', js: 'script.js' };
     let html = '';
     ['html', 'css', 'js'].forEach(l => {
-        const isChecked = document.getElementById(`chk-${l}`).checked;
-        if (isChecked) {
-            html += `<div class="file-item">
+        if (document.getElementById(`chk-${l}`).checked) {
+            html += `<div style="display:flex; justify-content:space-between; background:rgba(255,255,255,0.05); padding:10px; border-radius:5px; margin-bottom:8px;">
                 <span><i class="far fa-file"></i> ${names[l]}</span>
-                <i class="fas fa-trash" style="cursor:pointer" onclick="deleteFileFromShutter('${l}')"></i>
+                <i class="fas fa-trash" style="cursor:pointer; color:#ff4d4d" onclick="deleteFileFromShutter('${l}')"></i>
             </div>`;
         }
     });
-    container.innerHTML = html || '<p style="font-size:12px;opacity:0.5;">No files open</p>';
+    container.innerHTML = html || '<p style="font-size:12px;opacity:0.5;text-align:center;">No files open</p>';
 };
 
 window.deleteFileFromShutter = (l) => {
@@ -61,14 +61,14 @@ window.toggleLeftSidebar = () => {
     updateFileList();
 };
 
-// --- 3. CORE FUNCTIONS (Sagal Agodarsarkha) ---
+// --- Core Functions ---
 window.updateVisibility = () => {
     ['html', 'css', 'js'].forEach(l => {
         const box = document.getElementById(`${l}-code`).closest('.editor-box');
         box.style.display = document.getElementById(`chk-${l}`).checked ? 'flex' : 'none';
     });
-    initWindowControls(); // Refresh buttons
-    updateFileList();    // Refresh shutter
+    initWindowControls();
+    updateFileList();
 };
 
 window.runCode = () => {
@@ -80,16 +80,10 @@ window.runCode = () => {
     document.getElementById('preview-overlay').style.display = 'flex';
 };
 
-window.updateThemeAndFont = () => {
-    // Tuza original theme logic
-    const themeKey = document.getElementById('theme-sel').value;
-    // ... (rest of theme code)
-};
-
 window.toggleSettings = () => document.getElementById('settingsPanel').classList.toggle('open');
 window.closePreview = () => document.getElementById('preview-overlay').style.display = 'none';
 
-window.onload = () => { 
-    updateVisibility(); 
-    // updateThemeAndFont(); // Garaj asel tar chalu kara
+window.onload = () => {
+    updateVisibility();
+    // theme function jar script.js madhe asel tar ithe call kara
 };
