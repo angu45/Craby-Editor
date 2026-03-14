@@ -1,41 +1,60 @@
+/* --- Original Theme Variables --- */
 :root {
     --bg: #0d1117;
     --panel: #161b22;
     --accent: #ffb400;
-    --border: #30363d;
     --text: #d1d5db;
+    --border: #30363d;
 }
 
+/* Body level reset */
 body {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     background: var(--bg);
     color: white;
     font-family: 'Plus Jakarta Sans', sans-serif;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* No body scroll */
+    overflow: hidden; /* No extra scrolling on body */
+    border: none !important;
 }
 
+/* Header Style (Original) */
 header {
     flex: 0 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 15px; background: var(--panel);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    background: var(--panel);
     border-bottom: 1px solid var(--border);
 }
 
-/* Original Buttons Look */
 .icon-btn {
-    background: #21262d; border: 1px solid var(--border);
-    color: white; padding: 6px 12px; border-radius: 4px;
-    font-size: 12px; cursor: pointer; margin-left: 5px;
+    background: #21262d;
+    border: 1px solid var(--border);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.run-btn { background: var(--accent) !important; color: black !important; font-weight: bold; }
+.run-btn {
+    background: var(--accent) !important;
+    color: #000 !important;
+    font-weight: bold;
+}
 
-/* Smart Layout Container */
+/* Main Layout - Windows Divider */
 .main-container {
-    flex: 1; /* Pure screen height occupy karel */
+    flex: 1;
     display: flex;
     flex-direction: column;
     padding: 0;
@@ -45,77 +64,114 @@ header {
     display: flex;
     flex-direction: column;
     height: 100%;
-    gap: 2px; /* Subtle line between editors */
 }
 
 .editor-box {
-    flex: 1; /* Sagle editors saman height ghetil */
+    flex: 1; /* Hya mule sagle editors saman height ghetil */
     display: flex;
     flex-direction: column;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
+    min-height: 40px; /* Minimize kelyavarchi height */
 }
 
-/* Label - Top Right Buttons Fix */
+/* Window Labels & Controls (Top Right) */
 .label {
     background: var(--panel);
-    padding: 6px 15px;
+    padding: 8px 15px;
     color: var(--accent);
     font-size: 11px;
     font-weight: 800;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.window-controls { display: flex; gap: 12px; }
-.window-controls i { cursor: pointer; font-size: 12px; opacity: 0.6; }
-.window-controls i:hover { opacity: 1; }
+.window-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.window-controls i {
+    cursor: pointer;
+    font-size: 12px;
+    color: #8b949e;
+    transition: 0.2s;
+}
+
+.window-controls i:hover {
+    color: white;
+}
 
 textarea {
     flex: 1;
     width: 100%;
     background: transparent;
     color: var(--text);
-    border: none; outline: none;
+    border: none;
+    outline: none;
     padding: 15px;
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     resize: none;
 }
 
-/* Shutter Button & Panel */
+/* Shutter Design */
 #shutterBtn {
-    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
-    background: var(--accent); color: black; padding: 12px 6px;
-    border-radius: 0 5px 5px 0; z-index: 1000; cursor: pointer;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent);
+    color: black;
+    padding: 12px 6px;
+    border-radius: 0 5px 5px 0;
+    z-index: 1001;
+    cursor: pointer;
 }
 
 .left-sidebar {
-    position: fixed; left: -260px; top: 0; width: 250px; height: 100%;
-    background: var(--panel); border-right: 1px solid var(--border);
-    transition: 0.3s; z-index: 999; padding: 20px;
+    position: fixed;
+    left: -260px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    transition: 0.3s ease;
+    z-index: 1000;
+    padding: 20px;
 }
-.left-sidebar.open { left: 0; }
 
-.file-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px; background: rgba(255,255,255,0.05);
-    border-radius: 4px; margin-bottom: 8px; font-size: 12px;
+.left-sidebar.open {
+    left: 0;
 }
 
-/* Settings Panel Right Side */
+/* Settings & Preview */
 .settings-panel {
-    position: fixed; right: -310px; top: 0; width: 300px; height: 100%;
-    background: var(--panel); border-left: 1px solid var(--border);
-    transition: 0.3s; z-index: 2000; padding: 20px;
+    position: fixed;
+    right: -310px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    transition: 0.3s ease;
+    z-index: 2000;
+    padding: 20px;
 }
-.settings-panel.open { right: 0; }
 
-/* Fullscreen Helper */
+.settings-panel.open {
+    right: 0;
+}
+
 .fullscreen-editor {
-    position: fixed !important; top: 0; left: 0;
-    width: 100% !important; height: 100vh !important;
-    z-index: 3000; background: var(--bg);
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100% !important;
+    height: 100vh !important;
+    z-index: 3000;
+    background: var(--bg);
 }
