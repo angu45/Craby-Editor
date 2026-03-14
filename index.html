@@ -52,27 +52,23 @@
         <button class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play"></i> RUN</b></button>
     </div>
 </header>
-
 <div id="shutterBtn" onclick="toggleLeftSidebar()">
     <i class="fas fa-chevron-right"></i>
 </div>
+
 <div class="left-sidebar" id="leftSidebar">
-    <div class="sidebar-header">
-        <h3 style="font-size: 1.1rem; color: var(--accent);"><i class="fas fa-folder-open"></i> EXPLORER</h3>
-        <i class="fas fa-times" onclick="toggleLeftSidebar()" style="cursor:pointer; color: #ff4d4d;"></i>
+    <div class="sidebar-header" style="display:flex; justify-content: space-between; margin-bottom: 20px;">
+        <h4 style="margin:0; font-size:14px; color:var(--accent)">EXPLORER</h4>
+        <i class="fas fa-times" onclick="toggleLeftSidebar()" style="cursor:pointer"></i>
     </div>
     
-    <button class="icon-btn" style="width: 100%; justify-content: center; margin-bottom: 20px; background: var(--accent); color: #000;" onclick="addNewFile()">
-        <i class="fas fa-plus"></i> <b>NEW FILE</b>
+    <button class="icon-btn" style="width:100%; margin-bottom:15px; background:var(--accent); color:white; justify-content:center" onclick="addNewFile()">
+        <i class="fas fa-plus"></i> NEW FILE
     </button>
 
-    <div class="s-group">
-        <label style="opacity: 0.6; font-size: 11px; letter-spacing: 1px;">OPEN EDITORS</label>
-        <div id="file-list-container">
-            </div>
-    </div>
+    <div id="file-list-container">
+        </div>
 </div>
-
 
 <div class="main-container">
     <div class="editor-section">
