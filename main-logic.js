@@ -27,35 +27,10 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. SIDEBARS & SETTINGS LOGIC (Slider Fixes) ---
-function toggleLeftSidebar() {
-    const sb = document.getElementById('shutter'); // Shutter cha ID check kara
-    const trigger = document.getElementById('shutter-trigger');
-    if(sb) sb.classList.toggle('open');
-    if(trigger) trigger.classList.toggle('active');
-}
-
+// --- 2. SETTINGS LOGIC ONLY ---
 function toggleSettings() {
     const panel = document.getElementById('settings-panel');
     if(panel) panel.classList.toggle('open');
-}
-
-// Side Panels band karnyasaathi (Optional helper)
-function closePanels() {
-    document.getElementById('shutter')?.classList.remove('open');
-    document.getElementById('settings-panel')?.classList.remove('open');
-}
-
-function updateVisibility() {
-    const editors = {
-        'html': document.getElementById('box-html'),
-        'css': document.getElementById('box-css'),
-        'js': document.getElementById('box-js')
-    };
-    
-    if(document.getElementById('chk-html')) editors.html.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
-    if(document.getElementById('chk-css')) editors.css.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
-    if(document.getElementById('chk-js')) editors.js.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
 }
 
 function updateThemeAndFont() {
@@ -80,33 +55,22 @@ function updateThemeAndFont() {
         tx.style.background = theme.bg;
     });
 
-    document.querySelectorAll('.label').forEach(label => {
-        label.style.background = theme.panel;
-        label.style.color = theme.accent;
+    document.querySelectorAll('.window-header').forEach(header => {
+        header.style.background = theme.panel;
     });
 
-    document.querySelectorAll('.icon-btn i').forEach(icon => {
+    document.querySelectorAll('.icon-btn i, .window-controls i').forEach(icon => {
         icon.style.color = theme.accent;
     });
 }
 
-// --- 3. FILE SYSTEM & EDITOR CREATION ---
+// --- 3. FILE SYSTEM & EDITOR CREATION (No Shutter Code) ---
 function addFileToUI(name, id, content = "") {
-    const fileList = document.getElementById('shutter-file-list'); // ID updated
-    if(!fileList) return;
-
-    const newTab = document.createElement('div');
-    newTab.className = 'shutter-item';
-    newTab.id = `tab-${id}`;
-    newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent)">(min)</small>`;
-    newTab.onclick = () => { restoreBox(id); toggleLeftSidebar(); };
-    fileList.appendChild(newTab);
-
-    const wrapper = document.getElementById('editor-grid'); // ID updated
+    const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
 
     const newBox = document.createElement('div');
-    newBox.className = 'window-frame'; // Class matched to CSS
+    newBox.className = 'window-frame';
     newBox.id = `box-${id}`;
     newBox.innerHTML = `
         <div class="window-header">
@@ -126,16 +90,6 @@ function addFileToUI(name, id, content = "") {
     const txt = document.getElementById(`${id}-code`);
     attachInputListeners(txt);
 }
-
-function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; document.getElementById(`status-${id}`).style.display = 'inline'; }
-function restoreBox(id) { document.getElementById(`box-${id}`).style.display = 'flex'; document.getElementById(`status-${id}`).style.display = 'none'; }
-function expandBox(id) {
-    const boxes = document.querySelectorAll('.window-frame');
-    const current = document.getElementById(`box-${id}`);
-    if (current.style.flex === "10") { boxes.forEach(b => b.style.flex = "1"); }
-    else { boxes.forEach(b => b.style.flex = "0.1"); current.style.flex = "10"; current.style.display = "flex"; }
-}
-function deleteBox(id) { if(confirm("Delete this file?")) { document.getElementById(`box-${id}`).remove(); document.getElementById(`tab-${id}`).remove(); } }
 
 // --- 4. EDITOR CORE & AUTO-COMPLETE ---
 function attachInputListeners(txt) {
@@ -232,7 +186,7 @@ function closePreview() { document.getElementById('preview-overlay').style.displ
 
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.replace(/>\s+</g, '><').replace(/</g, '>\n<').replace(/;/g, ';\n  ');
+        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
     });
 }
 
@@ -241,54 +195,49 @@ function exportCode() {
     const blob = new Blob([html], {type: "text/html"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
-// --- SMART FULLSCREEN LOGIC ---
+
+// --- 6. WINDOW CONTROLS ---
 function expandBox(id) {
     const targetBox = document.getElementById(`box-${id}`);
     const allBoxes = document.querySelectorAll('.window-frame');
-
-    // Jar to aadhich fullscreen asel tar normal kara
     if (targetBox.classList.contains('fullscreen')) {
         targetBox.classList.remove('fullscreen');
-        allBoxes.forEach(b => b.style.display = 'flex'); // Baki boxes parat dakhva
+        allBoxes.forEach(b => b.style.display = 'flex');
     } else {
-        // Sarv boxes madhun fullscreen kadha aani tyana lapa (hide)
         allBoxes.forEach(b => {
             b.classList.remove('fullscreen');
             b.style.display = 'none';
         });
-        
-        // Fakt target box dakhva aani fullscreen kara
         targetBox.classList.add('fullscreen');
         targetBox.style.display = 'flex';
     }
 }
 
-// Minimize kelya-var urlele boxes automatic jaga ghetil
 function minimizeBox(id) {
     const box = document.getElementById(`box-${id}`);
-    if (box) {
-        box.style.display = 'none';
-        document.getElementById(`status-${id}`).style.display = 'inline';
-    }
+    if (box) box.style.display = 'none';
+    // Status update logic script2 karel
 }
 
-// Restore kelya-var parat flex mule jaga vatli jail
 function restoreBox(id) {
     const box = document.getElementById(`box-${id}`);
     if (box) {
         box.style.display = 'flex';
-        document.getElementById(`status-${id}`).style.display = 'none';
-        box.classList.remove('fullscreen'); // Safe side
+        box.classList.remove('fullscreen');
     }
 }
 
-// --- 6. INITIAL LOAD ---
+function deleteBox(id) { 
+    if(confirm("Delete this file?")) { 
+        document.getElementById(`box-${id}`).remove(); 
+    } 
+}
+
+// --- 7. INITIAL LOAD ---
 window.onload = () => { 
     addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
     addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; font-family: sans-serif; }");
     
-    const themeSel = document.getElementById('theme-sel');
-    if(themeSel) themeSel.value = 'dark'; 
     updateThemeAndFont(); 
 };
 
