@@ -1,4 +1,4 @@
- /* --- 1. CORE LAYOUT --- */
+/* --- 1. CORE LAYOUT --- */
 :root {
     --bg-main: #0d1117;
     --bg-panel: #161b22;
@@ -36,46 +36,55 @@ header {
     border-bottom: 2px solid var(--accent);
     position: sticky; 
     top: 0;
-    z-index: 1001; 
+    z-index: 3000; 
 }
 
 .logo-container { display: flex; align-items: center; gap: 10px; }
 .logo-container img { height: 35px; width: auto; }
-.logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
+.logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 
-.header-actions { display: flex; gap: 8px; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
 
+/* Header Buttons Size Fix */
 .icon-btn {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     color: white;
-    padding: 8px 12px;
+    padding: 8px 14px; /* Balanced size */
     border-radius: 6px;
     cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Download/Settings button icons theme color follow kartil */
+.icon-btn:hover { background: #1c2128; border-color: var(--accent); }
 .icon-btn i { color: var(--accent); }
 
 .run-btn {
-    background: var(--accent) !important;
-    color: #000 !important;
-    font-weight: bold;
+    background: rgba(255, 180, 0, 0.1) !important;
+    border: 1px solid var(--accent) !important;
+    color: var(--accent) !important;
+    font-weight: 800;
 }
 
-/* --- 3. SMART EDITOR AREA (Auto-Height Logic) --- */
+.run-btn:hover { background: var(--accent) !important; color: #000 !important; }
+
+/* --- 3. SMART EDITOR AREA --- */
 .main-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Main scroll band kela aahe jyamule editors screen fit hoti */
+    overflow: hidden; 
     padding: 10px;
 }
 
 .editor-grid {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Purna height vaparnar */
+    height: 100%; 
     gap: 10px;
 }
 
@@ -86,13 +95,12 @@ header {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    flex: 1; /* Hya mule jevdhya files open astil tevdhi jaga automatic vatli jail */
+    flex: 1; 
     min-height: 40px; 
     overflow: hidden;
     transition: flex 0.3s ease;
 }
 
-/* Fullscreen Mode Class */
 .window-frame.fullscreen {
     position: fixed;
     top: 60px;
@@ -112,27 +120,13 @@ header {
     flex-shrink: 0;
 }
 
-.window-title { font-size: 11px; font-weight: 800; color: var(--accent); }
+.window-title { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
 
-/* Control Buttons Size Choti kelye */
-.window-controls {
-    display: flex;
-    gap: 10px;
-}
+.window-controls { display: flex; gap: 12px; }
+.window-controls i { cursor: pointer; font-size: 12px; color: var(--accent); opacity: 0.7; transition: 0.2s; }
+.window-controls i:hover { opacity: 1; transform: scale(1.1); }
 
-.window-controls i { 
-    cursor: pointer; 
-    font-size: 11px; /* Size Choti kelye */
-    color: var(--accent); /* Theme color logic */
-    opacity: 0.7;
-}
-
-.window-controls i:hover { opacity: 1; }
-
-.window-body {
-    flex: 1;
-    display: flex;
-}
+.window-body { flex: 1; display: flex; }
 
 textarea {
     flex: 1;
@@ -150,35 +144,6 @@ textarea {
     overflow: auto;
 }
 
-/* --- 5. SHUTTER --- */
-#shutter-trigger {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--accent);
-    color: #000;
-    padding: 15px 8px;
-    border-radius: 0 8px 8px 0;
-    z-index: 999;
-    cursor: pointer;
-}
-
-.shutter {
-    position: fixed;
-    left: -320px;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    background: var(--bg-panel);
-    border-right: 2px solid var(--accent);
-    transition: 0.3s ease;
-    z-index: 2000;
-    padding: 20px;
-}
-
-.shutter.open { left: 0; }
-
 /* --- 5. SHUTTER (LEFT SLIDER) --- */
 #shutter-trigger {
     position: fixed;
@@ -189,7 +154,7 @@ textarea {
     color: #000;
     padding: 15px 8px;
     border-radius: 0 8px 8px 0;
-    z-index: 2500; /* Trigger button panel chya var pahije */
+    z-index: 2500; 
     cursor: pointer;
     transition: left 0.3s ease;
 }
@@ -203,11 +168,32 @@ textarea {
     background: var(--bg-panel);
     border-right: 2px solid var(--accent);
     transition: left 0.3s ease;
-    z-index: 4000; /* Purna screen var dakhvnyasathi z-index vadhavla */
-    padding: 20px;
+    z-index: 4000; 
+    padding: 0;
 }
 
 .shutter.open { left: 0; }
+
+.shutter-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 15px; 
+    border-bottom: 1px solid var(--border);
+}
+
+.shutter-list { padding: 15px; }
+
+.add-btn {
+    width: 100%; 
+    padding: 12px; 
+    background: var(--accent); 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer;
+    margin-bottom: 15px;
+}
 
 /* --- 6. SETTINGS PANEL (RIGHT SLIDER) --- */
 .settings-panel {
@@ -221,17 +207,26 @@ textarea {
     transition: right 0.3s ease;
     z-index: 4000; 
     padding: 20px;
-    /* Visibility hidden kadhla aahe jyamule smooth transition disel */
 }
 
-.settings-panel.open {
-    right: 0;
+.settings-panel.open { right: 0; }
 
-    
-    visibility: visible;
+.s-group { margin-bottom: 20px; }
+.s-group label { display: block; font-size: 11px; color: #8b949e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+.s-group select, .s-group input {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    outline: none;
 }
 
-/* --- 7. RUN OVERLAY --- */
+.checkbox-group { display: flex; gap: 15px; }
+.checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+
+/* --- 7. PREVIEW OVERLAY --- */
 .preview-overlay {
     position: fixed;
     inset: 0;
@@ -239,4 +234,26 @@ textarea {
     z-index: 9999;
     display: none;
     flex-direction: column;
+}
+
+.overlay-header {
+    height: 60px;
+    background: var(--bg-panel);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+#output-frame { flex: 1; border: none; width: 100%; background: white; }
+
+/* Suggestion Box Fix */
+#suggestion-box {
+    position: absolute;
+    z-index: 5000;
+    background: #1c2128;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
