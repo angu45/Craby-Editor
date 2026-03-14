@@ -1,73 +1,134 @@
+/* --- Tuzya Original Look sathi Variables --- */
 :root {
-    --bg: #1e1e1e;
-    --panel: #252526;
-    --accent: #007acc;
-    --text: #d4d4d4;
-    --border: #3c3c3c;
+    --bg: #0d1117;
+    --panel: #161b22;
+    --accent: #ffb400;
+    --text: #9cdcfe;
+    --border: #30363d;
 }
 
 body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: white;
 }
 
 header {
-    background: var(--panel); border-bottom: 1px solid var(--border);
-    display: flex; justify-content: space-between; padding: 5px 15px;
-}
-
-.editor-section { display: flex; flex-direction: column; gap: 10px; padding: 10px; }
-
-.editor-box {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 4px; overflow: hidden; display: flex; flex-direction: column;
-}
-
-/* VS Code Style Label */
-.label {
-    background: var(--panel); padding: 5px 15px; font-size: 11px;
-    text-transform: uppercase; font-weight: 600; color: #969696;
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--panel);
     border-bottom: 1px solid var(--border);
 }
 
-.window-controls { display: flex; gap: 15px; }
-.window-controls i { cursor: pointer; opacity: 0.6; font-size: 12px; }
-.window-controls i:hover { opacity: 1; color: var(--accent); }
+/* --- Editor Section Layout (Pahilyasarkha) --- */
+.main-container { padding: 10px; }
+
+.editor-section {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+}
+
+.editor-box {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+/* --- Label & Right Side Buttons (NEW) --- */
+.label {
+    display: flex;
+    justify-content: space-between; /* Naav left la, buttons right la */
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--panel);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.window-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.window-controls i {
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.window-controls i:hover {
+    opacity: 1;
+    color: white;
+}
 
 textarea {
-    background: transparent; border: none; outline: none;
-    color: var(--text); padding: 10px; min-height: 250px;
-    font-family: 'Fira Code', monospace; resize: vertical;
+    width: 100%;
+    min-height: 250px;
+    padding: 15px;
+    background: transparent;
+    color: var(--text);
+    border: none;
+    outline: none;
+    font-family: 'Fira Code', monospace;
 }
 
-/* Shutter Button & Sidebar */
+/* --- Shutter Button & Sidebar --- */
 #shutterBtn {
-    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
-    background: var(--accent); color: white; padding: 12px 6px;
-    border-radius: 0 5px 5px 0; z-index: 10001; cursor: pointer;
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent);
+    color: #000;
+    padding: 15px 8px;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    z-index: 10001;
+    transition: 0.3s;
 }
-#shutterBtn.active { left: 260px; transform: translateY(-50%) rotate(180deg); }
+
+#shutterBtn.active { left: 280px; transform: translateY(-50%) rotate(180deg); }
 
 .left-sidebar {
-    position: fixed; left: -280px; top: 0; width: 260px; height: 100%;
-    background: var(--panel); z-index: 10000; border-right: 1px solid var(--border);
-    transition: 0.3s ease; padding: 20px 15px;
+    position: fixed;
+    left: -300px;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: var(--panel);
+    border-right: 1px solid var(--accent);
+    z-index: 10000;
+    padding: 20px;
+    transition: 0.4s ease;
 }
+
 .left-sidebar.open { left: 0; }
 
 .file-item {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #2d2d2d; padding: 8px 12px; border-radius: 4px;
-    margin-bottom: 5px; font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    margin-bottom: 8px;
 }
-.minimized-file { border-left: 3px solid var(--accent); opacity: 0.8; }
 
-.file-actions i { cursor: pointer; margin-left: 10px; font-size: 12px; opacity: 0.6; }
-.file-actions i:hover { opacity: 1; }
-
-/* Fullscreen Fix */
+/* --- Fullscreen Mode Fix --- */
 .fullscreen-editor {
-    position: fixed !important; top: 0; left: 0; width: 100% !important;
-    height: 100vh !important; z-index: 10005; background: var(--bg);
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100% !important;
+    height: 100vh !important;
+    z-index: 10005;
+    background: var(--bg);
 }
