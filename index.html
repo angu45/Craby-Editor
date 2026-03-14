@@ -1,24 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="--bg: #0d1117; --panel: #161b22; --accent: #ffb400; --border-color: #30363d;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craby Editor - Smart Layout</title>
+    <title>Craby Editor - Free Online HTML, CSS, JS Editor</title>
+    
+    <meta name="description" content="Craby Editor is a powerful and lightweight online HTML editor by Anguworkshop. Write, preview, and export HTML, CSS, and JS code instantly.">
+    <meta name="keywords" content="free online html editor,html editor,Html compiler,Craby Editor, Anguworkshop, Online HTML Editor">
+    <meta name="author" content="Anguworkshop">
+
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://craby-editor-ieoz2pm6f-angutais-projects.vercel.app/style.css">
 </head>
 <body>
+
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
         <span class="logo-text">Craby Editor</span>
     </div>
     <div class="header-actions">
-        <button class="icon-btn" onclick="exportCode()" title="Download Project"><i class="fas fa-download"></i></button>
-        <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
-        <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+        <button class="icon-btn" title="Format Code"><i class="fas fa-magic" style="color: var(--accent);"></i></button>
+        <button class="icon-btn" onclick="exportCode()" title="Download Project"><i class="fas fa-download" style="color: var(--accent);"></i></button>
+        <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play" style="color: var(--accent);"></i> RUN</b></button>
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-cog" style="color: var(--accent);"></i></button>
     </div>
 </header>
+
 <div id="shutter-trigger" onclick="toggleShutter()">
     <i class="fas fa-chevron-right"></i>
 </div>
@@ -39,15 +50,66 @@
 
 <div id="preview-overlay" class="preview-overlay">
     <div class="overlay-header">
-        <span class="logo-text">LIVE PREVIEW</span>
-        <button class="close-btn" onclick="closePreview()">CLOSE</button>
+        <div class="logo-container">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
+            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="icon-btn"><i class="fas fa-desktop" style="color: var(--accent);"></i></button>
+            <button class="icon-btn"><i class="fas fa-mobile-alt" style="color: var(--accent);"></i></button>
+            <button class="close-btn" onclick="closePreview()" style="background: #ff4d4d !important; color: white !important; border:none; padding: 5px 15px; border-radius: 4px; cursor: pointer;"><b>CLOSE</b></button>
+        </div>
     </div>
     <div class="overlay-body">
-        <iframe id="output-frame"></iframe>
+        <div id="wrapper" class="iframe-wrapper">
+            <iframe id="output-frame"></iframe>
+        </div>
     </div>
 </div>
 
+<div class="settings-panel" id="settingsPanel" style="display: none; position: fixed; right: 20px; top: 80px; background: var(--panel); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; z-index: 1000; width: 300px;">
+    <h3 style="color: var(--accent); display: flex; justify-content: space-between; margin-top: 0;">
+        IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
+    </h3>
+    <div class="s-group" style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Show/Hide Editors</label>
+        <div style="display: flex; gap: 10px; font-size: 12px;">
+            <label><input type="checkbox" id="chk-html" checked=""> HTML</label>
+            <label><input type="checkbox" id="chk-css" checked=""> CSS</label>
+            <label><input type="checkbox" id="chk-js"> JS</label>
+        </div>
+    </div>
+    <div class="s-group" style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Font Family</label>
+        <select id="font-family-sel" style="width: 100%; background: #0d1117; color: white; border: 1px solid var(--border-color); padding: 5px;">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="monospace">System Monospace</option>
+        </select>
+    </div>
+    <div class="s-group" style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Editor Theme</label>
+        <select id="theme-sel" style="width: 100%; background: #0d1117; color: white; border: 1px solid var(--border-color); padding: 5px;">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="cyberpunk">Cyberpunk Neon</option>
+        </select>
+    </div>
+    <button onclick="toggleSettings()" class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center; padding: 10px; border-radius: 4px;"><b>SAVE & CLOSE</b></button>
+</div>
+
+<div id="suggestion-box" style="display: none;"></div>
+
 <script src="main-logic.js"></script>
 <script src="script2.js"></script>
+
+<script>
+    // Settings Panel उघडण्यासाठी/बंद करण्यासाठी फंक्शन
+    function toggleSettings() {
+        const panel = document.getElementById('settingsPanel');
+        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+    }
+</script>
+
 </body>
 </html>
