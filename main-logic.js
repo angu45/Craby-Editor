@@ -24,34 +24,37 @@ let currentLang = '';
 /**
  * Creates a new editor window in the grid
  */
-function addFileToUI(name, id, content = "") {
+function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
 
+    // Create a safe ID from filename (e.g., "123.html" -> "file-123-html")
+    const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+
     // If box already exists, just show it
-    if(document.getElementById(`box-${id}`)) {
-        document.getElementById(`box-${id}`).style.display = 'flex';
+    if(document.getElementById(`box-${safeId}`)) {
+        document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
     }
 
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
-    newBox.id = `box-${id}`;
+    newBox.id = `box-${safeId}`;
     newBox.innerHTML = `
         <div class="window-header">
             <span class="window-title">${name.toUpperCase()} <i class="fas fa-code"></i></span>
             <div class="window-controls">
-                <i class="fas fa-minus" onclick="minimizeBox('${id}')" title="Minimize"></i>
-                <i class="fas fa-expand" onclick="expandBox('${id}')" title="Full Screen"></i>
-                <i class="fas fa-trash" onclick="deleteBox('${id}', '${name}')" title="Delete"></i>
+                <i class="fas fa-minus" onclick="minimizeBox('${safeId}')" title="Minimize"></i>
+                <i class="fas fa-expand" onclick="expandBox('${safeId}')" title="Full Screen"></i>
+                <i class="fas fa-trash" onclick="deleteBox('${safeId}', '${name}')" title="Delete"></i>
             </div>
         </div>
         <div class="window-body">
-            <textarea id="${id}-code" spellcheck="false" data-lang="${id}" oninput="updateFileContent('${name}', this.value)">${content}</textarea>
+            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" oninput="updateFileContent('${name}', this.value)">${content}</textarea>
         </div>
     `;
     wrapper.appendChild(newBox);
-    attachInputListeners(document.getElementById(`${id}-code`));
+    attachInputListeners(document.getElementById(`${safeId}-code`));
     
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
@@ -74,7 +77,6 @@ function attachInputListeners(txt) {
         const char = e.data;
         currentLang = txt.getAttribute('data-lang') || 'html';
 
-        // Auto-pairing brackets and quotes
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
@@ -99,7 +101,6 @@ function showSuggestions(txt) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
         
-        // Position suggestion box near cursor
         sBox.style.top = `${rect.top + 30}px`; 
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
@@ -120,7 +121,6 @@ function insertWord(word, id) {
     
     let wordToInsert = word;
 
-    // Auto tag closing for HTML
     if (currentLang === 'html') {
         const selfClosing = ['img', 'br', 'hr', 'input', 'meta', 'link'];
         if (!selfClosing.includes(word.toLowerCase())) {
@@ -132,7 +132,6 @@ function insertWord(word, id) {
 
     txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
     
-    // Set cursor inside tag for HTML
     if (currentLang === 'html' && wordToInsert.includes('></')) {
         txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     }
@@ -156,7 +155,7 @@ function updateActive(items) { items.forEach((it, i) => it.classList.toggle('act
 // --- 4. INTERACTIVE RUN & DOWNLOAD SYSTEM ---
 
 /**
- * Runs the code by asking user which file to use as entry point
+ * Runs the code by using the latest content from the 'files' object
  */
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
@@ -165,14 +164,14 @@ function runCode() {
 
     const fileToRun = prompt("Which HTML file do you want to run?", "index.html");
     
-    if (!files[fileToRun]) {
-        alert("File not found! Please check the name.");
+    if (!files[fileToRun] || files[fileToRun].type !== 'html') {
+        alert("HTML File not found! Please check the name (e.g., 123.html).");
         return;
     }
 
     overlay.style.display = 'flex';
 
-    // Get current contents from global object
+    // Inject CSS/JS into the chosen HTML
     const htmlContent = files[fileToRun].content || '';
     const cssContent = `<style>${files["style.css"] ? files["style.css"].content : ""}</style>`;
     const jsContent = `<script>${files["script.js"] ? files["script.js"].content : ""}<\/script>`;
@@ -192,7 +191,6 @@ function exportCode() {
     if (!fileName) return;
 
     if (fileName.toLowerCase() === 'all') {
-        // ZIP Download logic
         if (typeof JSZip !== "undefined") {
             const zip = new JSZip();
             Object.keys(files).forEach(name => {
@@ -205,10 +203,9 @@ function exportCode() {
                 link.click();
             });
         } else {
-            alert("JSZip library not found. Downloading individual files only.");
+            alert("JSZip library not found.");
         }
     } else {
-        // Single File Download logic
         if (files[fileName]) {
             const blob = new Blob([files[fileName].content], { type: "text/plain" });
             const link = document.createElement("a");
@@ -216,7 +213,7 @@ function exportCode() {
             link.download = fileName;
             link.click();
         } else {
-            alert("File not found! Make sure you included the extension (.html, .css)");
+            alert("File not found!");
         }
     }
 }
@@ -225,11 +222,18 @@ function exportCode() {
 
 function toggleShutter() {
     const shutter = document.getElementById('shutter');
-    shutter.classList.toggle('open');
+    if(shutter) shutter.classList.toggle('open');
 }
 
-function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
-function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; }
+function expandBox(id) { 
+    const box = document.getElementById(`box-${id}`);
+    if(box) box.classList.toggle('fullscreen'); 
+}
+
+function minimizeBox(id) { 
+    const box = document.getElementById(`box-${id}`);
+    if(box) box.style.display = 'none'; 
+}
 
 function deleteBox(id, fileName) { 
     if(confirm(`Are you sure you want to delete ${fileName}?`)) {
@@ -240,9 +244,6 @@ function deleteBox(id, fileName) {
     } 
 }
 
-/**
- * Renders the file list in the taskbar/shutter
- */
 function renderFileList() {
     const list = document.getElementById('shutter-file-list');
     if(!list) return;
@@ -261,31 +262,35 @@ function renderFileList() {
 
 function addNewFilePrompt() {
     const name = prompt("Enter new file name (e.g. about.html):");
-    if(name) {
-        const ext = name.split('.').pop();
+    if(name && name.includes('.')) {
+        const ext = name.split('.').pop().toLowerCase();
         files[name] = { content: "", type: ext };
         renderFileList();
         addFileToUI(name, ext, "");
+    } else if(name) {
+        alert("Please include file extension (e.g., .html, .css, .js)");
     }
 }
 
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
-        // Simple beautification logic
         tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<');
+        // Update the files object after beautify
+        const fileName = Object.keys(files).find(key => {
+            const safeId = "file-" + key.replace(/[^a-z0-9]/gi, '-');
+            return tx.id === `${safeId}-code`;
+        });
+        if(fileName) updateFileContent(fileName, tx.value);
     });
 }
 
-/**
- * Initialize the editor on page load
- */
 window.onload = () => { 
     renderFileList();
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
+    addFileToUI("script.js", "js", files["script.js"].content);
 };
 
-// Close suggestion box when clicking outside
 document.addEventListener('mousedown', (e) => { 
     if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none'; 
 });
