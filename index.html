@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craby Editor - Professional Web IDE</title>
+    
+    <title>Craby Editor - Free Online HTML, CSS, JS Editor with Live Preview</title>
+    <meta name="description" content="Craby Editor is a fast, free, and powerful online HTML, CSS, and JavaScript editor. Write code, preview instantly, and download your web projects. The best lightweight IDE for developers.">
+    <meta name="keywords" content="online html editor, live html preview, free code editor, web development tool, online compiler, craby editor, html css js compiler, mobile friendly code editor, best online ide">
+    <meta name="author" content="Anguworkshop">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Craby Editor - Professional Web IDE">
+    <meta property="og:description" content="Experience the fastest way to write and test your web code online with Craby Editor.">
+    <meta property="og:image" content="https://i.ibb.co/kgRnJLtW/1000176146-removebg-preview.png">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/png" href="https://i.ibb.co/kgRnJLtW/1000176146-removebg-preview.png">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/kgRnJLtW/1000176146-removebg-preview.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Roboto+Mono:wght@400;700&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -94,24 +108,22 @@
     <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
 </div>
 
-<div id="preview-overlay" class="preview-overlay"><div class="overlay-header">
-    <div class="logo-container">
-        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Logo" height="30">
+<div id="preview-overlay" class="preview-overlay">
+    <div class="overlay-header">
+        <div class="logo-container">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Logo" height="30">
         </div>
-    <div style="display: flex; gap: 10px;">
-        <button class="icon-btn" onclick="setPreviewSize('100%')"><i class="fas fa-desktop"></i></button>
-        <button class="icon-btn" onclick="setPreviewSize('375px')"><i class="fas fa-mobile-alt"></i></button>
-        <button onclick="closePreview()" class="close-btn">CLOSE</button>
-    </div>
-</div>
-
-            <button onclick="closePreview()" style="background:#ff4d4d; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">CLOSE</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="icon-btn" onclick="setPreviewSize('100%')"><i class="fas fa-desktop"></i></button>
+            <button class="icon-btn" onclick="setPreviewSize('375px')"><i class="fas fa-mobile-alt"></i></button>
+            <button onclick="closePreview()" class="close-btn">CLOSE</button>
         </div>
     </div>
     <div id="preview-body" style="flex:1; display:flex; justify-content:center; align-items:center; background:#1e1e1e;">
         <iframe id="output-frame" style="width:100%; height:100%; background:white; transition: 0.3s ease;"></iframe>
     </div>
 </div>
+
 <script src="theme-settings.js"></script>
 <script src="main-logic.js"></script>
 <script src="script2.js"></script>
