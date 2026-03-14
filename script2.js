@@ -140,6 +140,19 @@ function setPreviewSize(width) {
     const frame = document.getElementById('output-frame');
     if(frame) frame.style.width = width;
 }
+// --- PAGE REFRESH WARNING FUNCTION ---
+function enableExitWarning() {
+    window.onbeforeunload = function (e) {
+        const message = "Do you want to leave this page? Your unsaved changes might be lost.";
+        e = e || window.event;
+        if (e) {
+            e.returnValue = message;
+        }
+        return message;
+    };
+}
+
+enableExitWarning();
 
 // --- 4. INITIALIZATION ---
 window.addEventListener('DOMContentLoaded', () => {
