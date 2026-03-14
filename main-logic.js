@@ -1,235 +1,252 @@
-// --- 1. GLOBAL CONFIG & THEMES ---
-window.themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
-    light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
-    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' }
+// --- 1. CONFIGURATION & DICTIONARY ---
+const dictionary = {
+    html: ['a', 'alt', 'article', 'aside', 'audio', 'b', 'base', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'class', 'code', 'col', 'colgroup', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'height', 'hr', 'html', 'href', 'i', 'id', 'iframe', 'img', 'input', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'meta', 'name', 'nav', 'ol', 'optgroup', 'option', 'p', 'param', 'picture', 'placeholder', 'pre', 'progress', 'q', 'rel', 'required', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'type', 'u', 'ul', 'value', 'var', 'video', 'width'],
+    css: ['absolute', 'align-items', 'animation', 'background', 'background-color', 'border', 'border-radius', 'bottom', 'box-shadow', 'box-sizing', 'clear', 'color', 'column-count', 'content', 'cursor', 'display', 'flex', 'flex-direction', 'flex-wrap', 'float', 'font', 'font-family', 'font-size', 'font-weight', 'gap', 'grid', 'grid-template-columns', 'height', 'inline-block', 'justify-content', 'left', 'letter-spacing', 'line-height', 'margin', 'margin-top', 'max-height', 'min-width', 'none', 'opacity', 'overflow', 'padding', 'pointer', 'position', 'relative', 'right', 'text-align', 'text-decoration', 'top', 'transform', 'transition', 'width', 'z-index'],
+    js: ['addEventListener', 'alert', 'Array', 'async', 'await', 'break', 'catch', 'clearInterval', 'clearTimeout', 'console.log', 'const', 'continue', 'Date', 'default', 'delete', 'document.getElementById', 'document.querySelector', 'else', 'fetch', 'for', 'function', 'if', 'JSON.parse', 'JSON.stringify', 'let', 'Math.floor', 'new', 'null', 'parseFloat', 'parseInt', 'return', 'setInterval', 'setTimeout', 'String', 'switch', 'this', 'typeof', 'undefined', 'var', 'window', 'while']
 };
 
-// --- 2. WINDOW CONTROLS (Minimize, Fullscreen, Delete) ---
-// Pratyek editor box chya 'label' div madhe he buttons asne garjeche aahe.
-window.initWindowControls = () => {
-    document.querySelectorAll('.editor-box').forEach(box => {
-        const label = box.querySelector('.label');
-        if (label && !label.querySelector('.window-controls')) {
-            const controls = document.createElement('div');
-            controls.className = 'window-controls';
-            controls.style.display = 'flex';
-            controls.style.gap = '8px';
-            
-            controls.innerHTML = `
-                <i class="fas fa-minus" title="Minimize" onclick="controlWindow(this, 'min')"></i>
-                <i class="fas fa-expand" title="Fullscreen" onclick="controlWindow(this, 'full')"></i>
-                <i class="fas fa-times" title="Close" onclick="controlWindow(this, 'del')" style="color:#ff4d4d"></i>
-            `;
-            label.appendChild(controls);
-        }
-    });
+const themes = {
+    dark: { '--bg-main': '#0d1117', '--bg-panel': '#161b22', '--bg-header': '#010409', '--border-color': 'rgba(255,255,255,0.1)', '--accent': '#ffb400', '--text-primary': '#c9d1d9', '--text-textarea': '#9cdcfe', '--shutter-bg': '#161b22', '--window-header-bg': '#21262d' },
+    light: { '--bg-main': '#ffffff', '--bg-panel': '#f8fafc', '--bg-header': '#f1f5f9', '--border-color': '#cbd5e1', '--accent': '#1e40af', '--text-primary': '#0f172a', '--text-textarea': '#111827', '--shutter-bg': '#f1f5f9', '--window-header-bg': '#e2e8f0' }
 };
 
-window.controlWindow = (btn, action) => {
-    const box = btn.closest('.editor-box');
-    const txt = box.querySelector('textarea');
-    const lang = txt.id.split('-')[0];
+// --- 2. GLOBAL STATE ---
+let files = [
+    { id: 'f1', name: 'index.html', lang: 'html', content: '<!DOCTYPE html>\n<html>\n<body>\n  <h1>Welcome to Craby Editor</h1>\n</body>\n</html>', minimized: false },
+    { id: 'f2', name: 'style.css', lang: 'css', content: 'h1 { color: #ffb400; text-align: center; }', minimized: false },
+    { id: 'f3', name: 'main.js', lang: 'js', content: 'console.log("Craby Editor is live!");', minimized: false }
+];
+let nextId = 4;
+let sBox = null;
+let selectedIdx = 0;
 
-    if (action === 'min') {
-        txt.style.display = txt.style.display === 'none' ? 'block' : 'none';
-        box.style.flex = txt.style.display === 'none' ? '0 0 auto' : '1';
-    } 
-    else if (action === 'full') {
-        box.classList.toggle('fullscreen-editor');
-        if(box.classList.contains('fullscreen-editor')) {
-            box.style.position = 'fixed';
-            box.style.top = '60px'; box.style.left = '0';
-            box.style.width = '100%'; box.style.height = 'calc(100vh - 60px)';
-            box.style.zIndex = '9999';
-        } else {
-            box.style.position = 'relative';
-            box.style.top = '0'; box.style.width = '100%'; box.style.height = '100%';
-            box.style.zIndex = '1';
-            updateVisibility(); // Reset to normal flex
-        }
-    } 
-    else if (action === 'del') {
-        const check = document.getElementById(`chk-${lang}`);
-        if (check) {
-            check.checked = false;
-            updateVisibility();
-        }
-    }
-};
-
-// --- 3. SHUTTER & SETTINGS LOGIC ---
-window.toggleLeftSidebar = () => {
-    const sidebar = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    if (sidebar) sidebar.classList.toggle('open');
-    if (shutter) shutter.classList.toggle('active');
-    
-    // Sidebar उघडला तर Settings बंद करा
-    if (sidebar && sidebar.classList.contains('open')) {
-        document.getElementById('settingsPanel').classList.remove('open');
-    }
-};
-
-window.toggleSettings = () => {
-    const settings = document.getElementById('settingsPanel');
-    if (settings) settings.classList.toggle('open');
-    
-    // Settings उघडली तर Sidebar बंद करा
-    if (settings && settings.classList.contains('open')) {
-        const sidebar = document.getElementById('leftSidebar');
-        if (sidebar) {
-            sidebar.classList.remove('open');
-            document.getElementById('shutterBtn').classList.remove('active');
-        }
-    }
-};
-
-// --- 4. CORE FUNCTIONALITIES ---
-window.updateVisibility = () => {
-    const langs = ['html', 'css', 'js'];
-    langs.forEach(lang => {
-        const box = document.getElementById(`${lang}-code`).closest('.editor-box');
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        box.style.display = isChecked ? 'flex' : 'none';
-    });
-};
-
-window.updateThemeAndFont = () => {
-    const themeKey = document.getElementById('theme-sel').value;
-    const font = document.getElementById('font-family-sel').value;
-    const fontSize = document.getElementById('font-size-bar').value;
-    const theme = window.themes[themeKey] || window.themes.dark;
-
-    document.getElementById('fs-display').innerText = fontSize + "px";
-    document.documentElement.style.setProperty('--bg', theme.bg);
-    document.documentElement.style.setProperty('--accent', theme.accent);
-
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px";
-        tx.style.color = theme.text;
-        tx.style.background = theme.bg;
-    });
-    
-    document.querySelectorAll('.label').forEach(l => {
-        l.style.background = theme.panel;
-        l.style.color = theme.accent;
-    });
-};
-
-// --- 5. INITIALIZE ---
+// --- 3. INITIALIZATION ---
 window.onload = () => {
-    // Default 2 editors (HTML & CSS)
-    document.getElementById('chk-html').checked = true;
-    document.getElementById('chk-css').checked = true;
-    document.getElementById('chk-js').checked = false;
+    renderAllFiles();
     
-    initWindowControls();
-    updateVisibility();
-    updateThemeAndFont();
+    // Create Suggestion Box
+    sBox = document.createElement('div');
+    sBox.id = 'suggestion-box';
+    document.body.appendChild(sBox);
 };
 
-// Toolbar Buttons
-window.runCode = () => {
-    const overlay = document.getElementById('preview-overlay');
-    overlay.style.display = 'flex';
-    const h = document.getElementById('html-code').value;
-    const c = `<style>${document.getElementById('css-code').value}</style>`;
-    const j = `<script>${document.getElementById('js-code').value}<\/script>`;
-    const out = document.getElementById('output').contentWindow.document;
-    out.open(); out.write(h + c + j); out.close();
-};
+// --- 4. CORE RENDERING LOGIC ---
+function renderAllFiles() {
+    const grid = document.getElementById('editor-grid');
+    grid.innerHTML = '';
+    files.forEach(file => {
+        if (!file.minimized) {
+            createFileWindow(file, grid);
+        }
+    });
+    updateShutter();
+    updateRunButtonState();
+}
 
-window.closePreview = () => { document.getElementById('preview-overlay').style.display = 'none'; };
+function createFileWindow(file, container) {
+    const frame = document.createElement('div');
+    frame.className = 'window-frame';
+    frame.id = `win-${file.id}`;
 
-window.exportCode = () => {
-    const code = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
-    const blob = new Blob([code], {type: "text/html"});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = "index.html";
-    a.click();
-};// --- 1. SHUTTER & WINDOW STATUS LOGIC ---
-
-// Window Status Shutter madhe update karne
-window.updateWindowStatus = () => {
-    const list = document.getElementById('window-status-list');
-    const langs = ['html', 'css', 'js'];
-    let html = '';
-
-    langs.forEach(lang => {
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        const statusColor = isChecked ? '#4ade80' : '#ff4d4d'; // Green for Open, Red for Closed
-        const statusText = isChecked ? 'VISIBLE' : 'HIDDEN';
-
-        html += `
-            <div class="status-item">
-                <span><b>${lang.toUpperCase()}</b></span>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:10px; color:${statusColor}">${statusText}</span>
-                    <div class="status-dot" style="background:${statusColor}"></div>
-                    <button class="icon-btn" style="padding:4px 8px; font-size:10px;" onclick="toggleFromShutter('${lang}')">
-                        ${isChecked ? 'Hide' : 'Show'}
-                    </button>
-                </div>
+    frame.innerHTML = `
+        <div class="window-header">
+            <span class="window-title">${file.name}</span>
+            <div class="window-controls">
+                <i class="win-control fas fa-minus" title="Minimize" onclick="minimizeWindow('${file.id}')"></i>
+                <i class="win-control fas fa-expand" title="Fullscreen" onclick="toggleFullscreen('${file.id}')"></i>
+                <i class="win-control fas fa-times" title="Delete" onclick="deleteFile('${file.id}')"></i>
             </div>
-        `;
-    });
-    list.innerHTML = html;
-};
+        </div>
+        <div class="window-body">
+            <textarea id="ta-${file.id}" lang="${file.lang}" spellcheck="false" 
+                oninput="updateFileContent('${file.id}', this.value)" 
+                onkeydown="handleKeyActions(event, '${file.id}')">${file.content}</textarea>
+        </div>
+    `;
+    container.appendChild(frame);
+}
 
-// Shutter madhun window toggle karne
-window.toggleFromShutter = (lang) => {
-    const check = document.getElementById(`chk-${lang}`);
-    check.checked = !check.checked;
-    updateVisibility();
-    updateWindowStatus();
-};
+// --- 5. UI CONTROLS (Shutter, Settings, Windows) ---
+function toggleShutter() {
+    document.getElementById('shutter').classList.toggle('open');
+}
 
-// Quick Theme Change via Shutter
-window.quickTheme = () => {
-    const themeSel = document.getElementById('theme-sel');
-    const options = Array.from(themeSel.options);
-    let nextIdx = (themeSel.selectedIndex + 1) % options.length;
-    themeSel.selectedIndex = nextIdx;
-    updateThemeAndFont();
-};
+function toggleSettings() {
+    document.getElementById('settings-panel').classList.toggle('open');
+}
 
-// Shutter Toggle Logic (Center-Left Button)
-window.toggleLeftSidebar = () => {
-    const sidebar = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    
-    sidebar.classList.toggle('open');
-    shutter.classList.toggle('active');
-
-    if(sidebar.classList.contains('open')) {
-        updateWindowStatus(); // Open zalyavar status refresh kara
-        // Jar Sidebar ughadla tar Settings band kara
-        document.getElementById('settingsPanel').classList.remove('open');
+function minimizeWindow(id) {
+    const file = files.find(f => f.id === id);
+    if (file) {
+        file.minimized = true;
+        renderAllFiles();
     }
-};
+}
 
-// Overriding updateVisibility to refresh Shutter status
-const originalUpdateVisibility = window.updateVisibility;
-window.updateVisibility = () => {
-    const langs = ['html', 'css', 'js'];
-    langs.forEach(lang => {
-        const box = document.getElementById(`${lang}-code`).closest('.editor-box');
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        box.style.display = isChecked ? 'flex' : 'none';
+function restoreWindow(id) {
+    const file = files.find(f => f.id === id);
+    if (file) {
+        file.minimized = false;
+        renderAllFiles();
+        // Scroll to the restored window
+        setTimeout(() => {
+            const win = document.getElementById(`win-${id}`);
+            if (win) win.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+}
+
+function toggleFullscreen(id) {
+    const win = document.getElementById(`win-${id}`);
+    if (!document.fullscreenElement) {
+        win.requestFullscreen().catch(err => alert("Error enabling fullscreen"));
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function updateShutter() {
+    const list = document.getElementById('shutter-file-list');
+    list.innerHTML = '';
+    files.forEach(file => {
+        const item = document.createElement('div');
+        item.className = 'shutter-item';
+        item.onclick = () => {
+            if (file.minimized) restoreWindow(file.id);
+            toggleShutter();
+        };
+        item.innerHTML = `
+            <span>${file.name}</span>
+            <span style="font-size:10px; color:${file.minimized ? '#ff4d4d' : '#4ade80'}">
+                ${file.minimized ? 'Minimized' : 'Active'}
+            </span>
+        `;
+        list.appendChild(item);
     });
-    updateWindowStatus(); // Sync shutter status
-};
+}
 
-// --- Initialization ---
-const originalOnload = window.onload;
-window.onload = () => {
-    if(originalOnload) originalOnload();
-    updateWindowStatus();
-    initWindowControls(); 
-};
+// --- 6. FILE MANAGEMENT ---
+function updateFileContent(id, content) {
+    const file = files.find(f => f.id === id);
+    if (file) file.content = content;
+}
+
+function deleteFile(id) {
+    if (confirm("Delete this file?")) {
+        files = files.filter(f => f.id !== id);
+        renderAllFiles();
+    }
+}
+
+function updateRunButtonState() {
+    const runBtn = document.getElementById('run-btn');
+    const hasHtml = files.some(f => f.lang === 'html');
+    runBtn.style.opacity = hasHtml ? "1" : "0.5";
+    runBtn.disabled = !hasHtml;
+}
+
+// --- 7. INTELLISENSE & KEY ACTIONS ---
+function handleKeyActions(e, id) {
+    const ta = document.getElementById(`ta-${id}`);
+    const lang = ta.getAttribute('lang');
+
+    if (sBox.style.display === 'block') {
+        const items = sBox.querySelectorAll('.suggestion-item');
+        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActiveSBox(items); return; }
+        if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActiveSBox(items); return; }
+        if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); return; }
+        if (e.key === 'Escape') { sBox.style.display = 'none'; return; }
+    }
+
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = ta.selectionStart;
+        ta.value = ta.value.substring(0, start) + "  " + ta.value.substring(ta.selectionEnd);
+        ta.selectionStart = ta.selectionEnd = start + 2;
+    }
+
+    // Auto-close brackets
+    const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+    if (pairs[e.key]) {
+        const pos = ta.selectionStart;
+        ta.value = ta.value.substring(0, pos) + pairs[e.key] + ta.value.substring(pos);
+        ta.selectionStart = ta.selectionEnd = pos;
+    }
+
+    clearTimeout(ta.suggestTimeout);
+    ta.suggestTimeout = setTimeout(() => handleSuggestions(ta, lang), 100);
+}
+
+function handleSuggestions(ta, lang) {
+    const pos = ta.selectionStart;
+    const textBefore = ta.value.substring(0, pos);
+    const words = textBefore.split(/[\s<>{}:;()]/);
+    const lastWord = words[words.length - 1].toLowerCase();
+
+    if (!dictionary[lang] || lastWord.length < 1) { sBox.style.display = 'none'; return; }
+
+    const matches = dictionary[lang].filter(w => w.startsWith(lastWord)).slice(0, 10);
+
+    if (matches.length > 0) {
+        selectedIdx = 0;
+        const rect = ta.getBoundingClientRect();
+        sBox.style.display = 'block';
+        sBox.style.top = (rect.top + 30) + 'px';
+        sBox.style.left = '20px';
+        sBox.style.width = '80%';
+
+        sBox.innerHTML = matches.map((m, i) => `
+            <div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${ta.id}', '${lang}')">
+                ${m}
+            </div>
+        `).join('');
+    } else { sBox.style.display = 'none'; }
+}
+
+function updateActiveSBox(items) {
+    items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
+}
+
+function insertWord(word, taId, lang) {
+    const ta = document.getElementById(taId);
+    const pos = ta.selectionStart;
+    const textBefore = ta.value.substring(0, pos);
+    const lastWordMatch = textBefore.match(/[\w.-]+$/);
+    const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
+
+    let insertText = word;
+    if (lang === 'html') insertText = `<${word}></${word}>`;
+    if (lang === 'css') insertText = `${word}: ;`;
+
+    ta.value = ta.value.substring(0, startPos) + insertText + ta.value.substring(pos);
+    updateFileContent(taId.replace('ta-', ''), ta.value);
+    sBox.style.display = 'none';
+    ta.focus();
+}
+
+// --- 8. RUN & PREVIEW ---
+function runCode() {
+    let html = "", css = "", js = "";
+    files.forEach(f => {
+        if (f.lang === 'html') html += f.content;
+        if (f.lang === 'css') css += `<style>${f.content}</style>`;
+        if (f.lang === 'js') js += `<script>${f.content}<\/script>`;
+    });
+
+    const overlay = document.getElementById('preview-overlay');
+    const frame = document.getElementById('output-frame');
+    overlay.style.display = 'flex';
+    
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(html + css + js);
+    doc.close();
+}
+
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+}
+
+document.addEventListener('mousedown', (e) => {
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
+});
