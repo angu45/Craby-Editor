@@ -50,7 +50,7 @@ function addFileToUI(name, type, content = "") {
         <div class="window-body editor-container" style="display: flex; position: relative;">
             <div class="line-numbers" id="${safeId}-lines" 
                  style="${showLineNumbers ? 'display:block;' : 'display:none;'} 
-                        text-align: right; padding: 10px 8px; border-right: 2px solid var(--accent); 
+                        text-align: right; padding: 10px 8px; border-right: 2px solid #00aaff; 
                         color: gray; user-select: none; background: rgba(0,0,0,0.1); overflow: hidden;">
                 1
             </div>
@@ -72,11 +72,9 @@ function updateLineNumbers(safeId) {
     const lineBox = document.getElementById(`${safeId}-lines`);
     if(!tx || !lineBox) return;
 
-    // Get textarea computed styles to match font and size
     const computedStyle = window.getComputedStyle(tx);
     
-    // Sync line numbers style with textarea
-    lineBox.style.fontSize = computedStyle.fontSize;
+    // Line number settings initialization
     lineBox.style.fontFamily = computedStyle.fontFamily;
     lineBox.style.lineHeight = computedStyle.lineHeight;
     lineBox.style.paddingTop = computedStyle.paddingTop;
@@ -97,6 +95,20 @@ function syncScroll(safeId) {
     }
 }
 
+// --- NEW SETTING FUNCTIONS FOR LINE NUMBERS ---
+
+function changeLineNoSize(size) {
+    document.querySelectorAll('.line-numbers').forEach(el => {
+        el.style.fontSize = size + "px";
+    });
+}
+
+function changeLineThickness(width) {
+    document.querySelectorAll('.line-numbers').forEach(el => {
+        el.style.borderRightWidth = width + "px";
+    });
+}
+
 function toggleLineNumbers() {
     showLineNumbers = !showLineNumbers;
     document.querySelectorAll('.line-numbers').forEach(el => {
@@ -104,13 +116,13 @@ function toggleLineNumbers() {
     });
 }
 
+// --- UTILITY FUNCTIONS ---
+
 function updateFileContent(fileName, newContent) {
     if(files[fileName]) {
         files[fileName].content = newContent;
     }
 }
-
-// --- 3. AUTO-COMPLETE & SUGGESTION LOGIC ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
@@ -118,7 +130,6 @@ function attachInputListeners(txt) {
         const val = txt.value;
         const char = e.data;
         currentLang = txt.getAttribute('data-lang') || 'html';
-
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
@@ -134,18 +145,14 @@ function showSuggestions(txt) {
     const textBefore = txt.value.substring(0, pos);
     const words = textBefore.split(/[\s<>{}:;()]/);
     const lastWord = words[words.length - 1].toLowerCase();
-
     if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
-    
     const matches = (dictionary[currentLang] || []).filter(word => word.startsWith(lastWord));
-
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
         sBox.style.top = `${rect.top + 30}px`; 
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
-
         sBox.innerHTML = matches.map((m, i) => `
             <div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
                 <i class="fas fa-bolt" style="font-size:10px; color:var(--accent); margin-right:5px;"></i>${m}
@@ -159,9 +166,7 @@ function insertWord(word, id) {
     const textBefore = txt.value.substring(0, pos);
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
-    
     let wordToInsert = word;
-
     if (currentLang === 'html') {
         const selfClosing = ['img', 'br', 'hr', 'input', 'meta', 'link'];
         if (!selfClosing.includes(word.toLowerCase())) {
@@ -170,13 +175,10 @@ function insertWord(word, id) {
             wordToInsert = `<${word}>`;
         }
     }
-
     txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
-    
     if (currentLang === 'html' && wordToInsert.includes('></')) {
         txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     }
-
     sBox.style.display = 'none';
     txt.focus();
     updateLineNumbers(id.replace('-code', ''));
@@ -194,25 +196,16 @@ function handleNav(e, txt) {
 
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
-// --- 4. INTERACTIVE RUN & DOWNLOAD SYSTEM ---
-
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     if (!overlay || !frame) return;
-
     const fileToRun = prompt("Which HTML file do you want to run?", "index.html");
-    
-    if (!files[fileToRun] || files[fileToRun].type !== 'html') {
-        alert("HTML File not found!");
-        return;
-    }
-
+    if (!files[fileToRun] || files[fileToRun].type !== 'html') { alert("HTML File not found!"); return; }
     overlay.style.display = 'flex';
     const htmlContent = files[fileToRun].content || '';
     const cssContent = `<style>${files["style.css"] ? files["style.css"].content : ""}</style>`;
     const jsContent = `<script>${files["script.js"] ? files["script.js"].content : ""}<\/script>`;
-
     const doc = frame.contentWindow.document;
     doc.open();
     doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">${cssContent}</head><body>${htmlContent}${jsContent}</body></html>`);
@@ -220,34 +213,25 @@ function runCode() {
 }
 
 function exportCode() {
-    const fileName = prompt("Which file to download? (e.g. index.html) or type 'all' for ZIP:", "index.html");
+    const fileName = prompt("Which file to download? (e.g. index.html) or 'all' for ZIP:", "index.html");
     if (!fileName) return;
-
-    if (fileName.toLowerCase() === 'all') {
-        if (typeof JSZip !== "undefined") {
-            const zip = new JSZip();
-            Object.keys(files).forEach(name => {
-                zip.file(name, files[name].content);
-            });
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(content);
-                link.download = "Craby_Project.zip";
-                link.click();
-            });
-        }
-    } else {
-        if (files[fileName]) {
-            const blob = new Blob([files[fileName].content], { type: "text/plain" });
+    if (fileName.toLowerCase() === 'all' && typeof JSZip !== "undefined") {
+        const zip = new JSZip();
+        Object.keys(files).forEach(name => zip.file(name, files[name].content));
+        zip.generateAsync({ type: "blob" }).then(content => {
             const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
+            link.href = URL.createObjectURL(content);
+            link.download = "Craby_Project.zip";
             link.click();
-        }
+        });
+    } else if (files[fileName]) {
+        const blob = new Blob([files[fileName].content], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
     }
 }
-
-// --- 5. UTILITY FUNCTIONS ---
 
 function toggleShutter() {
     const shutter = document.getElementById('shutter');
@@ -281,10 +265,7 @@ function renderFileList() {
         const div = document.createElement('div');
         div.className = "file-item";
         div.innerHTML = `<i class="fas fa-file-code"></i> ${name}`;
-        div.onclick = () => {
-            addFileToUI(name, files[name].type, files[name].content);
-            toggleShutter();
-        };
+        div.onclick = () => { addFileToUI(name, files[name].type, files[name].content); toggleShutter(); };
         list.appendChild(div);
     });
 }
@@ -323,23 +304,32 @@ function formatCode(code) {
     return result.trim();
 }
 
+// --- 3. WINDOW ONLOAD (INITIALIZE SETTINGS) ---
+
 window.onload = () => { 
     renderFileList();
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
     
     const settingsPanel = document.getElementById('settingsPanel');
-    if(settingsPanel && !document.getElementById('line-toggle-item')) {
-        const div = document.createElement('div');
-        div.className = 'setting-item';
-        div.id = 'line-toggle-item';
-        div.innerHTML = `
-            <span>Line Numbers</span>
-            <label class="switch">
-                <input type="checkbox" checked onchange="toggleLineNumbers()">
-                <span class="slider"></span>
-            </label>`;
-        settingsPanel.appendChild(div);
+    if(settingsPanel) {
+        // Line Numbers Toggle
+        const toggleDiv = document.createElement('div');
+        toggleDiv.className = 'setting-item';
+        toggleDiv.innerHTML = `<span>Show Line Numbers</span><label class="switch"><input type="checkbox" checked onchange="toggleLineNumbers()"><span class="slider"></span></label>`;
+        settingsPanel.appendChild(toggleDiv);
+
+        // Setting 1: Line Number Font Size
+        const sizeDiv = document.createElement('div');
+        sizeDiv.className = 'setting-item';
+        sizeDiv.innerHTML = `<span>Line No. Size</span><input type="range" min="8" max="25" value="12" oninput="changeLineNoSize(this.value)">`;
+        settingsPanel.appendChild(sizeDiv);
+
+        // Setting 2: Line (Border) Thickness
+        const thickDiv = document.createElement('div');
+        thickDiv.className = 'setting-item';
+        thickDiv.innerHTML = `<span>Line Thickness</span><input type="range" min="1" max="10" value="2" oninput="changeLineThickness(this.value)">`;
+        settingsPanel.appendChild(thickDiv);
     }
 };
 
