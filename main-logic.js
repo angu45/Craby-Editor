@@ -5,7 +5,6 @@ const dictionary = {
     js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
 };
 
-// Global object with updated default index.html content
 let files = {
     "index.html": { 
         content: `<!DOCTYPE html>\n<html>\n<head>\n<title>Craby Html Editor</title>\n</head>\n<body>\n\n<h1>Welcome to Craby Html Editor</h1>\n\n</body>\n</html>`, 
@@ -21,20 +20,16 @@ document.body.appendChild(sBox);
 
 let selectedIdx = 0;
 let currentLang = '';
+let showLineNumbers = true; // Default setting
 
 // --- 2. EDITOR CREATION & UI LOGIC ---
 
-/**
- * Creates a new editor window in the grid
- */
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
 
-    // Create a safe ID from filename (e.g., "123.html" -> "file-123-html")
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
 
-    // If box already exists, just show it
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
@@ -52,19 +47,49 @@ function addFileToUI(name, type, content = "") {
                 <i class="fas fa-trash" onclick="deleteBox('${safeId}', '${name}')" title="Delete"></i>
             </div>
         </div>
-        <div class="window-body">
-            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" oninput="updateFileContent('${name}', this.value)">${content}</textarea>
+        <div class="window-body editor-container">
+            <div class="line-numbers" id="${safeId}-lines" ${showLineNumbers ? '' : 'style="display:none"'}>1</div>
+            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
+                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
+                onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
     `;
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
+    updateLineNumbers(safeId);
     
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
 
-/**
- * Updates the content in the global files object
- */
+// Function to update line numbers based on text lines
+function updateLineNumbers(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lineBox = document.getElementById(`${safeId}-lines`);
+    if(!tx || !lineBox) return;
+
+    const lines = tx.value.split('\n').length;
+    let lineHTML = '';
+    for(let i = 1; i <= lines; i++) {
+        lineHTML += i + '<br>';
+    }
+    lineBox.innerHTML = lineHTML;
+}
+
+// Keep line numbers and textarea in sync while scrolling
+function syncScroll(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lineBox = document.getElementById(`${safeId}-lines`);
+    lineBox.scrollTop = tx.scrollTop;
+}
+
+// Settings Toggle Function
+function toggleLineNumbers() {
+    showLineNumbers = !showLineNumbers;
+    document.querySelectorAll('.line-numbers').forEach(el => {
+        el.style.display = showLineNumbers ? 'block' : 'none';
+    });
+}
+
 function updateFileContent(fileName, newContent) {
     if(files[fileName]) {
         files[fileName].content = newContent;
@@ -103,7 +128,6 @@ function showSuggestions(txt) {
     if (matches.length > 0) {
         selectedIdx = 0;
         const rect = txt.getBoundingClientRect();
-        
         sBox.style.top = `${rect.top + 30}px`; 
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
@@ -141,6 +165,7 @@ function insertWord(word, id) {
 
     sBox.style.display = 'none';
     txt.focus();
+    updateLineNumbers(id.replace('-code', ''));
 }
 
 function handleNav(e, txt) {
@@ -165,12 +190,11 @@ function runCode() {
     const fileToRun = prompt("Which HTML file do you want to run?", "index.html");
     
     if (!files[fileToRun] || files[fileToRun].type !== 'html') {
-        alert("HTML File not found! Please check the name.");
+        alert("HTML File not found!");
         return;
     }
 
     overlay.style.display = 'flex';
-
     const htmlContent = files[fileToRun].content || '';
     const cssContent = `<style>${files["style.css"] ? files["style.css"].content : ""}</style>`;
     const jsContent = `<script>${files["script.js"] ? files["script.js"].content : ""}<\/script>`;
@@ -183,7 +207,6 @@ function runCode() {
 
 function exportCode() {
     const fileName = prompt("Which file to download? (e.g. index.html) or type 'all' for ZIP:", "index.html");
-
     if (!fileName) return;
 
     if (fileName.toLowerCase() === 'all') {
@@ -195,11 +218,9 @@ function exportCode() {
             zip.generateAsync({ type: "blob" }).then(function(content) {
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(content);
-                link.download = "Craby_Project_Complete.zip";
+                link.download = "Craby_Project.zip";
                 link.click();
             });
-        } else {
-            alert("JSZip library not found.");
         }
     } else {
         if (files[fileName]) {
@@ -208,8 +229,6 @@ function exportCode() {
             link.href = URL.createObjectURL(blob);
             link.download = fileName;
             link.click();
-        } else {
-            alert("File not found!");
         }
     }
 }
@@ -232,7 +251,7 @@ function minimizeBox(id) {
 }
 
 function deleteBox(id, fileName) { 
-    if(confirm(`Are you sure you want to delete ${fileName}?`)) {
+    if(confirm(`Delete ${fileName}?`)) {
         const box = document.getElementById(`box-${id}`);
         if(box) box.remove();
         delete files[fileName];
@@ -257,76 +276,36 @@ function renderFileList() {
 }
 
 function addNewFilePrompt() {
-    const name = prompt("Enter new file name (e.g. about.html):");
+    const name = prompt("New file name:");
     if(name && name.includes('.')) {
         const ext = name.split('.').pop().toLowerCase();
         files[name] = { content: "", type: ext };
         renderFileList();
         addFileToUI(name, ext, "");
-    } else if(name) {
-        alert("Please include file extension (e.g., .html, .css, .js)");
     }
 }
+
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
         let code = tx.value;
-
         tx.value = formatCode(code);
+        updateLineNumbers(tx.id.replace('-code', ''));
     });
 }
 
 function formatCode(code) {
-
-    let tab = "  "; // 2 spaces
+    let tab = "  ";
     let indent = "";
     let result = "";
-
-    // Add line breaks
-    code = code
-        .replace(/>\s*</g, ">\n<")   // HTML tags
-        .replace(/{/g, "{\n")       // open brace
-        .replace(/}/g, "\n}\n")     // close brace
-        .replace(/;/g, ";\n");      // css/js line
-
+    code = code.replace(/>\s*</g, ">\n<").replace(/{/g, "{\n").replace(/}/g, "\n}\n").replace(/;/g, ";\n");
     let lines = code.split("\n");
-
     lines.forEach(line => {
-
         line = line.trim();
         if(line === "") return;
-
-        // reduce indent when closing
-        if(line.startsWith("}") || line.startsWith("</")) {
-            indent = indent.substring(tab.length);
-        }
-
+        if(line.startsWith("}") || line.startsWith("</")) indent = indent.substring(tab.length);
         result += indent + line + "\n";
-
-        // increase indent
-        if(line.endsWith("{") || line.match(/^<[^\/!][^>]*>$/)) {
-            indent += tab;
-        }
-
+        if(line.endsWith("{") || (line.startsWith("<") && !line.includes("/") && !line.includes("!"))) indent += tab;
     });
-
-    return result.trim();
-}
-// Helper: Format CSS and JS (Basic Braces logic)
-function formatCSSJS(code) {
-    let tab = '  ';
-    let result = '';
-    let indent = '';
-    
-    // Clean existing mess
-    code = code.replace(/\s*\{\s*/g, " {\n").replace(/\s*\}\s*/g, "\n}\n").replace(/\s*;\s*/g, ";\n");
-
-    code.split('\n').forEach(line => {
-        line = line.trim();
-        if (line.match(/\}/)) indent = indent.substring(tab.length);
-        if (line !== "") result += indent + line + '\n';
-        if (line.match(/\{/)) indent += tab;
-    });
-
     return result.trim();
 }
 
@@ -335,6 +314,20 @@ window.onload = () => {
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
     addFileToUI("script.js", "js", files["script.js"].content);
+    
+    // Add Toggle to Settings Panel
+    const settingsPanel = document.getElementById('settingsPanel');
+    if(settingsPanel) {
+        const div = document.createElement('div');
+        div.className = 'setting-item';
+        div.innerHTML = `
+            <span>Line Numbers</span>
+            <label class="switch">
+                <input type="checkbox" checked onchange="toggleLineNumbers()">
+                <span class="slider"></span>
+            </label>`;
+        settingsPanel.appendChild(div);
+    }
 };
 
 document.addEventListener('mousedown', (e) => { 
