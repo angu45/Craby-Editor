@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Craby Editor - Smart Mobile-First Code Editor</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
-
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Craby Editor - Smart Layout</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-</head><body>
+</head>
+<body>
 
 <header>
     <div class="logo-container">
@@ -18,7 +15,7 @@
         <span class="logo-text">Craby Editor</span>
     </div>
     <div class="header-actions">
-        <button class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
+        <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
         <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
     </div>
 </header>
@@ -33,22 +30,24 @@
 </div>
 
 <div id="shutter" class="shutter">
-    <div style="display:flex; justify-content:space-between; color:var(--accent); margin-bottom:20px;">
-        <h3>FILES</h3>
-        <i class="fas fa-times" onclick="toggleShutter()" style="cursor:pointer"></i>
+    <div class="shutter-header">
+        <h3>TASKBAR</h3>
+        <i class="fas fa-times" onclick="toggleShutter()"></i>
     </div>
-    <div id="shutter-file-list"></div>
+    <button class="add-btn" onclick="addNewFilePrompt()"><i class="fas fa-plus"></i> NEW FILE</button>
+    <div id="shutter-file-list" class="shutter-list"></div>
 </div>
 
-<div id="settings-panel" class="settings-panel">
-    <div style="display:flex; justify-content:space-between; color:var(--accent); margin-bottom:20px;">
-        <h3>IDE SETTINGS</h3>
-        <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer"></i>
+<div id="preview-overlay" class="preview-overlay">
+    <div class="overlay-header">
+        <span class="logo-text">LIVE PREVIEW</span>
+        <button class="close-btn" onclick="closePreview()">CLOSE</button>
     </div>
+    <div class="overlay-body">
+        <iframe id="output-frame"></iframe>
     </div>
+</div>
 
-<script src="main-logic.js"></script>
-</body>
-
+<script src="script.js"></script>
 </body>
 </html>
