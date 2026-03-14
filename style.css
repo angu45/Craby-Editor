@@ -5,6 +5,36 @@
     --text: #c9d1d9;
     --border: rgba(255, 255, 255, 0.1);
 }
+/* Settings Panel Styling */
+.settings-panel {
+    position: fixed;
+    right: -320px; /* Suruvatila baher */
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--bg-panel);
+    border-left: 2px solid var(--accent);
+    z-index: 3000; /* Shutter chya hi var */
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    visibility: hidden;
+}
+
+.settings-panel.open {
+    right: 0;
+    visibility: visible;
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--accent);
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+}
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: var(--bg-main); color: var(--text); font-family: sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
