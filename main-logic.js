@@ -5,9 +5,12 @@ const dictionary = {
     js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
 };
 
-// Global object to store all files data
+// Global object with updated default index.html content
 let files = {
-    "index.html": { content: "<h1>Welcome to Craby Editor</h1>", type: "html" },
+    "index.html": { 
+        content: `<!DOCTYPE html>\n<html>\n<head>\n<title>Craby Html Editor</title>\n</head>\n<body>\n\n<h1>Welcome to Craby Html Editor</h1>\n\n</body>\n</html>`, 
+        type: "html" 
+    },
     "style.css": { content: "h1 { color: #ffb400; text-align: center; font-family: sans-serif; }", type: "css" },
     "script.js": { content: "console.log('Craby Editor is Ready!');", type: "js" }
 };
@@ -60,7 +63,7 @@ function addFileToUI(name, type, content = "") {
 }
 
 /**
- * Updates the content in the global files object whenever user types
+ * Updates the content in the global files object
  */
 function updateFileContent(fileName, newContent) {
     if(files[fileName]) {
@@ -154,9 +157,6 @@ function updateActive(items) { items.forEach((it, i) => it.classList.toggle('act
 
 // --- 4. INTERACTIVE RUN & DOWNLOAD SYSTEM ---
 
-/**
- * Runs the code by using the latest content from the 'files' object
- */
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
@@ -165,13 +165,12 @@ function runCode() {
     const fileToRun = prompt("Which HTML file do you want to run?", "index.html");
     
     if (!files[fileToRun] || files[fileToRun].type !== 'html') {
-        alert("HTML File not found! Please check the name (e.g., 123.html).");
+        alert("HTML File not found! Please check the name.");
         return;
     }
 
     overlay.style.display = 'flex';
 
-    // Inject CSS/JS into the chosen HTML
     const htmlContent = files[fileToRun].content || '';
     const cssContent = `<style>${files["style.css"] ? files["style.css"].content : ""}</style>`;
     const jsContent = `<script>${files["script.js"] ? files["script.js"].content : ""}<\/script>`;
@@ -182,9 +181,6 @@ function runCode() {
     doc.close();
 }
 
-/**
- * Downloads single file or entire project based on user input
- */
 function exportCode() {
     const fileName = prompt("Which file to download? (e.g. index.html) or type 'all' for ZIP:", "index.html");
 
@@ -275,7 +271,6 @@ function addNewFilePrompt() {
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
         tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<');
-        // Update the files object after beautify
         const fileName = Object.keys(files).find(key => {
             const safeId = "file-" + key.replace(/[^a-z0-9]/gi, '-');
             return tx.id === `${safeId}-code`;
