@@ -49,17 +49,33 @@ function updateFontSize(val) {
     updateThemeAndFont();
 }
 
-// --- 3. PREVIEW DEVICE LOGIC ---
-function setPreviewSize(width) {
+// --- PREVIEW DEVICE REALITY LOGIC ---
+function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
-    if (!frame) return;
-    frame.style.width = width;
-    if (width === '100%') {
-        frame.style.height = '100%';
-        frame.style.border = 'none';
-    } else {
-        frame.style.height = '600px'; 
-        frame.style.border = '10px solid #333';
-        frame.style.borderRadius = '15px';
+    const overlayBody = frame.parentElement; // Preview body container
+
+    if (!frame || !overlayBody) return;
+
+    // Reset styles aadhi
+    frame.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+    
+    if (device === '100%') {
+        // --- REAL DESKTOP VIEW ---
+        frame.style.width = "100%";
+        frame.style.height = "100%";
+        frame.style.border = "none";
+        frame.style.borderRadius = "0";
+        frame.style.boxShadow = "none";
+        overlayBody.style.padding = "0";
+    } 
+    else if (device === '375px') {
+        // --- REAL MOBILE VIEW (iPhone Size) ---
+        frame.style.width = "375px";
+        frame.style.height = "750px"; // Mobile height logic
+        frame.style.border = "12px solid #222"; // Mobile bezel
+        frame.style.borderRadius = "35px"; // Rounded corners like phone
+        frame.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.5)";
+        overlayBody.style.padding = "20px";
+        overlayBody.style.overflowY = "auto";
     }
 }
