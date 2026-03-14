@@ -55,25 +55,39 @@ function updateShutterFileList(name, id) {
 // --- 2. SETTINGS PANEL (RIGHT SIDEBAR) FIX ---
 function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
-    if (!panel) return;
-
-    // Direct inline display style remove karne jyamule CSS transition kaam karel
-    if (panel.style.display === 'none') {
-        panel.style.display = 'block';
+    if (!panel) {
+        console.error("Settings panel sapdla nahi!");
+        return;
     }
 
-    // Toggle open class
-    panel.classList.toggle('open');
+    // Jar panel 'none' asel tar tyala aadhi 'block' karne jyamule animation disel
+    if (window.getComputedStyle(panel).display === 'none') {
+        panel.style.setProperty('display', 'block', 'important');
+        // Thoda micro-delay jyamule browser toggle transition detect karel
+        setTimeout(() => {
+            panel.classList.add('open');
+        }, 10);
+    } else {
+        // Jar open asel tar aadhi class kadhane
+        panel.classList.remove('open');
+        // Transition purn jhalya var (0.3s) display none karne
+        setTimeout(() => {
+            if (!panel.classList.contains('open')) {
+                panel.style.display = 'none';
+            }
+        }, 300);
+    }
     
-    // Jar shutter open asel tar band karne
+    // Jar Shutter open asel tar tyala band karne (Clean layout sathi)
     const shutter = document.getElementById('shutter');
-    if (shutter && shutter.classList.contains('open') && panel.classList.contains('open')) {
+    if (shutter && shutter.classList.contains('open')) {
         toggleShutter();
     }
 }
 
-// Settings: Editors Show/Hide
+// Settings: Editors Show/Hide (Corrected IDs)
 function updateVisibility() {
+    // Tumchya main-logic.js madhye IDs 'box-html' ki 'box-css' asaveet
     const htmlBox = document.getElementById('box-html');
     const cssBox = document.getElementById('box-css');
     const jsBox = document.getElementById('box-js');
@@ -87,19 +101,42 @@ function updateVisibility() {
     if(jsBox && chkJs) jsBox.style.display = chkJs.checked ? 'flex' : 'none';
 }
 
-// Settings: Theme aani Font Change
-function updateThemeAndFont() {
+// Settings: Theme aani Font Change (Conflict Avoided)
+function changeAppearance() {
     const fontFamily = document.getElementById('font-family-sel').value;
     const themeKey = document.getElementById('theme-sel').value;
     
-    // Main logic madhle theme update call karne
-    if (typeof updateThemeAndFont === "function") {
-        // Jar main-logic.js madhe same naavache function asel tar te call hoil
-        // Pan jar narsel tar khali logic apply hoil:
-        const textareas = document.querySelectorAll('textarea');
-        textareas.forEach(ta => {
-            ta.style.fontFamily = fontFamily;
-        });
+    // Sagle textareas shodhun tyancha font badalne
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(ta => {
+        ta.style.fontFamily = fontFamily;
+    });
+
+    // Theme logic: Jar main-logic madhe function asel tar call karne
+    if (typeof applyTheme === "function") {
+        applyTheme(themeKey);
+    } else {
+        console.log("Theme applied: " + themeKey);
+        // Basic theme change logic (example)
+        document.documentElement.style.setProperty('--accent', themeKey === 'matrix' ? '#0f0' : '#ffb400');
+    }
+}
+
+// --- 1. SHUTTER LOGIC (RE-ADDED FOR SAFETY) ---
+function toggleShutter() {
+    const shutter = document.getElementById('shutter');
+    const trigger = document.getElementById('shutter-trigger');
+    if (!shutter) return;
+
+    shutter.classList.toggle('open');
+    const icon = trigger.querySelector('i');
+    
+    if (shutter.classList.contains('open')) {
+        icon.className = 'fas fa-chevron-left';
+        trigger.style.left = '300px';
+    } else {
+        icon.className = 'fas fa-chevron-right';
+        trigger.style.left = '0';
     }
 }
 
