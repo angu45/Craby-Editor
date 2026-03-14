@@ -20,7 +20,8 @@ document.body.appendChild(sBox);
 
 let selectedIdx = 0;
 let currentLang = '';
-let showLineNumbers = true;
+let showLineNumbers = false; // Default Off ठेवले आहे
+let lineNumberFontSize = 14; // Default line number font size
 
 // --- 2. EDITOR CREATION & UI LOGIC ---
 
@@ -52,7 +53,7 @@ function addFileToUI(name, type, content = "") {
                  style="${showLineNumbers ? 'display:block;' : 'display:none;'} 
                         text-align: right; padding: 10px 5px; border-right: 1.5px solid rgba(255,255,255,0.1); 
                         color: rgba(255,255,255,0.3); user-select: none; background: transparent; 
-                        overflow: hidden; white-space: nowrap; min-width: 25px;">
+                        overflow: hidden; white-space: nowrap; font-size: ${lineNumberFontSize}px;">
                 1.
             </div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
@@ -75,8 +76,8 @@ function updateLineNumbers(safeId) {
 
     const computedStyle = window.getComputedStyle(tx);
     
-    // Font size आणि Line Height मॅच करणे
-    lineBox.style.fontSize = computedStyle.fontSize;
+    // Line Number ची साईज युजरने सेट केलेल्या 'lineNumberFontSize' नुसार असेल
+    lineBox.style.fontSize = lineNumberFontSize + "px";
     lineBox.style.fontFamily = computedStyle.fontFamily;
     lineBox.style.lineHeight = computedStyle.lineHeight;
     lineBox.style.paddingTop = computedStyle.paddingTop;
@@ -88,9 +89,9 @@ function updateLineNumbers(safeId) {
     }
     lineBox.innerHTML = lineHTML;
 
-    // नंबर्सच्या आकड्यानुसार पॅनची रुंदी आपोआप कमी-जास्त करणे
+    // Numbers च्या रुंदीनुसार पॅन ॲडजस्ट करणे
     const charCount = lines.toString().length;
-    lineBox.style.width = (charCount * (parseFloat(computedStyle.fontSize) * 0.8)) + "px";
+    lineBox.style.width = (charCount * (lineNumberFontSize * 0.8)) + "px";
 }
 
 function syncScroll(safeId) {
@@ -101,10 +102,18 @@ function syncScroll(safeId) {
     }
 }
 
-function toggleLineNumbers() {
-    showLineNumbers = !showLineNumbers;
+function toggleLineNumbers(status) {
+    showLineNumbers = status;
     document.querySelectorAll('.line-numbers').forEach(el => {
         el.style.display = showLineNumbers ? 'block' : 'none';
+    });
+}
+
+function changeLineNumberSize(size) {
+    lineNumberFontSize = size;
+    document.querySelectorAll('.line-numbers').forEach(el => {
+        const safeId = el.id.replace('-lines', '');
+        updateLineNumbers(safeId);
     });
 }
 
@@ -229,7 +238,7 @@ function exportCode() {
 
     if (fileName.toLowerCase() === 'all') {
         if (typeof JSZip !== "undefined") {
-            const zip = new JSZip();
+            const zip = new ZIP();
             Object.keys(files).forEach(name => {
                 zip.file(name, files[name].content);
             });
@@ -333,17 +342,29 @@ window.onload = () => {
     addFileToUI("style.css", "css", files["style.css"].content);
     
     const settingsPanel = document.getElementById('settingsPanel');
-    if(settingsPanel && !document.getElementById('line-toggle-item')) {
-        const div = document.createElement('div');
-        div.className = 'setting-item';
-        div.id = 'line-toggle-item';
-        div.innerHTML = `
-            <span>Line Numbers</span>
+    if(settingsPanel) {
+        // 1. Toggle Switch for Line Numbers (Default Off)
+        const toggleDiv = document.createElement('div');
+        toggleDiv.className = 'setting-item';
+        toggleDiv.innerHTML = `
+            <span>Show Line Numbers</span>
             <label class="switch">
-                <input type="checkbox" checked onchange="toggleLineNumbers()">
+                <input type="checkbox" onchange="toggleLineNumbers(this.checked)">
                 <span class="slider"></span>
             </label>`;
-        settingsPanel.appendChild(div);
+        settingsPanel.appendChild(toggleDiv);
+
+        // 2. Range Slider for Line Number Font Size
+        const rangeDiv = document.createElement('div');
+        rangeDiv.className = 'setting-item';
+        rangeDiv.style.flexDirection = 'column';
+        rangeDiv.style.alignItems = 'flex-start';
+        rangeDiv.innerHTML = `
+            <span>Line Number Size</span>
+            <input type="range" min="8" max="30" value="14" style="width: 100%; margin-top:10px;" 
+                oninput="changeLineNumberSize(this.value)">
+        `;
+        settingsPanel.appendChild(rangeDiv);
     }
 };
 
