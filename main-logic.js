@@ -36,7 +36,6 @@ function addFileToUI(name, id, content = "") {
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${id}-code`));
     
-    // N नवीन फाईल ऍड झाल्यावर थीम अप्लाय करणे
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
 
@@ -48,7 +47,6 @@ function attachInputListeners(txt) {
         const char = e.data;
         currentLang = txt.id.split('-')[0];
 
-        // Auto-Bracket/Pairing
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
@@ -99,6 +97,7 @@ function handleNav(e, txt) {
 }
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
+// --- 4. UPDATED REALITY-BASED RUN CODE ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
@@ -110,21 +109,38 @@ function runCode() {
 
     // Overlay dakhva
     overlay.style.display = 'flex';
+    
+    // By default Desktop view set kara (Reality based logic)
+    if(typeof setPreviewSize === "function") {
+        setPreviewSize('100%');
+    }
 
-    // Sagle code collect kara
-    // Laksha dya: IDs 'html-code', 'css-code', 'js-code' asaveet
+    // Sagle codes ekatra kara
     const htmlCode = document.getElementById('html-code')?.value || '';
     const cssCode = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
     const jsCode = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
 
-    // Iframe content write kara
+    // Iframe content write kara (Real Document structure sobat)
     const doc = frame.contentWindow.document;
     doc.open();
-    doc.write(htmlCode + cssCode + jsCode);
+    doc.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            ${cssCode}
+        </head>
+        <body style="margin:0; padding:0;">
+            ${htmlCode}
+            ${jsCode}
+        </body>
+        </html>
+    `);
     doc.close();
 }
 
-
+// --- 5. OTHER ACTIONS ---
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
         tx.value = tx.value.replace(/>\s+</g, '><').replace(/</g, '>\n<').replace(/;/g, ';\n  ');
@@ -137,7 +153,7 @@ function exportCode() {
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-// --- 5. WINDOW CONTROLS ---
+// --- 6. WINDOW CONTROLS ---
 function expandBox(id) {
     const targetBox = document.getElementById(`box-${id}`);
     targetBox.classList.toggle('fullscreen');
@@ -158,5 +174,5 @@ function deleteBox(id) {
 
 window.onload = () => { 
     addFileToUI("index.html", "html", "<h1>Craby Editor</h1>");
-    addFileToUI("style.css", "css", "h1 { color: orange; }");
+    addFileToUI("style.css", "css", "h1 { color: orange; text-align: center; }");
 };
