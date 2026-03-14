@@ -20,7 +20,7 @@ document.body.appendChild(sBox);
 
 let selectedIdx = 0;
 let currentLang = '';
-let showLineNumbers = true; // Default setting
+let showLineNumbers = true;
 
 // --- 2. EDITOR CREATION & UI LOGIC ---
 
@@ -48,7 +48,7 @@ function addFileToUI(name, type, content = "") {
             </div>
         </div>
         <div class="window-body editor-container">
-            <div class="line-numbers" id="${safeId}-lines" ${showLineNumbers ? '' : 'style="display:none"'}>1</div>
+            <div class="line-numbers" id="${safeId}-lines" style="${showLineNumbers ? '' : 'display:none;'} font-size: 0.8em; opacity: 0.6;">1</div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
                 oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
                 onscroll="syncScroll('${safeId}')">${content}</textarea>
@@ -61,28 +61,31 @@ function addFileToUI(name, type, content = "") {
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
 
-// Function to update line numbers based on text lines
 function updateLineNumbers(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
     const lineBox = document.getElementById(`${safeId}-lines`);
     if(!tx || !lineBox) return;
 
+    // Line numbers font size will automatically follow textarea's font size but slightly smaller (0.8em)
     const lines = tx.value.split('\n').length;
     let lineHTML = '';
     for(let i = 1; i <= lines; i++) {
         lineHTML += i + '<br>';
     }
     lineBox.innerHTML = lineHTML;
+    
+    // Adjust line-height to match textarea
+    const computedStyle = window.getComputedStyle(tx);
+    lineBox.style.lineHeight = computedStyle.lineHeight;
+    lineBox.style.paddingTop = computedStyle.paddingTop;
 }
 
-// Keep line numbers and textarea in sync while scrolling
 function syncScroll(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
     const lineBox = document.getElementById(`${safeId}-lines`);
-    lineBox.scrollTop = tx.scrollTop;
+    if(tx && lineBox) lineBox.scrollTop = tx.scrollTop;
 }
 
-// Settings Toggle Function
 function toggleLineNumbers() {
     showLineNumbers = !showLineNumbers;
     document.querySelectorAll('.line-numbers').forEach(el => {
@@ -311,15 +314,15 @@ function formatCode(code) {
 
 window.onload = () => { 
     renderFileList();
+    // Default: Show only index.html and style.css
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
-    addFileToUI("script.js", "js", files["script.js"].content);
     
-    // Add Toggle to Settings Panel
     const settingsPanel = document.getElementById('settingsPanel');
-    if(settingsPanel) {
+    if(settingsPanel && !document.getElementById('line-toggle-item')) {
         const div = document.createElement('div');
         div.className = 'setting-item';
+        div.id = 'line-toggle-item';
         div.innerHTML = `
             <span>Line Numbers</span>
             <label class="switch">
