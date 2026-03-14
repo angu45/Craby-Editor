@@ -270,43 +270,47 @@ function addNewFilePrompt() {
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
         let code = tx.value;
-        const lang = tx.getAttribute('data-lang'); // html, css, or js
 
-        if (lang === 'html') {
-            code = formatHTML(code);
-        } else if (lang === 'css' || lang === 'js') {
-            code = formatCSSJS(code);
-        }
-
-        tx.value = code;
-
-        // Update the global files object with beautified code
-        const fileName = Object.keys(files).find(key => {
-            const safeId = "file-" + key.replace(/[^a-z0-9]/gi, '-');
-            return tx.id === `${safeId}-code`;
-        });
-        if (fileName) updateFileContent(fileName, tx.value);
+        tx.value = formatCode(code);
     });
 }
 
-// Helper: Format HTML with Indentation
-function formatHTML(html) {
-    let tab = '  '; // 2 spaces for indentation
-    let result = '';
-    let indent = '';
+function formatCode(code) {
 
-    html.split(/>\s*</).forEach(element => {
-        if (element.match(/^\/\w/)) {
+    let tab = "  "; // 2 spaces
+    let indent = "";
+    let result = "";
+
+    // Add line breaks
+    code = code
+        .replace(/>\s*</g, ">\n<")   // HTML tags
+        .replace(/{/g, "{\n")       // open brace
+        .replace(/}/g, "\n}\n")     // close brace
+        .replace(/;/g, ";\n");      // css/js line
+
+    let lines = code.split("\n");
+
+    lines.forEach(line => {
+
+        line = line.trim();
+        if(line === "") return;
+
+        // reduce indent when closing
+        if(line.startsWith("}") || line.startsWith("</")) {
             indent = indent.substring(tab.length);
         }
-        result += indent + '<' + element + '>\n';
-        if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input") && !element.startsWith("img") && !element.startsWith("br")) {
+
+        result += indent + line + "\n";
+
+        // increase indent
+        if(line.endsWith("{") || line.match(/^<[^\/!][^>]*>$/)) {
             indent += tab;
         }
-    });
-    return result.substring(1, result.length - 1).trim();
-}
 
+    });
+
+    return result.trim();
+}
 // Helper: Format CSS and JS (Basic Braces logic)
 function formatCSSJS(code) {
     let tab = '  ';
