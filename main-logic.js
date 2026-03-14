@@ -241,6 +241,46 @@ function exportCode() {
     const blob = new Blob([html], {type: "text/html"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
+// --- SMART FULLSCREEN LOGIC ---
+function expandBox(id) {
+    const targetBox = document.getElementById(`box-${id}`);
+    const allBoxes = document.querySelectorAll('.window-frame');
+
+    // Jar to aadhich fullscreen asel tar normal kara
+    if (targetBox.classList.contains('fullscreen')) {
+        targetBox.classList.remove('fullscreen');
+        allBoxes.forEach(b => b.style.display = 'flex'); // Baki boxes parat dakhva
+    } else {
+        // Sarv boxes madhun fullscreen kadha aani tyana lapa (hide)
+        allBoxes.forEach(b => {
+            b.classList.remove('fullscreen');
+            b.style.display = 'none';
+        });
+        
+        // Fakt target box dakhva aani fullscreen kara
+        targetBox.classList.add('fullscreen');
+        targetBox.style.display = 'flex';
+    }
+}
+
+// Minimize kelya-var urlele boxes automatic jaga ghetil
+function minimizeBox(id) {
+    const box = document.getElementById(`box-${id}`);
+    if (box) {
+        box.style.display = 'none';
+        document.getElementById(`status-${id}`).style.display = 'inline';
+    }
+}
+
+// Restore kelya-var parat flex mule jaga vatli jail
+function restoreBox(id) {
+    const box = document.getElementById(`box-${id}`);
+    if (box) {
+        box.style.display = 'flex';
+        document.getElementById(`status-${id}`).style.display = 'none';
+        box.classList.remove('fullscreen'); // Safe side
+    }
+}
 
 // --- 6. INITIAL LOAD ---
 window.onload = () => { 
