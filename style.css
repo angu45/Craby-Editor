@@ -185,14 +185,52 @@ header {
     overflow: hidden; 
     height: calc(100vh - 60px); /* Occupies remaining screen height */
 }
-
+/* Editor Section Vertical karanyasathi */
 .editor-section {
     display: flex;
-    flex-direction: column; /* Hya mule windows ekmekanchya khali yetil */
-    gap: 15px;             /* Windows madhe thodi jaga rahel */
+    flex-direction: column;
+    gap: 20px;
     padding: 15px;
-    height: 100%;
-    overflow-y: auto;      /* Jar files jast zalya tar scroll karta yeil */
+}
+
+/* Label Style - Buttons Right corner la aananyasathi */
+.label {
+    display: flex;
+    justify-content: space-between; /* Naav left la, buttons right la */
+    align-items: center;
+    padding: 8px 15px !important;
+    background: var(--panel);
+    color: var(--accent);
+    font-weight: bold;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Window Controls Group */
+.window-controls {
+    display: flex;
+    gap: 15px; /* Buttons madhli jaga */
+}
+
+.window-controls i {
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.window-controls i:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Fullscreen Helper */
+.fullscreen-editor {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100% !important;
+    height: 100vh !important;
+    z-index: 10002;
+    background: var(--bg);
 }
 
 .editor-box {
