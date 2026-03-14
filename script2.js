@@ -1,144 +1,153 @@
-// --- 1. CONFIGURATION & THEMES ---
-const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
-    light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' }
-};
+// --- 1. GLOBAL VARIABLES ---
+let currentLang = 'html';
 
-const dictionary = {
-    html: ['div', 'span', 'h1', 'p', 'a', 'img', 'body', 'html', 'script', 'style', 'button', 'input'],
-    css: ['color', 'background', 'margin', 'padding', 'display', 'flex', 'position', 'width', 'height'],
-    js: ['console.log', 'document', 'window', 'function', 'let', 'const', 'if', 'else']
-};
+// --- 2. SLIDER & PANEL TOGGLE LOGIC ---
 
-let currentLang = '';
-
-// --- 2. SLIDER & PANEL LOGIC (Functional) ---
-function toggleLeftSidebar() {
+// Shutter (Left Sidebar) Toggle
+function toggleShutter() {
     const shutter = document.getElementById('shutter');
-    if (shutter) shutter.classList.toggle('open');
+    const trigger = document.getElementById('shutter-trigger');
+    
+    shutter.classList.toggle('open');
+    
+    // Icon badalnyasaathi logic
+    const icon = trigger.querySelector('i');
+    if (shutter.classList.contains('open')) {
+        icon.className = 'fas fa-chevron-left';
+    } else {
+        icon.className = 'fas fa-chevron-right';
+    }
 }
 
+// Settings Panel (Right Sidebar) Toggle
 function toggleSettings() {
-    const panel = document.getElementById('settings-panel');
-    if (panel) panel.classList.toggle('open');
+    const panel = document.getElementById('settings-panel'); 
+    // Jar tumchya HTML madhe ID 'settings-panel' nasel tar to add kara
+    if (panel) {
+        panel.classList.toggle('open');
+    } else {
+        // Temporary alert jar panel HTML madhe naseel tar
+        alert("Settings Panel ID 'settings-panel' not found in HTML!");
+    }
 }
 
-// --- 3. SMART LAYOUT & FILE SYSTEM ---
-function addFileToUI(name, id, content = "") {
-    // Explorer (Shutter) madhe add kara
-    const fileList = document.getElementById('shutter-file-list');
-    if (fileList) {
-        const item = document.createElement('div');
-        item.className = 'shutter-item';
-        item.id = `tab-${id}`;
-        item.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent)">(min)</small>`;
-        item.onclick = () => { restoreBox(id); toggleLeftSidebar(); };
-        fileList.appendChild(item);
-    }
+// --- 3. SMART FILE & GRID SYSTEM ---
 
-    // Editor Area madhe box add kara
+// Navin file banavnyasathi function
+function addNewFilePrompt() {
+    const fileName = prompt("Enter file name (e.g. script.js or style.css):");
+    if (fileName) {
+        const id = fileName.split('.')[0] + Math.floor(Math.random() * 1000);
+        const ext = fileName.split('.').pop();
+        addFileToUI(fileName, id, "", ext);
+    }
+}
+
+// File UI madhe add karne (Grid + Shutter List)
+function addFileToUI(name, id, content = "", type = "html") {
+    // A. Shutter (Taskbar) List madhe item add karne
+    const shutterList = document.getElementById('shutter-file-list');
+    const listItem = document.createElement('div');
+    listItem.className = 'shutter-item';
+    listItem.id = `tab-${id}`;
+    listItem.innerHTML = `
+        <span><i class="fas fa-file-code"></i> ${name}</span>
+        <small id="status-${id}" style="display:none; color:var(--accent)">(minimized)</small>
+    `;
+    listItem.onclick = () => { restoreBox(id); toggleShutter(); };
+    shutterList.appendChild(listItem);
+
+    // B. Main Editor Grid madhe Box add karne
     const grid = document.getElementById('editor-grid');
-    if (grid) {
-        const frame = document.createElement('div');
-        frame.className = 'window-frame';
-        frame.id = `box-${id}`;
-        frame.innerHTML = `
-            <div class="window-header">
-                <span class="window-title">${name.toUpperCase()}</span>
-                <div class="window-controls">
-                    <i class="fas fa-minus" title="Minimize" onclick="minimizeBox('${id}')"></i>
-                    <i class="fas fa-expand" title="Fullscreen" onclick="expandBox('${id}')"></i>
-                    <i class="fas fa-trash" title="Delete" onclick="deleteBox('${id}')"></i>
-                </div>
+    const frame = document.createElement('div');
+    frame.className = 'window-frame';
+    frame.id = `box-${id}`;
+    frame.innerHTML = `
+        <div class="window-header">
+            <span class="window-title">${name.toUpperCase()} <i class="fas fa-code"></i></span>
+            <div class="window-controls">
+                <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
+                <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
+                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
             </div>
-            <div class="window-body">
-                <textarea id="${id}-code" spellcheck="false" oninput="currentLang='${id}'">${content}</textarea>
-            </div>`;
-        grid.appendChild(frame);
-    }
+        </div>
+        <div class="window-body">
+            <textarea id="${id}-code" spellcheck="false" placeholder="Type your ${type} code here...">${content}</textarea>
+        </div>
+    `;
+    grid.appendChild(frame);
 }
 
-// --- 4. WINDOW CONTROLS (Smart Height Applied) ---
+// --- 4. WINDOW CONTROLS ---
+
 function minimizeBox(id) {
-    const box = document.getElementById(`box-${id}`);
-    if (box) {
-        box.style.display = 'none';
-        document.getElementById(`status-${id}`).style.display = 'inline';
-    }
+    document.getElementById(`box-${id}`).style.display = 'none';
+    document.getElementById(`status-${id}`).style.display = 'inline';
 }
 
 function restoreBox(id) {
-    const box = document.getElementById(`box-${id}`);
-    if (box) {
-        box.style.display = 'flex';
-        box.classList.remove('fullscreen');
-        document.getElementById(`status-${id}`).style.display = 'none';
-    }
+    document.getElementById(`box-${id}`).style.display = 'flex';
+    document.getElementById(`status-${id}`).style.display = 'none';
 }
 
 function expandBox(id) {
-    const target = document.getElementById(`box-${id}`);
-    const all = document.querySelectorAll('.window-frame');
-    if (target.classList.contains('fullscreen')) {
-        target.classList.remove('fullscreen');
-        all.forEach(b => b.style.display = 'flex');
+    const box = document.getElementById(`box-${id}`);
+    const allBoxes = document.querySelectorAll('.window-frame');
+    
+    if (box.classList.contains('fullscreen')) {
+        box.classList.remove('fullscreen');
+        allBoxes.forEach(b => b.style.display = 'flex');
     } else {
-        all.forEach(b => { b.classList.remove('fullscreen'); b.style.display = 'none'; });
-        target.classList.add('fullscreen');
-        target.style.display = 'flex';
+        allBoxes.forEach(b => {
+            b.classList.remove('fullscreen');
+            b.style.display = 'none';
+        });
+        box.classList.add('fullscreen');
+        box.style.display = 'flex';
     }
 }
 
 function deleteBox(id) {
-    if (confirm("He file delete karaychi ka?")) {
-        document.getElementById(`box-${id}`)?.remove();
-        document.getElementById(`tab-${id}`)?.remove();
+    if (confirm("Kharach file delete karaychi?")) {
+        document.getElementById(`box-${id}`).remove();
+        document.getElementById(`tab-${id}`).remove();
     }
 }
 
-// --- 5. THEME & FONT UPDATER ---
-function updateThemeAndFont() {
-    const themeKey = document.getElementById('theme-sel')?.value || 'dark';
-    const fontSize = document.getElementById('font-size-bar')?.value || '14';
-    const theme = themes[themeKey];
+// --- 5. PREVIEW & RUN ---
 
-    document.documentElement.style.setProperty('--accent', theme.accent);
-    document.documentElement.style.setProperty('--bg-panel', theme.panel);
-    
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontSize = fontSize + "px";
-        tx.style.color = theme.text;
-        tx.style.background = theme.bg;
-    });
-}
-
-// --- 6. CORE ACTIONS ---
 function runCode() {
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
-    
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
     
-    const doc = document.getElementById('output-frame').contentWindow.document;
-    doc.open(); doc.write(h + c + j); doc.close();
+    // Sagle code ekatra karne (Smart Logic)
+    let html = "";
+    let css = "<style>";
+    let js = "<script>";
+    
+    document.querySelectorAll('textarea').forEach(tx => {
+        if (tx.id.includes('html')) html += tx.value;
+        if (tx.id.includes('css')) css += tx.value;
+        if (tx.id.includes('js')) js += tx.value;
+    });
+    
+    css += "</style>";
+    js += "<\/script>";
+    
+    const frame = document.getElementById('output-frame');
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(html + css + js);
+    doc.close();
 }
 
-function exportCode() {
-    const code = document.getElementById('html-code')?.value || 'No Content';
-    const blob = new Blob([code], { type: 'text/html' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'craby_project.html';
-    a.click();
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
 }
 
-// --- INITIAL LOAD ---
+// --- 6. INITIAL LOAD ---
 window.onload = () => {
-    addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
-    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
-    updateThemeAndFont();
+    // Default don files
+    addFileToUI("index.html", "html-main", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>", "html");
+    addFileToUI("style.css", "css-main", "h1 { color: #ffb400; text-align: center; }", "css");
 };
