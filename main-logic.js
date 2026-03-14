@@ -126,4 +126,10 @@ function handleKeyActions(e, id) {
         ta.value = ta.value.substring(0, start) + "  " + ta.value.substring(ta.selectionEnd);
         ta.selectionStart = ta.selectionEnd = start + 2;
     }
+}function toggleSettings() {
+    const panel = document.getElementById('settings-panel');
+    if (panel) {
+        panel.classList.toggle('open');
+    }
 }
+
