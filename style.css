@@ -1,134 +1,296 @@
-/* --- Original Look Variables --- */
+/* --- 1. VARIABLES & RESET --- */
 :root {
-    --bg: #0d1117;
-    --panel: #161b22;
-    --accent: #ffb400;
-    --text: #d1d5db;
-    --border: #30363d;
+    --bg: #0d1117; 
+    --panel: #161b22; 
+    --accent: #ffb400; 
+    --text: #c9d1d9; 
+    --border: rgba(255, 255, 255, 0.1); 
+    --header: #010409;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    overflow: hidden; /* Screen baher scroll hou naye mhanun */
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
 }
 
-/* Header & Original Buttons */
-header {
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
+body { 
+    background: var(--bg); 
+    color: var(--text); 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden; /* Prevents the entire page from scrolling */
 }
 
-.logo-container img { height: 30px; }
-
-.icon-btn {
-    background: #21262d;
-    border: 1px solid var(--border);
-    color: white;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-left: 5px;
+/* --- 2. HEADER & NAVIGATION --- */
+header { 
+    background: var(--header); 
+    padding: 10px 20px; 
+    height: 60px; /* Fixed height for a solid header */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid var(--accent); 
+    z-index: 1000; 
+    position: relative; 
 }
 
-.run-btn { background: var(--accent) !important; color: black !important; font-weight: bold; }
-
-/* Main Section Layout */
-.main-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 5px;
+.logo-container { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    cursor: default;
 }
 
-.editor-section {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 8px;
+.logo-container img { 
+    height: 35px; 
+    pointer-events: none; 
 }
 
-.editor-box {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--bg);
-    overflow: hidden;
+.logo-text { 
+    font-weight: 800; 
+    font-size: 1.3rem; 
+    color: var(--accent); 
+    letter-spacing: 0.5px; 
 }
 
-/* --- Window Controls (Top-Right Fix) --- */
-.label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 12px;
-    background: var(--panel);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
+.nav-actions { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
 }
 
-.window-controls {
-    display: flex;
-    gap: 12px;
-}
-
-.window-controls i {
-    cursor: pointer;
-    font-size: 13px;
-    color: #8b949e;
+.icon-btn { 
+    background: var(--panel); 
+    border: 1px solid var(--border); 
+    color: var(--text); 
+    padding: 8px 14px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-size: 0.8rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
     transition: 0.2s;
 }
 
-.window-controls i:hover { color: white; }
+.icon-btn:hover { 
+    border-color: var(--accent); 
+    background: rgba(255,180,0,0.1); 
+}
 
-textarea {
-    flex: 1;
-    width: 100%;
-    background: transparent;
-    color: var(--text);
-    border: none;
-    outline: none;
-    padding: 10px;
-    font-family: 'Fira Code', monospace;
+.run-btn { 
+    background: var(--accent) !important; 
+    color: #000 !important; 
+    font-weight: 800; 
+    border: none; 
+}
+
+/* --- 3. EDITOR SECTION --- */
+.main-container { 
+    display: flex; 
+    flex: 1; 
+    position: relative; 
+    overflow: hidden; 
+    height: calc(100vh - 60px); /* Occupies remaining screen height */
+}
+
+.editor-section { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%;
+}
+
+.editor-box { 
+    display: flex; 
+    flex-direction: column; 
+    border-bottom: 1px solid var(--border); 
+    flex: 1; 
+    position: relative; 
+    min-height: 0; /* Prevents flex items from breaking layout */
+}
+
+.label { 
+    background: rgba(0,0,0,0.4); 
+    padding: 6px 15px; 
+    font-size: 10px; 
+    font-weight: 800; 
+    color: var(--accent); 
+    letter-spacing: 1px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    flex-shrink: 0; /* Keeps label at the top */
+}
+
+textarea { 
+    flex: 1; 
+    background: transparent; 
+    border: none; 
+    color: #9cdcfe; 
+    font-family: 'Fira Code', monospace; 
+    padding: 15px; 
+    resize: none; 
+    outline: none; 
+    font-size: 14px; 
+    line-height: 1.6; 
+    overflow-y: auto; /* Only the code area will scroll */
+}
+
+/* --- 4. PREVIEW OVERLAY (FLOW SCREEN) --- */
+.preview-overlay {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: #f1f5f9; 
+    z-index: 99999; 
+    display: none; 
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp { 
+    from { transform: translateY(100%); } 
+    to { transform: translateY(0); } 
+}
+
+.overlay-header {
+    background: var(--header); 
+    padding: 12px 25px; 
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid var(--accent);
+}
+
+.overlay-body { 
+    flex: 1; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 20px; 
+    overflow: auto; 
+}
+
+.iframe-wrapper { 
+    width: 100%; 
+    height: 100%; 
+    background: white; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1); 
+    border-radius: 4px; 
+    overflow: hidden; 
+    transition: 0.3s; 
+}
+
+/* Mobile Preview Mode */
+.iframe-wrapper.mobile { 
+    width: 375px; 
+    height: 667px; 
+    border: 12px solid #1a1a1a; 
+    border-radius: 35px; 
+}
+
+iframe { 
+    width: 100%; 
+    height: 100%; 
+    border: none; 
+}
+
+/* --- 5. SETTINGS PANEL --- */
+.settings-panel { 
+    position: fixed; 
+    right: -350px; 
+    top: 0; 
+    width: 320px; 
+    height: 100%; 
+    background: var(--panel); 
+    border-left: 2px solid var(--accent); 
+    z-index: 1000000; 
+    padding: 25px; 
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    color: white; 
+    visibility: hidden;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+}
+
+.settings-panel.open { 
+    right: 0; 
+    visibility: visible; 
+}
+
+.s-group { 
+    margin-bottom: 20px; 
+}
+
+.s-group label { 
+    display: block; 
+    font-size: 12px; 
+    margin-bottom: 8px; 
+    opacity: 0.8; 
+}
+
+.s-group select { 
+    width: 100%; 
+    padding: 10px; 
+    background: #0d1117; 
+    border: 1px solid var(--border); 
+    color: white; 
+    border-radius: 4px; 
+    outline: none; 
+}
+
+/* --- 6. RECOMMENDATION BOX --- */
+#suggestion-box {
+    position: fixed;
+    background: #161b22;
+    border: 1px solid var(--accent);
+    color: #c9d1d9;
+    z-index: 2000000;
+    display: none;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    min-width: 180px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px 15px;
+    cursor: pointer;
     font-size: 13px;
-    resize: none;
+    font-family: 'Fira Code', monospace;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Sidebar & Shutter Fix */
-#shutterBtn {
-    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
-    background: var(--accent); color: black; padding: 12px 6px;
-    border-radius: 0 5px 5px 0; z-index: 1001; cursor: pointer;
+.suggestion-item:hover, .suggestion-item.active {
+    background: var(--accent);
+    color: #000;
 }
 
-.left-sidebar {
-    position: fixed; left: -260px; top: 0; width: 250px; height: 100%;
-    background: var(--panel); border-right: 1px solid var(--border);
-    transition: 0.3s ease; z-index: 1000; padding: 20px;
+.suggestion-item small {
+    font-size: 10px;
+    opacity: 0.6;
+    background: rgba(0,0,0,0.2);
+    padding: 2px 5px;
+    border-radius: 3px;
 }
 
-.left-sidebar.open { left: 0; }
-
-.settings-panel {
-    position: fixed; right: -310px; top: 0; width: 300px; height: 100%;
-    background: var(--panel); border-left: 1px solid var(--border);
-    transition: 0.3s ease; z-index: 2000; padding: 20px;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
 }
-
-.settings-panel.open { right: 0; }
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
