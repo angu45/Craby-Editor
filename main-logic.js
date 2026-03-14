@@ -233,4 +233,10 @@ window.onload = () => {
     updateWindowStatus();
     initWindowControls(); 
 };
+window.toggleLeftSidebar = () => {
+    const sidebar = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+    sidebar.classList.toggle('open');
+    shutter.classList.toggle('active');
+};
 
