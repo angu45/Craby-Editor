@@ -47,9 +47,15 @@ function addFileToUI(name, type, content = "") {
                 <i class="fas fa-trash" onclick="deleteBox('${safeId}', '${name}')" title="Delete"></i>
             </div>
         </div>
-        <div class="window-body editor-container">
-            <div class="line-numbers" id="${safeId}-lines" style="${showLineNumbers ? '' : 'display:none;'} font-size: 0.8em; opacity: 0.6;">1</div>
+        <div class="window-body editor-container" style="display: flex; position: relative;">
+            <div class="line-numbers" id="${safeId}-lines" 
+                 style="${showLineNumbers ? 'display:block;' : 'display:none;'} 
+                        text-align: right; padding: 10px 8px; border-right: 2px solid var(--accent); 
+                        color: gray; user-select: none; background: rgba(0,0,0,0.1); overflow: hidden;">
+                1
+            </div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
+                style="flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: white; resize: none; white-space: pre;"
                 oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
                 onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
@@ -66,24 +72,29 @@ function updateLineNumbers(safeId) {
     const lineBox = document.getElementById(`${safeId}-lines`);
     if(!tx || !lineBox) return;
 
-    // Line numbers font size will automatically follow textarea's font size but slightly smaller (0.8em)
+    // Get textarea computed styles to match font and size
+    const computedStyle = window.getComputedStyle(tx);
+    
+    // Sync line numbers style with textarea
+    lineBox.style.fontSize = computedStyle.fontSize;
+    lineBox.style.fontFamily = computedStyle.fontFamily;
+    lineBox.style.lineHeight = computedStyle.lineHeight;
+    lineBox.style.paddingTop = computedStyle.paddingTop;
+
     const lines = tx.value.split('\n').length;
     let lineHTML = '';
     for(let i = 1; i <= lines; i++) {
         lineHTML += i + '<br>';
     }
     lineBox.innerHTML = lineHTML;
-    
-    // Adjust line-height to match textarea
-    const computedStyle = window.getComputedStyle(tx);
-    lineBox.style.lineHeight = computedStyle.lineHeight;
-    lineBox.style.paddingTop = computedStyle.paddingTop;
 }
 
 function syncScroll(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
     const lineBox = document.getElementById(`${safeId}-lines`);
-    if(tx && lineBox) lineBox.scrollTop = tx.scrollTop;
+    if(tx && lineBox) {
+        lineBox.scrollTop = tx.scrollTop;
+    }
 }
 
 function toggleLineNumbers() {
@@ -314,7 +325,6 @@ function formatCode(code) {
 
 window.onload = () => { 
     renderFileList();
-    // Default: Show only index.html and style.css
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
     
