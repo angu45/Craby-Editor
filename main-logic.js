@@ -1,4 +1,4 @@
-// --- 1. GLOBAL CONFIGURATION & THEMES ---
+// --- 1. GLOBAL CONFIG & THEMES (JUNE AS IT IS) ---
 window.themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
@@ -6,10 +6,15 @@ window.themes = {
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
     matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
     nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
-    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' }
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// --- 2. WINDOW CONTROLS (MINIMIZE, FULLSCREEN, DELETE) ---
+// --- 2. WINDOW CONTROLS LOGIC (MINIMIZE, FULLSCREEN, DELETE) ---
 window.initWindowControls = () => {
     document.querySelectorAll('.editor-box').forEach(box => {
         const label = box.querySelector('.label');
@@ -17,7 +22,7 @@ window.initWindowControls = () => {
             const controls = document.createElement('div');
             controls.className = 'window-controls';
             controls.style.display = 'flex';
-            controls.style.gap = '10px';
+            controls.style.gap = '12px';
             
             controls.innerHTML = `
                 <i class="fas fa-minus" title="Minimize" onclick="controlWindow(this, 'min')"></i>
@@ -35,8 +40,13 @@ window.controlWindow = (btn, action) => {
     const lang = txt.id.split('-')[0];
 
     if (action === 'min') {
-        txt.style.display = txt.style.display === 'none' ? 'block' : 'none';
-        box.style.minHeight = txt.style.display === 'none' ? "45px" : "300px";
+        if (txt.style.display === 'none') {
+            txt.style.display = 'block';
+            box.style.minHeight = "300px";
+        } else {
+            txt.style.display = 'none';
+            box.style.minHeight = "45px";
+        }
     } 
     else if (action === 'full') {
         box.classList.toggle('fullscreen-editor');
@@ -50,24 +60,18 @@ window.controlWindow = (btn, action) => {
     }
 };
 
-// --- 3. SHUTTER & FILE EXPLORER LOGIC ---
+// --- 3. SHUTTER & FILE EXPLORER ---
 window.addNewFile = () => {
-    const fileName = prompt("Enter file name (e.g. index.html, style.css, script.js):");
+    const fileName = prompt("Enter file name (e.g. index.html, style.css):");
     if (fileName) {
         const ext = fileName.split('.').pop().toLowerCase();
-        let targetId = '';
-        if (ext === 'html') targetId = 'chk-html';
-        else if (ext === 'css') targetId = 'chk-css';
-        else if (ext === 'js') targetId = 'chk-js';
-        else {
-            alert("Please use .html, .css or .js extension!");
-            return;
-        }
-
-        const checkbox = document.getElementById(targetId);
-        if (checkbox) {
-            checkbox.checked = true;
+        let target = (ext === 'html') ? 'chk-html' : (ext === 'css' ? 'chk-css' : (ext === 'js' ? 'chk-js' : null));
+        
+        if (target) {
+            document.getElementById(target).checked = true;
             updateVisibility();
+        } else {
+            alert("Use .html, .css, or .js extension!");
         }
     }
 };
@@ -75,40 +79,24 @@ window.addNewFile = () => {
 window.updateFileList = () => {
     const container = document.getElementById('file-list-container');
     if (!container) return;
+    const fileMap = { 'html': 'index.html', 'css': 'style.css', 'js': 'script.js' };
+    let html = '';
 
-    const fileMap = {
-        'html': { name: 'index.html', icon: 'fa-code', color: '#e34c26' },
-        'css': { name: 'style.css', icon: 'fa-css3-alt', color: '#264de4' },
-        'js': { name: 'script.js', icon: 'fa-js', color: '#f7df1e' }
-    };
-
-    let htmlContent = '';
     ['html', 'css', 'js'].forEach(lang => {
-        const isVisible = document.getElementById(`chk-${lang}`).checked;
-        if (isVisible) {
-            const file = fileMap[lang];
-            htmlContent += `
-                <div class="file-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(255,255,255,0.05); margin-bottom:5px; border-radius:5px;">
-                    <div class="file-info" style="display:flex; align-items:center; gap:10px;">
-                        <i class="fab ${file.icon}" style="color: ${file.color}"></i>
-                        <span style="font-size:14px;">${file.name}</span>
-                    </div>
-                    <div class="file-actions">
-                        <i class="fas fa-trash" style="cursor:pointer; font-size:12px; opacity:0.6;" onclick="deleteFileFromShutter('${lang}')"></i>
-                    </div>
+        if (document.getElementById(`chk-${lang}`).checked) {
+            html += `
+                <div class="file-item" style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,255,255,0.05); margin-bottom:5px; border-radius:5px;">
+                    <span><i class="fas fa-file-code" style="margin-right:8px; color:var(--accent);"></i>${fileMap[lang]}</span>
+                    <i class="fas fa-trash" onclick="deleteFileFromShutter('${lang}')" style="cursor:pointer; color:#ff4d4d; font-size:12px;"></i>
                 </div>`;
         }
     });
-
-    container.innerHTML = htmlContent || '<p style="font-size:12px; opacity:0.5; text-align:center;">No files open</p>';
+    container.innerHTML = html || '<p style="text-align:center; opacity:0.5; font-size:12px;">Empty Workspace</p>';
 };
 
 window.deleteFileFromShutter = (lang) => {
-    const check = document.getElementById(`chk-${lang}`);
-    if (check) {
-        check.checked = false;
-        updateVisibility();
-    }
+    document.getElementById(`chk-${lang}`).checked = false;
+    updateVisibility();
 };
 
 window.toggleLeftSidebar = () => {
@@ -116,14 +104,13 @@ window.toggleLeftSidebar = () => {
     const shutter = document.getElementById('shutterBtn');
     sidebar.classList.toggle('open');
     shutter.classList.toggle('active');
-    
     if (sidebar.classList.contains('open')) {
         updateFileList();
         document.getElementById('settingsPanel').classList.remove('open');
     }
 };
 
-// --- 4. CORE EDITOR FUNCTIONS ---
+// --- 4. CORE FUNCTIONS (FORMAT, RUN, EXPORT, THEMES) ---
 window.updateVisibility = () => {
     const langs = ['html', 'css', 'js'];
     langs.forEach(lang => {
@@ -131,7 +118,8 @@ window.updateVisibility = () => {
         const isChecked = document.getElementById(`chk-${lang}`).checked;
         box.style.display = isChecked ? 'flex' : 'none';
     });
-    updateFileList(); 
+    initWindowControls();
+    updateFileList();
 };
 
 window.updateThemeAndFont = () => {
@@ -172,13 +160,27 @@ window.closePreview = () => { document.getElementById('preview-overlay').style.d
 window.toggleSettings = () => { 
     document.getElementById('settingsPanel').classList.toggle('open'); 
     document.getElementById('leftSidebar').classList.remove('open');
-    document.getElementById('shutterBtn').classList.remove('active');
 };
 
-// --- 5. INITIALIZE ON LOAD ---
+window.beautifyCode = () => {
+    const editors = ['html-code', 'css-code', 'js-code'];
+    editors.forEach(id => {
+        const el = document.getElementById(id);
+        el.value = el.value.replace(/\s+/g, ' ').replace(/{/g, ' {\n  ').replace(/}/g, '\n}\n').replace(/;/g, ';\n  ').trim();
+    });
+    alert("Code Formatted!");
+};
+
+window.exportCode = () => {
+    const code = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
+    const blob = new Blob([code], {type: "text/html"});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "index.html";
+    a.click();
+};
+
 window.onload = () => {
-    initWindowControls(); // Window buttons generate karne
     updateVisibility();
     updateThemeAndFont();
-    updateFileList();
 };
