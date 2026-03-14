@@ -8,18 +8,17 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
         <span class="logo-text">Craby Editor</span>
     </div>
     <div class="header-actions">
+        <button class="icon-btn" onclick="exportCode()" title="Download Project"><i class="fas fa-download"></i></button>
         <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
         <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
     </div>
 </header>
-
 <div id="shutter-trigger" onclick="toggleShutter()">
     <i class="fas fa-chevron-right"></i>
 </div>
