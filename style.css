@@ -1,4 +1,4 @@
-/* --- 1. VARIABLES & RESET --- */
+/* --- 1. VARIABLES & RESET (Standard) --- */
 :root {
     --bg: #0d1117; 
     --panel: #161b22; 
@@ -24,7 +24,7 @@ body {
     overflow: hidden; 
 }
 
-/* --- 2. HEADER & NAVIGATION --- */
+/* Header aani initial elements saathi (optional, but needed for layout consistency) */
 header { 
     background: var(--header); 
     padding: 10px 20px; 
@@ -35,58 +35,7 @@ header {
     z-index: 1000; 
 }
 
-.logo-container { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    cursor: default;
-}
-
-.logo-container img { 
-    height: 35px; 
-    pointer-events: none; 
-}
-
-.logo-text { 
-    font-weight: 800; 
-    font-size: 1.3rem; 
-    color: var(--accent); 
-    letter-spacing: 0.5px; 
-}
-
-.nav-actions { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-}
-
-.icon-btn { 
-    background: var(--panel); 
-    border: 1px solid var(--border); 
-    color: var(--text); 
-    padding: 8px 14px; 
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-size: 0.8rem; 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    transition: 0.2s;
-}
-
-.icon-btn:hover { 
-    border-color: var(--accent); 
-    background: rgba(255,180,0,0.1); 
-}
-
-.run-btn { 
-    background: var(--accent) !important; 
-    color: #000 !important; 
-    font-weight: 800; 
-    border: none; 
-}
-
-/* --- 3. EDITOR SECTION --- */
+/* --- 2. MAIN CONTAINER & EDITOR LAYOUT (SMART LAYOUT) --- */
 .main-container { 
     display: flex; 
     flex: 1; 
@@ -94,10 +43,115 @@ header {
     overflow: hidden; 
 }
 
+/* Left Sidebar (Explorer) */
+.left-sidebar { 
+    width: 280px; 
+    background: var(--panel); 
+    height: 100%; 
+    border-right: 2px solid var(--accent); 
+    position: fixed; 
+    left: -282px; /* Initially hidden */
+    top: 0; 
+    z-index: 999; 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+.left-sidebar.open { 
+    left: 0; 
+}
+
+.left-sidebar h4 { 
+    color: var(--accent); 
+    font-size: 14px; 
+    margin-bottom: 20px; 
+}
+
+.new-file-btn { 
+    width: 100%; 
+    background: var(--accent) !important; 
+    color: white !important; 
+    justify-content: center !important; 
+    margin-bottom: 15px !important;
+}
+
+.file-list { 
+    flex: 1; 
+    overflow-y: auto; 
+    font-family: 'Fira Code', monospace; 
+    font-size: 13px;
+}
+
+.file-item { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 8px 12px; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    transition: 0.2s;
+}
+
+.file-item:hover { 
+    background: rgba(255,180,0,0.1); 
+}
+
+.file-item.active { 
+    background: rgba(255,180,0,0.2); 
+    color: var(--accent); 
+    font-weight: 600;
+}
+
+.file-actions i { 
+    font-size: 12px; 
+    opacity: 0.5; 
+    margin-left: 10px; 
+    transition: 0.2s;
+}
+
+.file-actions i:hover { 
+    opacity: 1; 
+    color: #ff4d4d;
+}
+
+/* Sidebar Toggle Shutter */
+#shutterBtn { 
+    position: fixed; 
+    left: 1px; /* To show slightly */
+    top: 50%; 
+    transform: translateY(-50%); 
+    background: var(--panel); 
+    border: 1px solid var(--border); 
+    border-radius: 0 50% 50% 0; 
+    width: 40px; 
+    height: 40px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: var(--accent); 
+    cursor: pointer; 
+    z-index: 1001; 
+    transition: 0.3s;
+}
+
+#shutterBtn:hover { 
+    background: var(--border);
+}
+
+.left-sidebar.open ~ #shutterBtn { 
+    left: 281px; 
+    border-radius: 50% 0 0 50%; 
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Editor Section */
 .editor-section { 
     flex: 1; 
     display: flex; 
     flex-direction: column; 
+    height: 100%;
 }
 
 .editor-box { 
@@ -106,11 +160,12 @@ header {
     border-bottom: 1px solid var(--border); 
     flex: 1; 
     position: relative; 
+    overflow: hidden; 
 }
 
 .label { 
     background: rgba(0,0,0,0.4); 
-    padding: 6px 15px; 
+    padding: 8px 15px; 
     font-size: 10px; 
     font-weight: 800; 
     color: var(--accent); 
@@ -118,6 +173,26 @@ header {
     display: flex; 
     justify-content: space-between; 
     align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.window-actions { 
+    display: flex; 
+    gap: 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.window-actions i {
+    transition: 0.2s;
+}
+
+.window-actions i:hover {
+    color: #ff4d4d;
+}
+
+.window-actions i:not(.fa-trash):hover {
+    color: #9cdcfe;
 }
 
 textarea { 
@@ -133,7 +208,7 @@ textarea {
     line-height: 1.6; 
 }
 
-/* --- 4. PREVIEW OVERLAY (FLOW SCREEN) --- */
+/* --- 3. PREVIEW OVERLAY (SMART RUN) --- */
 .preview-overlay {
     position: fixed; 
     top: 0; 
@@ -142,7 +217,7 @@ textarea {
     height: 100%;
     background: #f1f5f9; 
     z-index: 99999; 
-    display: none; 
+    display: none; /* Initially hidden */
     flex-direction: column;
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -180,100 +255,35 @@ textarea {
     transition: 0.3s; 
 }
 
-/* Mobile Preview Mode */
-.iframe-wrapper.mobile { 
-    width: 375px; 
-    height: 667px; 
-    border: 12px solid #1a1a1a; 
-    border-radius: 35px; 
-}
-
 iframe { 
     width: 100%; 
     height: 100%; 
     border: none; 
 }
 
-/* --- 5. SETTINGS PANEL --- */
-.settings-panel { 
-    position: fixed; 
-    right: -350px; 
-    top: 0; 
-    width: 320px; 
-    height: 100%; 
+/* Standard Buttons for shutter aani header */
+.icon-btn { 
     background: var(--panel); 
-    border-left: 2px solid var(--accent); 
-    z-index: 1000000; 
-    padding: 25px; 
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-    color: white; 
-    visibility: hidden;
-    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-}
-
-.settings-panel.open { 
-    right: 0; 
-    visibility: visible; 
-}
-
-.s-group { 
-    margin-bottom: 20px; 
-}
-
-.s-group label { 
-    display: block; 
-    font-size: 12px; 
-    margin-bottom: 8px; 
-    opacity: 0.8; 
-}
-
-.s-group select { 
-    width: 100%; 
-    padding: 10px; 
-    background: #0d1117; 
     border: 1px solid var(--border); 
-    color: white; 
-    border-radius: 4px; 
-    outline: none; 
+    color: var(--text); 
+    padding: 8px 14px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-size: 0.8rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    transition: 0.2s;
 }
 
-/* --- 6. RECOMMENDATION BOX --- */
-#suggestion-box {
-    position: fixed;
-    background: #161b22;
-    border: 1px solid var(--accent);
-    color: #c9d1d9;
-    z-index: 2000000;
-    display: none;
-    border-radius: 6px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    min-width: 180px;
-    max-height: 220px;
-    overflow-y: auto;
+.icon-btn:hover { 
+    border-color: var(--accent); 
+    background: rgba(255,180,0,0.1); 
 }
 
-.suggestion-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 13px;
-    font-family: 'Fira Code', monospace;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.suggestion-item:hover, .suggestion-item.active {
-    background: var(--accent);
-    color: #000;
-}
-
-.suggestion-item small {
-    font-size: 10px;
-    opacity: 0.6;
-    background: rgba(0,0,0,0.2);
-    padding: 2px 5px;
-    border-radius: 3px;
+.icon-btn.active {
+    background: rgba(255,180,0,0.2); 
+    color: var(--accent); 
 }
 
 /* Custom Scrollbar */
