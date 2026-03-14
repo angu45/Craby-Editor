@@ -34,9 +34,10 @@ header {
     align-items: center;
     padding: 0 15px;
     border-bottom: 2px solid var(--accent);
-    position: sticky; 
+    position: fixed; /* Fixed kelyamule varchi body scroll honar nahi */
+    width: 100%;
     top: 0;
-    z-index: 1001; 
+    z-index: 3000; /* Sarvaat var header rahil */
 }
 
 .logo-container { display: flex; align-items: center; gap: 10px; }
@@ -67,15 +68,15 @@ header {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden; 
+    overflow-y: auto; /* Editors scroll honyasathi */
     padding: 10px;
+    margin-top: 60px; /* Header sathi jaga sodli aahe (Important Fix) */
 }
 
 .editor-grid {
     display: flex;
     flex-direction: column;
-    height: 100%; 
-    gap: 10px;
+    gap: 15px;
 }
 
 /* --- 4. WINDOW BOX & TEXTAREA --- */
@@ -85,24 +86,14 @@ header {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    flex: 1; 
-    min-height: 40px; 
+    min-height: 250px; 
     overflow: hidden;
-    transition: flex 0.3s ease;
-}
-
-.window-frame.fullscreen {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 60px);
-    z-index: 500;
+    position: relative; /* Controls nit disnyasathi */
 }
 
 .window-header {
     background: var(--window-header-bg);
-    padding: 8px 15px;
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -110,21 +101,21 @@ header {
     flex-shrink: 0;
 }
 
-.window-title { font-size: 11px; font-weight: 800; color: var(--accent); }
+.window-title { font-size: 12px; font-weight: 800; color: var(--accent); }
 
 .window-controls {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .window-controls i { 
     cursor: pointer; 
-    font-size: 11px; 
-    color: var(--accent); 
-    opacity: 0.7;
+    font-size: 14px; /* Buttons thode mothe kele aahet (Image issue fix) */
+    color: var(--accent);
+    opacity: 0.9;
 }
 
-.window-controls i:hover { opacity: 1; }
+.window-controls i:hover { opacity: 1; transform: scale(1.1); }
 
 .window-body {
     flex: 1;
@@ -137,17 +128,16 @@ textarea {
     background: transparent;
     border: none;
     color: #9cdcfe;
-    padding: 12px;
+    padding: 15px;
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     line-height: 1.5;
     outline: none;
     resize: none;
     white-space: pre;
-    overflow: auto;
 }
 
-/* --- 5. SHUTTER (SMOOTH FIX) --- */
+/* --- 5. SHUTTER --- */
 #shutter-trigger {
     position: fixed;
     left: 0;
@@ -157,53 +147,39 @@ textarea {
     color: #000;
     padding: 15px 8px;
     border-radius: 0 8px 8px 0;
-    z-index: 2001; /* Shutter chya var pahije */
+    z-index: 2500;
     cursor: pointer;
-    transition: 0.3s ease; /* Trigger pan slide honyasathi */
+    transition: 0.3s;
 }
 
 .shutter {
     position: fixed;
-    left: -300px; /* Width evdhich minus kara */
+    left: -320px;
     top: 0;
     width: 300px;
     height: 100%;
     background: var(--bg-panel);
     border-right: 2px solid var(--accent);
     transition: 0.3s ease;
-    z-index: 2000;
+    z-index: 4000; /* Settings aani header chya var */
     padding: 20px;
-    display: block !important; /* Display none asel tar transition dist nahi */
 }
 
-.shutter.open { 
-    left: 0; 
-}
-
-/* Shutter list items style */
-.shutter-item {
-    padding: 10px;
-    margin-bottom: 5px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-}
-.shutter-item:hover { background: rgba(255,255,255,0.1); }
+.shutter.open { left: 0; }
 
 /* --- 6. SETTINGS PANEL (FIXED) --- */
 .settings-panel {
     position: fixed;
-    right: -300px;
+    right: -320px;
     top: 0;
     width: 300px;
     height: 100%;
     background: var(--bg-panel);
     border-left: 2px solid var(--accent);
     transition: 0.3s ease;
-    z-index: 2000;
+    z-index: 4000; /* Shutter evdhach z-index dila aahe (Image issue fix) */
     padding: 20px;
-    /* Visibility hidden kadhun takle jyamule transition disel */
+    display: block !important; /* JS class toggle karel */
 }
 
 .settings-panel.open {
@@ -215,22 +191,7 @@ textarea {
     position: fixed;
     inset: 0;
     background: #fff;
-    z-index: 9999;
+    z-index: 5000;
     display: none;
     flex-direction: column;
-}
-
-.overlay-header {
-    height: 50px;
-    background: #161b22;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-}
-
-#output-frame {
-    flex: 1;
-    border: none;
-    width: 100%;
 }
