@@ -113,6 +113,30 @@ window.toggleSettings = () => {
         settings.classList.toggle('open'); // Settings Panel उघडण्यासाठी/बंद करण्यासाठी
     }
 };
+// --- NEW: FONT SIZE CONTROL ---
+function updateFontSize(val) {
+    document.getElementById('font-size-val').innerText = val + "px";
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(ta => {
+        ta.style.fontSize = val + "px";
+    });
+}
+
+// --- NEW: PREVIEW SIZE TOGGLE (DESKTOP/MOBILE) ---
+function setPreviewSize(width) {
+    const frame = document.getElementById('output-frame');
+    if (width === '100%') {
+        frame.style.width = '100%';
+        frame.style.height = '100%';
+        frame.style.boxShadow = 'none';
+    } else {
+        frame.style.width = width;
+        frame.style.height = '667px'; // Standard Mobile Height
+        frame.style.boxShadow = '0 0 50px rgba(0,0,0,0.5)';
+        frame.style.borderRadius = '10px';
+    }
+}
+
 
 // 3. Close On Outside Click (Optional पण कामाचं)
 // स्क्रीनवर कुठेही बाहेर क्लिक केल्यावर पॅनल बंद व्हावेत असं वाटत असेल तर:
@@ -132,22 +156,6 @@ document.addEventListener('click', (e) => {
         !settings.contains(e.target) && !e.target.closest('.icon-btn')) {
         window.toggleSettings();
     }
-});// --- 1. CONFIGURATION & ALL 12 THEMES ---
-const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
-    light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
-    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
-    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
-    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
-    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
-    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
-    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
-    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
-    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
-    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
-};
-
 const dictionary = {
     html: ['a','alt','article','aside','audio','b','base','body','br','button','canvas','caption','cite','class','code','col','colgroup','datalist','dd','del','details','dfn','dialog','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','height','hr','html','href','i','id','iframe','img','input','label','legend','li','link','main','map','mark','meta','name','nav','ol','onclick','optgroup','option','p','param','picture','placeholder','pre','progress','q','rel','required','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','svg','table','tbody','td','template','textarea','tfoot','th','thead','time','title','tr','track','type','u','ul','value','var','video','width'],
     css: ['absolute','align-items','animation','background','background-color','border','border-radius','bottom','box-shadow','box-sizing','clear','color','column-count','column-gap','content','cursor','display','flex','flex-direction','flex-wrap','float','font','font-family','font-size','font-style','font-weight','gap','grid','grid-area','grid-template-columns','grid-template-rows','height','inline','inline-block','justify-content','left','letter-spacing','line-height','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','min-height','min-width','none','opacity','overflow','padding','padding-bottom','padding-left','padding-right','padding-top','pointer','position','relative','right','text-align','text-decoration','text-transform','top','transform','transition','transparent','visibility','width','word-spacing','z-index'],
