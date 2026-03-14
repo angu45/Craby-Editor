@@ -359,4 +359,38 @@ iframe {
 }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent);
+}.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    transition: 0.2s;
+}
+
+.file-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: var(--accent);
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.file-actions i {
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: 0.2s;
+}
+
+.file-actions i:hover {
+    opacity: 1;
+    color: #ff4d4d;
 }
