@@ -176,4 +176,20 @@ window.onload = () => {
     updateVisibility();
     updateThemeAndFont();
     updateFileList();
+};window.controlWindow = (btn, action) => {
+    const box = btn.closest('.editor-box');
+    const txt = box.querySelector('textarea');
+    
+    if (action === 'min') {
+        // Toggle display
+        if (txt.style.display === 'none') {
+            txt.style.display = 'block';
+            box.style.minHeight = "300px"; // Normal height
+        } else {
+            txt.style.display = 'none';
+            box.style.minHeight = "40px";  /* Fakt label disel itki height */
+        }
+    }
+    // ... baki action (full, del) tasech rahu dya
 };
+
