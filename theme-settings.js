@@ -1,5 +1,5 @@
-// --- 1. GLOBAL THEMES OBJECT ---
-window.themes = {
+// --- 1. ALL 12 THEMES ---
+const themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
@@ -14,98 +14,52 @@ window.themes = {
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// --- 2. THEME, FONT & SIZE APPLICATION ---
-window.updateThemeAndFont = function() {
-    // HTML IDs check karne
-    const themeSelect = document.getElementById('theme-sel');
-    const fontSelect = document.getElementById('font-family-sel');
-    const sizeRange = document.getElementById('font-size-range');
-    const sizeDisplay = document.getElementById('font-size-val');
+// --- 2. THEME & FONT APPLICATION ---
+function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const fontSize = document.getElementById('font-size-range')?.value || 14;
+    
+    const fsDisplay = document.getElementById('font-size-val');
+    if(fsDisplay) fsDisplay.innerText = fontSize + "px"; 
+    
+    const theme = themes[themeKey] || themes.dark;
 
-    if (!themeSelect || !fontSelect || !sizeRange) return;
-
-    const themeKey = themeSelect.value;
-    const font = fontSelect.value;
-    const fontSize = sizeRange.value;
-
-    // Font size label update karne
-    if (sizeDisplay) sizeDisplay.innerText = fontSize + "px";
-
-    const theme = window.themes[themeKey] || window.themes.dark;
-
-    // Main Layout Colors (CSS Variables)
+    // Root Variables
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
     document.documentElement.style.setProperty('--border', theme.border);
-
-    // Apply to Textareas
+    
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px"; 
+        tx.style.fontSize = fontSize + "px";
         tx.style.color = theme.text;
-        tx.style.backgroundColor = theme.bg;
+        tx.style.background = theme.bg;
         
-        // Editor box border
-        const eb = tx.closest('.window-frame') || tx.closest('.editor-box') || tx.parentElement;
+        const eb = tx.closest('.window-frame');
         if(eb) eb.style.borderColor = theme.border;
     });
 
-    // Icons aani Labels
-    document.querySelectorAll('.icon-btn i, .s-group label').forEach(el => {
-        el.style.color = theme.accent;
-    });
-};
+    document.querySelectorAll('.window-header').forEach(h => h.style.background = theme.panel);
+    document.querySelectorAll('.icon-btn i').forEach(i => i.style.color = theme.accent);
+}
 
-// Font Size Slider sathi direct function
-window.updateFontSize = function(val) {
-    window.updateThemeAndFont(); // Range badalli ki full update trigger karne
-};
+function updateFontSize(val) {
+    updateThemeAndFont();
+}
 
-// --- 3. SETTINGS PANEL TOGGLE FIX ---
-window.toggleSettings = () => {
-    const settings = document.getElementById('settingsPanel');
-    if (!settings) return;
-
-    settings.classList.toggle('open');
-    
-    // Smooth transition sathi display control
-    if (settings.classList.contains('open')) {
-        settings.style.display = 'block';
-    } else {
-        setTimeout(() => {
-            if (!settings.classList.contains('open')) settings.style.display = 'none';
-        }, 300);
-    }
-};
-
-// --- 4. PREVIEW SIZE LOGIC ---
-window.setPreviewSize = function(width) {
+// --- 3. PREVIEW DEVICE LOGIC ---
+function setPreviewSize(width) {
     const frame = document.getElementById('output-frame');
     if (!frame) return;
-
     frame.style.width = width;
     if (width === '100%') {
         frame.style.height = '100%';
-        frame.style.borderRadius = '0';
         frame.style.border = 'none';
     } else {
         frame.style.height = '600px'; 
-        frame.style.borderRadius = '15px';
         frame.style.border = '10px solid #333';
-        frame.style.boxShadow = '0 20px 50px rgba(0,0,0,0.5)';
+        frame.style.borderRadius = '15px';
     }
-};
-
-// --- 5. INITIAL SYNC ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Page load jhalya var themes apply karne
-    setTimeout(window.updateThemeAndFont, 500);
-});
-
-// Dictionary (as it is)
-window.dictionary = {
-    html: ['div','span','h1','p','a','button','input','img','ul','li'],
-    css: ['color','background','margin','padding','display','flex','grid'],
-    js: ['console.log','document','window','function','const','let']
-};
+}
