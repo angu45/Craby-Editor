@@ -267,16 +267,63 @@ function addNewFilePrompt() {
         alert("Please include file extension (e.g., .html, .css, .js)");
     }
 }
-
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<');
+        let code = tx.value;
+        const lang = tx.getAttribute('data-lang'); // html, css, or js
+
+        if (lang === 'html') {
+            code = formatHTML(code);
+        } else if (lang === 'css' || lang === 'js') {
+            code = formatCSSJS(code);
+        }
+
+        tx.value = code;
+
+        // Update the global files object with beautified code
         const fileName = Object.keys(files).find(key => {
             const safeId = "file-" + key.replace(/[^a-z0-9]/gi, '-');
             return tx.id === `${safeId}-code`;
         });
-        if(fileName) updateFileContent(fileName, tx.value);
+        if (fileName) updateFileContent(fileName, tx.value);
     });
+}
+
+// Helper: Format HTML with Indentation
+function formatHTML(html) {
+    let tab = '  '; // 2 spaces for indentation
+    let result = '';
+    let indent = '';
+
+    html.split(/>\s*</).forEach(element => {
+        if (element.match(/^\/\w/)) {
+            indent = indent.substring(tab.length);
+        }
+        result += indent + '<' + element + '>\n';
+        if (element.match(/^<?\w[^>]*[^\/]$/) && !element.startsWith("input") && !element.startsWith("img") && !element.startsWith("br")) {
+            indent += tab;
+        }
+    });
+    return result.substring(1, result.length - 1).trim();
+}
+
+// Helper: Format CSS and JS (Basic Braces logic)
+function formatCSSJS(code) {
+    let tab = '  ';
+    let result = '';
+    let indent = '';
+    
+    // Clean existing mess
+    code = code.replace(/\s*\{\s*/g, " {\n").replace(/\s*\}\s*/g, "\n}\n").replace(/\s*;\s*/g, ";\n");
+
+    code.split('\n').forEach(line => {
+        line = line.trim();
+        if (line.match(/\}/)) indent = indent.substring(tab.length);
+        if (line !== "") result += indent + line + '\n';
+        if (line.match(/\{/)) indent += tab;
+    });
+
+    return result.trim();
 }
 
 window.onload = () => { 
