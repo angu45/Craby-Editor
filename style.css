@@ -6,7 +6,7 @@
     --text: #c9d1d9; 
     --border: rgba(255, 255, 255, 0.1); 
     --header: #010409;
-}/* Floating Shutter Button */
+}/* Shutter Button Style */
 #shutterBtn {
     position: fixed;
     left: 0;
@@ -14,32 +14,35 @@
     transform: translateY(-50%);
     background: var(--accent);
     color: #000;
-    padding: 15px 8px;
-    border-radius: 0 10px 10px 0;
+    padding: 20px 10px;
+    border-radius: 0 8px 8px 0;
     cursor: pointer;
     z-index: 10001;
-    transition: 0.3s;
     box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-#shutterBtn.active { left: 280px; transform: translateY(-50%) rotate(180deg); }
+#shutterBtn:hover { padding-left: 15px; }
 
-/* Left Sidebar Shutter */
+/* Sidebar Shutter Panel */
 .left-sidebar {
     position: fixed;
-    left: -300px;
+    left: -320px; /* Suruvatila laplele */
     top: 0;
-    width: 280px;
+    width: 300px;
     height: 100%;
     background: var(--panel);
     border-right: 2px solid var(--accent);
     z-index: 10000;
-    padding: 20px;
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    padding: 25px;
+    transition: 0.4s ease;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
 }
 
 .left-sidebar.open { left: 0; }
+
+/* Shutter active astana button sarkavne */
+#shutterBtn.active { left: 300px; transform: translateY(-50%) rotate(180deg); }
 
 .sidebar-header {
     display: flex;
