@@ -1,58 +1,87 @@
-// --- 1. GLOBAL CONFIG & THEMES ---
+// --- 1. GLOBAL CONFIGURATION & THEMES (JUNA CODE AS IT IS) ---
 window.themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
     matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
-    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' }
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// --- 2. WINDOW CONTROLS (Minimize, Fullscreen, Delete) ---
-// Pratyek editor box chya 'label' div madhe he buttons asne garjeche aahe.
-window.initWindowControls = () => {
-    document.querySelectorAll('.editor-box').forEach(box => {
-        const label = box.querySelector('.label');
-        if (label && !label.querySelector('.window-controls')) {
-            const controls = document.createElement('div');
-            controls.className = 'window-controls';
-            controls.style.display = 'flex';
-            controls.style.gap = '8px';
-            
-            controls.innerHTML = `
-                <i class="fas fa-minus" title="Minimize" onclick="controlWindow(this, 'min')"></i>
-                <i class="fas fa-expand" title="Fullscreen" onclick="controlWindow(this, 'full')"></i>
-                <i class="fas fa-times" title="Close" onclick="controlWindow(this, 'del')" style="color:#ff4d4d"></i>
+const dictionary = {
+    html: ['div','span','h1','p','a','img','button','input','script','link','meta','class','id','style'],
+    css: ['color','background','margin','padding','display','flex','width','height','border','font-size'],
+    js: ['console.log','document.getElementById','addEventListener','function','const','let','if','else']
+};
+
+let selectedIdx = 0;
+let currentLang = '';
+
+// --- 2. SHUTTER & FILE EXPLORER LOGIC (NAVIN ADDED) ---
+
+// Navin file add karne (Prompts for name)
+window.addNewFile = () => {
+    const fileName = prompt("Enter file name (e.g. index.html, style.css, script.js):");
+    if (fileName) {
+        const ext = fileName.split('.').pop().toLowerCase();
+        let targetId = '';
+        if (ext === 'html') targetId = 'chk-html';
+        else if (ext === 'css') targetId = 'chk-css';
+        else if (ext === 'js') targetId = 'chk-js';
+        else {
+            alert("Please use .html, .css or .js extension!");
+            return;
+        }
+
+        const checkbox = document.getElementById(targetId);
+        if (checkbox) {
+            checkbox.checked = true;
+            updateVisibility();
+            alert(`${fileName} added to workspace!`);
+        }
+    }
+};
+
+// Shutter madhli file list update karne
+window.updateFileList = () => {
+    const container = document.getElementById('file-list-container');
+    if (!container) return;
+
+    const langs = [
+        { id: 'html', name: 'index.html', icon: 'fa-code', color: '#e34c26' },
+        { id: 'css', name: 'style.css', icon: 'fa-css3-alt', color: '#264de4' },
+        { id: 'js', name: 'script.js', icon: 'fa-js', color: '#f7df1e' }
+    ];
+
+    let html = '';
+    langs.forEach(lang => {
+        const isVisible = document.getElementById(`chk-${lang.id}`).checked;
+        if (isVisible) {
+            html += `
+                <div class="file-item">
+                    <div class="file-info">
+                        <i class="fab ${lang.icon}" style="color: ${lang.color}"></i>
+                        <span>${lang.name}</span>
+                    </div>
+                    <div class="file-actions">
+                        <i class="fas fa-trash" onclick="deleteFileFromShutter('${lang.id}')" title="Delete File"></i>
+                    </div>
+                </div>
             `;
-            label.appendChild(controls);
         }
     });
+
+    container.innerHTML = html || '<p style="font-size:12px; opacity:0.5; text-align:center; padding:20px;">No files open</p>';
 };
 
-window.controlWindow = (btn, action) => {
-    const box = btn.closest('.editor-box');
-    const txt = box.querySelector('textarea');
-    const lang = txt.id.split('-')[0];
-
-    if (action === 'min') {
-        txt.style.display = txt.style.display === 'none' ? 'block' : 'none';
-        box.style.flex = txt.style.display === 'none' ? '0 0 auto' : '1';
-    } 
-    else if (action === 'full') {
-        box.classList.toggle('fullscreen-editor');
-        if(box.classList.contains('fullscreen-editor')) {
-            box.style.position = 'fixed';
-            box.style.top = '60px'; box.style.left = '0';
-            box.style.width = '100%'; box.style.height = 'calc(100vh - 60px)';
-            box.style.zIndex = '9999';
-        } else {
-            box.style.position = 'relative';
-            box.style.top = '0'; box.style.width = '100%'; box.style.height = '100%';
-            box.style.zIndex = '1';
-            updateVisibility(); // Reset to normal flex
-        }
-    } 
-    else if (action === 'del') {
+window.deleteFileFromShutter = (lang) => {
+    if (confirm(`Close ${lang.toUpperCase()} editor?`)) {
         const check = document.getElementById(`chk-${lang}`);
         if (check) {
             check.checked = false;
@@ -61,34 +90,21 @@ window.controlWindow = (btn, action) => {
     }
 };
 
-// --- 3. SHUTTER & SETTINGS LOGIC ---
 window.toggleLeftSidebar = () => {
     const sidebar = document.getElementById('leftSidebar');
     const shutter = document.getElementById('shutterBtn');
     if (sidebar) sidebar.classList.toggle('open');
     if (shutter) shutter.classList.toggle('active');
     
-    // Sidebar उघडला तर Settings बंद करा
     if (sidebar && sidebar.classList.contains('open')) {
+        updateFileList();
+        // Close settings if shutter opens
         document.getElementById('settingsPanel').classList.remove('open');
     }
 };
 
-window.toggleSettings = () => {
-    const settings = document.getElementById('settingsPanel');
-    if (settings) settings.classList.toggle('open');
-    
-    // Settings उघडली तर Sidebar बंद करा
-    if (settings && settings.classList.contains('open')) {
-        const sidebar = document.getElementById('leftSidebar');
-        if (sidebar) {
-            sidebar.classList.remove('open');
-            document.getElementById('shutterBtn').classList.remove('active');
-        }
-    }
-};
+// --- 3. EDITOR CORE FUNCTIONS (JUNE FUNCTIONS) ---
 
-// --- 4. CORE FUNCTIONALITIES ---
 window.updateVisibility = () => {
     const langs = ['html', 'css', 'js'];
     langs.forEach(lang => {
@@ -96,44 +112,33 @@ window.updateVisibility = () => {
         const isChecked = document.getElementById(`chk-${lang}`).checked;
         box.style.display = isChecked ? 'flex' : 'none';
     });
+    updateFileList(); // Shutter list update kara
 };
 
 window.updateThemeAndFont = () => {
     const themeKey = document.getElementById('theme-sel').value;
     const font = document.getElementById('font-family-sel').value;
     const fontSize = document.getElementById('font-size-bar').value;
-    const theme = window.themes[themeKey] || window.themes.dark;
+    if(document.getElementById('fs-display')) document.getElementById('fs-display').innerText = fontSize + "px";
 
-    document.getElementById('fs-display').innerText = fontSize + "px";
+    const theme = themes[themeKey] || themes.dark;
     document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
-
+    
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px";
+        tx.style.fontSize = fontSize + "px"; 
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
     });
-    
-    document.querySelectorAll('.label').forEach(l => {
-        l.style.background = theme.panel;
-        l.style.color = theme.accent;
+
+    document.querySelectorAll('.label').forEach(el => {
+        el.style.background = theme.panel;
+        el.style.color = theme.accent;
     });
 };
 
-// --- 5. INITIALIZE ---
-window.onload = () => {
-    // Default 2 editors (HTML & CSS)
-    document.getElementById('chk-html').checked = true;
-    document.getElementById('chk-css').checked = true;
-    document.getElementById('chk-js').checked = false;
-    
-    initWindowControls();
-    updateVisibility();
-    updateThemeAndFont();
-};
-
-// Toolbar Buttons
 window.runCode = () => {
     const overlay = document.getElementById('preview-overlay');
     overlay.style.display = 'flex';
@@ -145,6 +150,17 @@ window.runCode = () => {
 };
 
 window.closePreview = () => { document.getElementById('preview-overlay').style.display = 'none'; };
+window.toggleSettings = () => { document.getElementById('settingsPanel').classList.toggle('open'); };
+window.setDevice = (m) => { document.getElementById('wrapper').className = 'iframe-wrapper ' + (m==='mobile'?'mobile':''); };
+
+window.beautifyCode = () => {
+    const editors = ['html-code', 'css-code', 'js-code'];
+    editors.forEach(id => {
+        const el = document.getElementById(id);
+        el.value = el.value.replace(/\s+/g, ' ').replace(/{/g, ' {\n  ').replace(/}/g, '\n}\n').replace(/;/g, ';\n  ').trim();
+    });
+    alert("Code Formatted!");
+};
 
 window.exportCode = () => {
     const code = `<!DOCTYPE html><html><head><style>${document.getElementById('css-code').value}</style></head><body>${document.getElementById('html-code').value}<script>${document.getElementById('js-code').value}<\/script></body></html>`;
@@ -153,183 +169,11 @@ window.exportCode = () => {
     a.href = URL.createObjectURL(blob);
     a.download = "index.html";
     a.click();
-};// --- 1. SHUTTER & WINDOW STATUS LOGIC ---
-
-// Window Status Shutter madhe update karne
-window.updateWindowStatus = () => {
-    const list = document.getElementById('window-status-list');
-    const langs = ['html', 'css', 'js'];
-    let html = '';
-
-    langs.forEach(lang => {
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        const statusColor = isChecked ? '#4ade80' : '#ff4d4d'; // Green for Open, Red for Closed
-        const statusText = isChecked ? 'VISIBLE' : 'HIDDEN';
-
-        html += `
-            <div class="status-item">
-                <span><b>${lang.toUpperCase()}</b></span>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:10px; color:${statusColor}">${statusText}</span>
-                    <div class="status-dot" style="background:${statusColor}"></div>
-                    <button class="icon-btn" style="padding:4px 8px; font-size:10px;" onclick="toggleFromShutter('${lang}')">
-                        ${isChecked ? 'Hide' : 'Show'}
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-    list.innerHTML = html;
 };
 
-// Shutter madhun window toggle karne
-window.toggleFromShutter = (lang) => {
-    const check = document.getElementById(`chk-${lang}`);
-    check.checked = !check.checked;
-    updateVisibility();
-    updateWindowStatus();
-};
-
-// Quick Theme Change via Shutter
-window.quickTheme = () => {
-    const themeSel = document.getElementById('theme-sel');
-    const options = Array.from(themeSel.options);
-    let nextIdx = (themeSel.selectedIndex + 1) % options.length;
-    themeSel.selectedIndex = nextIdx;
-    updateThemeAndFont();
-};
-
-// Shutter Toggle Logic (Center-Left Button)
-window.toggleLeftSidebar = () => {
-    const sidebar = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    
-    sidebar.classList.toggle('open');
-    shutter.classList.toggle('active');
-
-    if(sidebar.classList.contains('open')) {
-        updateWindowStatus(); // Open zalyavar status refresh kara
-        // Jar Sidebar ughadla tar Settings band kara
-        document.getElementById('settingsPanel').classList.remove('open');
-    }
-};
-
-// Overriding updateVisibility to refresh Shutter status
-const originalUpdateVisibility = window.updateVisibility;
-window.updateVisibility = () => {
-    const langs = ['html', 'css', 'js'];
-    langs.forEach(lang => {
-        const box = document.getElementById(`${lang}-code`).closest('.editor-box');
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        box.style.display = isChecked ? 'flex' : 'none';
-    });
-    updateWindowStatus(); // Sync shutter status
-};
-
-// --- Initialization ---
-const originalOnload = window.onload;
+// Initial Load
 window.onload = () => {
-    if(originalOnload) originalOnload();
-    updateWindowStatus();
-    initWindowControls(); 
+    updateVisibility();
+    updateThemeAndFont();
+    updateFileList();
 };
-window.toggleLeftSidebar = () => {
-    const sidebar = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sidebar.classList.toggle('open');
-    shutter.classList.toggle('active');
-};// --- FILE MANAGEMENT LOGIC ---
-
-window.addNewFile = () => {
-    const fileName = prompt("Enter file name (e.g. index.html, style.css):");
-    
-    if (fileName) {
-        const extension = fileName.split('.').pop().toLowerCase();
-        let lang = '';
-        
-        if (extension === 'html') lang = 'html';
-        else if (extension === 'css') lang = 'css';
-        else if (extension === 'js') lang = 'js';
-        else {
-            alert("Please use .html, .css, or .js extension!");
-            return;
-        }
-
-        // Window open kara jar ti closed asel
-        const checkbox = document.getElementById(`chk-${lang}`);
-        if (checkbox && !checkbox.checked) {
-            checkbox.checked = true;
-            updateVisibility();
-        }
-        
-        alert(`${fileName} added to workspace!`);
-        updateFileList();
-    }
-};
-
-window.updateFileList = () => {
-    const container = document.getElementById('file-list-container');
-    const langs = ['html', 'css', 'js'];
-    let html = '';
-
-    langs.forEach(lang => {
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        
-        // Fakt open aslelya files dakhva
-        if (isChecked) {
-            const icon = lang === 'html' ? 'fa-code' : (lang === 'css' ? 'fa-css3-alt' : 'fa-js');
-            const color = lang === 'html' ? '#e34c26' : (lang === 'css' ? '#264de4' : '#f7df1e');
-
-            html += `
-                <div class="file-item">
-                    <div class="file-info">
-                        <i class="fab ${icon}" style="color: ${color}"></i>
-                        <span>index.${lang}</span>
-                    </div>
-                    <div class="file-actions">
-                        <i class="fas fa-trash" onclick="deleteFileFromShutter('${lang}')" title="Remove File"></i>
-                    </div>
-                </div>
-            `;
-        }
-    });
-
-    container.innerHTML = html || '<p style="font-size:12px; opacity:0.5; text-align:center;">No files open</p>';
-};
-
-window.deleteFileFromShutter = (lang) => {
-    if (confirm(`Are you sure you want to close index.${lang}?`)) {
-        const checkbox = document.getElementById(`chk-${lang}`);
-        if (checkbox) {
-            checkbox.checked = false;
-            updateVisibility();
-            updateFileList(); // Refresh list
-        }
-    }
-};
-
-// Toggle Sidebar function update
-window.toggleLeftSidebar = () => {
-    const sidebar = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sidebar.classList.toggle('open');
-    shutter.classList.toggle('active');
-
-    if (sidebar.classList.contains('open')) {
-        updateFileList(); // List refresh kara jeva shutter ughdel
-    }
-};
-
-// Settings madhun visibility badalli ki list update kara
-const oldUpdateVisibility = window.updateVisibility;
-window.updateVisibility = () => {
-    const langs = ['html', 'css', 'js'];
-    langs.forEach(lang => {
-        const box = document.getElementById(`${lang}-code`).closest('.editor-box');
-        const isChecked = document.getElementById(`chk-${lang}`).checked;
-        box.style.display = isChecked ? 'flex' : 'none';
-    });
-    if (typeof updateFileList === 'function') updateFileList();
-};
-
-
