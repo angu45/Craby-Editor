@@ -1,4 +1,4 @@
-// --- Window Controls Logic ---
+// --- 1. WINDOW CONTROLS LOGIC ---
 window.initWindowControls = () => {
     document.querySelectorAll('.editor-box').forEach(box => {
         const label = box.querySelector('.label');
@@ -8,7 +8,7 @@ window.initWindowControls = () => {
             ctrl.innerHTML = `
                 <i class="fas fa-minus" title="Minimize" onclick="controlWindow(this, 'min')"></i>
                 <i class="fas fa-expand" title="Fullscreen" onclick="controlWindow(this, 'full')"></i>
-                <i class="fas fa-times" title="Close" onclick="controlWindow(this, 'del')" style="color:#ff4d4d"></i>
+                <i class="fas fa-trash" title="Close" onclick="controlWindow(this, 'del')"></i>
             `;
             label.appendChild(ctrl);
         }
@@ -23,7 +23,7 @@ window.controlWindow = (btn, action) => {
     if (action === 'min') {
         const isHidden = txt.style.display === 'none';
         txt.style.display = isHidden ? 'block' : 'none';
-        box.style.minHeight = isHidden ? "250px" : "40px";
+        box.style.flex = isHidden ? "1" : "0 0 40px";
     } else if (action === 'full') {
         box.classList.toggle('fullscreen-editor');
     } else if (action === 'del') {
@@ -33,21 +33,21 @@ window.controlWindow = (btn, action) => {
     updateFileList();
 };
 
-// --- Shutter Logic ---
+// --- 2. SHUTTER & FILE LIST ---
 window.updateFileList = () => {
     const container = document.getElementById('file-list-container');
     if (!container) return;
-    const names = { html: 'index.html', css: 'style.css', js: 'script.js' };
+    const names = { html: 'INDEX.HTML', css: 'STYLE.CSS', js: 'MAIN.JS' };
     let html = '';
     ['html', 'css', 'js'].forEach(l => {
         if (document.getElementById(`chk-${l}`).checked) {
-            html += `<div style="display:flex; justify-content:space-between; background:rgba(255,255,255,0.05); padding:10px; border-radius:5px; margin-bottom:8px;">
-                <span><i class="far fa-file"></i> ${names[l]}</span>
-                <i class="fas fa-trash" style="cursor:pointer; color:#ff4d4d" onclick="deleteFileFromShutter('${l}')"></i>
+            html += `<div class="file-item">
+                <span><i class="far fa-file-code"></i> ${names[l]}</span>
+                <i class="fas fa-times" onclick="deleteFileFromShutter('${l}')"></i>
             </div>`;
         }
     });
-    container.innerHTML = html || '<p style="font-size:12px;opacity:0.5;text-align:center;">No files open</p>';
+    container.innerHTML = html;
 };
 
 window.deleteFileFromShutter = (l) => {
@@ -61,7 +61,7 @@ window.toggleLeftSidebar = () => {
     updateFileList();
 };
 
-// --- Core Functions ---
+// --- 3. CORE VISIBILITY ---
 window.updateVisibility = () => {
     ['html', 'css', 'js'].forEach(l => {
         const box = document.getElementById(`${l}-code`).closest('.editor-box');
@@ -85,5 +85,4 @@ window.closePreview = () => document.getElementById('preview-overlay').style.dis
 
 window.onload = () => {
     updateVisibility();
-    // theme function jar script.js madhe asel tar ithe call kara
 };
