@@ -27,21 +27,26 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. SIDEBARS & SETTINGS LOGIC ---
+// --- 2. SIDEBARS & SETTINGS LOGIC (Slider Fixes) ---
 function toggleLeftSidebar() {
-    const sb = document.getElementById('leftSidebar');
-    const shutter = document.getElementById('shutterBtn');
-    sb.classList.toggle('open');
-    shutter.classList.toggle('active');
-    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+    const sb = document.getElementById('shutter'); // Shutter cha ID check kara
+    const trigger = document.getElementById('shutter-trigger');
+    if(sb) sb.classList.toggle('open');
+    if(trigger) trigger.classList.toggle('active');
 }
 
 function toggleSettings() {
-    document.getElementById('settingsPanel').classList.toggle('open');
+    const panel = document.getElementById('settings-panel');
+    if(panel) panel.classList.toggle('open');
+}
+
+// Side Panels band karnyasaathi (Optional helper)
+function closePanels() {
+    document.getElementById('shutter')?.classList.remove('open');
+    document.getElementById('settings-panel')?.classList.remove('open');
 }
 
 function updateVisibility() {
-    // Shutter मधील फाईल्सच्या निवडीनुसार एडिटर दाखवणे/लपवणे
     const editors = {
         'html': document.getElementById('box-html'),
         'css': document.getElementById('box-css'),
@@ -58,7 +63,9 @@ function updateThemeAndFont() {
     const font = document.getElementById('font-family-sel').value;
     const fontSize = document.getElementById('font-size-bar').value;
     
-    document.getElementById('fs-display').innerText = fontSize + "px"; 
+    const fsDisplay = document.getElementById('fs-display');
+    if(fsDisplay) fsDisplay.innerText = fontSize + "px"; 
+    
     const theme = themes[themeKey] || themes.dark;
 
     document.documentElement.style.setProperty('--bg', theme.bg);
@@ -68,7 +75,7 @@ function updateThemeAndFont() {
     
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px"; // Slider fix applied here
+        tx.style.fontSize = fontSize + "px";
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
     });
@@ -85,30 +92,34 @@ function updateThemeAndFont() {
 
 // --- 3. FILE SYSTEM & EDITOR CREATION ---
 function addFileToUI(name, id, content = "") {
-    // Shutter Explorer मध्ये फाईल ॲड करणे
-    const fileList = document.getElementById('file-list');
+    const fileList = document.getElementById('shutter-file-list'); // ID updated
+    if(!fileList) return;
+
     const newTab = document.createElement('div');
-    newTab.className = 'file-item';
+    newTab.className = 'shutter-item';
     newTab.id = `tab-${id}`;
     newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent)">(min)</small>`;
-    newTab.onclick = () => restoreBox(id);
+    newTab.onclick = () => { restoreBox(id); toggleLeftSidebar(); };
     fileList.appendChild(newTab);
 
-    // Editor Wrapper मध्ये बॉक्स ॲड करणे
-    const wrapper = document.getElementById('editor-wrapper');
+    const wrapper = document.getElementById('editor-grid'); // ID updated
+    if(!wrapper) return;
+
     const newBox = document.createElement('div');
-    newBox.className = 'editor-box';
+    newBox.className = 'window-frame'; // Class matched to CSS
     newBox.id = `box-${id}`;
     newBox.innerHTML = `
-        <div class="label">
-            <span>${name.toUpperCase()} <i class="fas fa-code"></i></span>
+        <div class="window-header">
+            <span class="window-title">${name.toUpperCase()} <i class="fas fa-code"></i></span>
             <div class="window-controls">
                 <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
                 <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
                 <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
             </div>
         </div>
-        <textarea id="${id}-code" spellcheck="false">${content}</textarea>
+        <div class="window-body">
+            <textarea id="${id}-code" spellcheck="false">${content}</textarea>
+        </div>
     `;
     wrapper.appendChild(newBox);
     
@@ -119,7 +130,7 @@ function addFileToUI(name, id, content = "") {
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; document.getElementById(`status-${id}`).style.display = 'inline'; }
 function restoreBox(id) { document.getElementById(`box-${id}`).style.display = 'flex'; document.getElementById(`status-${id}`).style.display = 'none'; }
 function expandBox(id) {
-    const boxes = document.querySelectorAll('.editor-box');
+    const boxes = document.querySelectorAll('.window-frame');
     const current = document.getElementById(`box-${id}`);
     if (current.style.flex === "10") { boxes.forEach(b => b.style.flex = "1"); }
     else { boxes.forEach(b => b.style.flex = "0.1"); current.style.flex = "10"; current.style.display = "flex"; }
@@ -205,37 +216,42 @@ function updateActive(items) { items.forEach((it, i) => it.classList.toggle('act
 
 // --- 5. TOOLBAR ACTIONS ---
 function runCode() {
-    document.getElementById('preview-overlay').style.display = 'flex';
+    const overlay = document.getElementById('preview-overlay');
+    if(overlay) overlay.style.display = 'flex';
     const h = document.getElementById('html-code')?.value || '';
     const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
     const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
-    const out = document.getElementById('output').contentWindow.document;
-    out.open(); out.write(h + c + j); out.close();
+    const frame = document.getElementById('output-frame');
+    if(frame) {
+        const out = frame.contentWindow.document;
+        out.open(); out.write(h + c + j); out.close();
+    }
 }
 
 function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
-function setDevice(m) { document.getElementById('wrapper').className = 'iframe-wrapper ' + (m==='mobile'?'mobile':''); }
 
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
+        tx.value = tx.value.replace(/>\s+</g, '><').replace(/</g, '>\n<').replace(/;/g, ';\n  ');
     });
 }
 
 function exportCode() {
-    const blob = new Blob([document.getElementById('html-code').value], {type: "text/html"});
+    const html = document.getElementById('html-code')?.value || '';
+    const blob = new Blob([html], {type: "text/html"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-// --- 6. INITIAL LOAD (Default 2 Files) ---
+// --- 6. INITIAL LOAD ---
 window.onload = () => { 
-    // डिफॉल्ट फक्त १ HTML आणि १ CSS
     addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
     addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; font-family: sans-serif; }");
     
-    // Theme आणि Slider रिफ्रेश
-    document.getElementById('theme-sel').value = 'dark'; 
+    const themeSel = document.getElementById('theme-sel');
+    if(themeSel) themeSel.value = 'dark'; 
     updateThemeAndFont(); 
 };
 
-document.addEventListener('mousedown', (e) => { if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none'; });
+document.addEventListener('mousedown', (e) => { 
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none'; 
+});
