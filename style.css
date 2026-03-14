@@ -22,10 +22,10 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Body scroll honar nahi, header fix rahil */
+    overflow: hidden; 
 }
 
-/* --- 2. HEADER: FIXED (Sakal sarkh gayab honar nahi) --- */
+/* --- 2. HEADER: FIXED --- */
 header {
     height: 60px;
     background: var(--bg-header);
@@ -36,7 +36,7 @@ header {
     border-bottom: 2px solid var(--accent);
     position: sticky; 
     top: 0;
-    z-index: 1001; /* Saglyanchya var header rahil */
+    z-index: 1001; 
 }
 
 .logo-container { display: flex; align-items: center; gap: 10px; }
@@ -54,39 +54,57 @@ header {
     cursor: pointer;
 }
 
+/* Download/Settings button icons theme color follow kartil */
+.icon-btn i { color: var(--accent); }
+
 .run-btn {
     background: var(--accent) !important;
     color: #000 !important;
     font-weight: bold;
 }
 
-/* --- 3. EDITOR AREA --- */
+/* --- 3. SMART EDITOR AREA (Auto-Height Logic) --- */
 .main-container {
     flex: 1;
-    overflow-y: auto; /* Fakt ha area scroll hoil */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Main scroll band kela aahe jyamule editors screen fit hoti */
     padding: 10px;
 }
 
 .editor-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    height: 100%; /* Purna height vaparnar */
+    gap: 10px;
 }
 
-/* --- 4. WINDOW BOX & TEXTAREA (Full Fill Logic) --- */
+/* --- 4. WINDOW BOX & TEXTAREA --- */
 .window-frame {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    min-height: 250px; /* Box chi size nit rahil */
+    flex: 1; /* Hya mule jevdhya files open astil tevdhi jaga automatic vatli jail */
+    min-height: 40px; 
     overflow: hidden;
+    transition: flex 0.3s ease;
+}
+
+/* Fullscreen Mode Class */
+.window-frame.fullscreen {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 60px);
+    z-index: 500;
 }
 
 .window-header {
     background: var(--window-header-bg);
-    padding: 10px 15px;
+    padding: 8px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -96,7 +114,21 @@ header {
 
 .window-title { font-size: 11px; font-weight: 800; color: var(--accent); }
 
-/* Textarea purna box fill karel */
+/* Control Buttons Size Choti kelye */
+.window-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.window-controls i { 
+    cursor: pointer; 
+    font-size: 11px; /* Size Choti kelye */
+    color: var(--accent); /* Theme color logic */
+    opacity: 0.7;
+}
+
+.window-controls i:hover { opacity: 1; }
+
 .window-body {
     flex: 1;
     display: flex;
@@ -108,7 +140,7 @@ textarea {
     background: transparent;
     border: none;
     color: #9cdcfe;
-    padding: 15px;
+    padding: 12px;
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     line-height: 1.5;
@@ -118,7 +150,7 @@ textarea {
     overflow: auto;
 }
 
-/* --- 5. SHUTTER (Aadhi sarkhch rahil) --- */
+/* --- 5. SHUTTER --- */
 #shutter-trigger {
     position: fixed;
     left: 0;
@@ -147,7 +179,7 @@ textarea {
 
 .shutter.open { left: 0; }
 
-/* --- 6. SETTINGS PANEL FIX --- */
+/* --- 6. SETTINGS PANEL --- */
 .settings-panel {
     position: fixed;
     right: -320px;
@@ -159,7 +191,7 @@ textarea {
     transition: 0.3s ease;
     z-index: 2000;
     padding: 20px;
-    visibility: hidden; /* Click kelyavarach disel */
+    visibility: hidden;
 }
 
 .settings-panel.open {
@@ -167,7 +199,7 @@ textarea {
     visibility: visible;
 }
 
-/* --- 7. RUN OVERLAY (Preview) --- */
+/* --- 7. RUN OVERLAY --- */
 .preview-overlay {
     position: fixed;
     inset: 0;
