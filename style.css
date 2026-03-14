@@ -1,134 +1,121 @@
-/* --- Original Theme Variables --- */
 :root {
     --bg: #0d1117;
     --panel: #161b22;
     --accent: #ffb400;
-    --text: #9cdcfe;
     --border: #30363d;
+    --text: #d1d5db;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0; padding: 0;
     background: var(--bg);
     color: white;
-    border: none !important; /* Body border remove kely aahe */
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* No body scroll */
 }
 
-/* Header & Buttons - Original Look */
 header {
+    flex: 0 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 15px; background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Original Buttons Look */
+.icon-btn {
+    background: #21262d; border: 1px solid var(--border);
+    color: white; padding: 6px 12px; border-radius: 4px;
+    font-size: 12px; cursor: pointer; margin-left: 5px;
+}
+
+.run-btn { background: var(--accent) !important; color: black !important; font-weight: bold; }
+
+/* Smart Layout Container */
+.main-container {
+    flex: 1; /* Pure screen height occupy karel */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.editor-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 2px; /* Subtle line between editors */
+}
+
+.editor-box {
+    flex: 1; /* Sagle editors saman height ghetil */
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Label - Top Right Buttons Fix */
+.label {
+    background: var(--panel);
+    padding: 6px 15px;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 800;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
+    letter-spacing: 1px;
 }
 
-.icon-btn {
-    background: #21262d;
-    border: 1px solid var(--border);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-left: 5px;
-    transition: 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.icon-btn:hover {
-    background: #30363d;
-    border-color: #8b949e;
-}
-
-.run-btn {
-    background: var(--accent) !important;
-    color: #000 !important;
-    font-weight: bold;
-}
-
-/* Editor Section */
-.main-container { padding: 10px; }
-.editor-section { display: flex; flex-direction: column; gap: 12px; }
-
-.editor-box {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg);
-    overflow: hidden;
-}
-
-/* --- Window Controls (Top Right Fix) --- */
-.label {
-    display: flex;
-    justify-content: space-between; /* Important for Top-Right buttons */
-    align-items: center;
-    padding: 8px 15px;
-    background: var(--panel);
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: bold;
-    border-bottom: 1px solid var(--border);
-}
-
-.window-controls {
-    display: flex;
-    gap: 15px;
-}
-
-.window-controls i {
-    cursor: pointer;
-    font-size: 14px;
-    color: #8b949e;
-    transition: 0.2s;
-}
-
-.window-controls i:hover { color: white; }
+.window-controls { display: flex; gap: 12px; }
+.window-controls i { cursor: pointer; font-size: 12px; opacity: 0.6; }
+.window-controls i:hover { opacity: 1; }
 
 textarea {
+    flex: 1;
     width: 100%;
-    min-height: 250px;
-    padding: 15px;
     background: transparent;
     color: var(--text);
-    border: none;
-    outline: none;
+    border: none; outline: none;
+    padding: 15px;
     font-family: 'Fira Code', monospace;
-    resize: vertical;
+    font-size: 14px;
+    resize: none;
 }
 
-/* Shutter Button & Sidebar */
+/* Shutter Button & Panel */
 #shutterBtn {
     position: fixed; left: 0; top: 50%; transform: translateY(-50%);
-    background: var(--accent); color: #000; padding: 15px 8px;
-    border-radius: 0 8px 8px 0; z-index: 10001; cursor: pointer;
+    background: var(--accent); color: black; padding: 12px 6px;
+    border-radius: 0 5px 5px 0; z-index: 1000; cursor: pointer;
 }
-
-#shutterBtn.active { left: 260px; transform: translateY(-50%) rotate(180deg); }
 
 .left-sidebar {
-    position: fixed; left: -280px; top: 0; width: 260px; height: 100%;
-    background: var(--panel); border-right: 1px solid var(--accent);
-    z-index: 10000; padding: 20px; transition: 0.3s ease;
+    position: fixed; left: -260px; top: 0; width: 250px; height: 100%;
+    background: var(--panel); border-right: 1px solid var(--border);
+    transition: 0.3s; z-index: 999; padding: 20px;
 }
-
 .left-sidebar.open { left: 0; }
 
-/* Settings Panel (Pahilyasarkha) */
+.file-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px; background: rgba(255,255,255,0.05);
+    border-radius: 4px; margin-bottom: 8px; font-size: 12px;
+}
+
+/* Settings Panel Right Side */
 .settings-panel {
-    position: fixed; right: -320px; top: 0; width: 300px; height: 100%;
+    position: fixed; right: -310px; top: 0; width: 300px; height: 100%;
     background: var(--panel); border-left: 1px solid var(--border);
-    padding: 20px; transition: 0.3s ease; z-index: 10005;
+    transition: 0.3s; z-index: 2000; padding: 20px;
 }
 .settings-panel.open { right: 0; }
 
+/* Fullscreen Helper */
 .fullscreen-editor {
-    position: fixed !important; top: 0; left: 0; width: 100% !important;
-    height: 100vh !important; z-index: 10005; background: var(--bg);
+    position: fixed !important; top: 0; left: 0;
+    width: 100% !important; height: 100vh !important;
+    z-index: 3000; background: var(--bg);
 }
