@@ -1,8 +1,15 @@
-// --- 1. CONFIGURATION & DICTIONARY ---
+// --- 1. CONFIGURATION & STATE ---
 const dictionary = {
     html: ['div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul','main','strong','em','hr'],
     css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items'],
     js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
+};
+
+// प्रोजेक्टमधील सर्व फाईल्सचा डेटा साठवण्यासाठी
+let files = {
+    "index.html": { content: "<h1>Welcome to Craby Editor</h1>", type: "html" },
+    "style.css": { content: "h1 { color: #ffb400; text-align: center; font-family: sans-serif; }", type: "css" },
+    "script.js": { content: "console.log('Craby Editor is Ready!');", type: "js" }
 };
 
 const sBox = document.createElement('div');
@@ -12,10 +19,16 @@ document.body.appendChild(sBox);
 let selectedIdx = 0;
 let currentLang = '';
 
-// --- 2. EDITOR CREATION ---
+// --- 2. EDITOR CREATION & UI ---
 function addFileToUI(name, id, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
+
+    // जर आधीच तो बॉक्स असेल तर फक्त दाखवा
+    if(document.getElementById(`box-${id}`)) {
+        document.getElementById(`box-${id}`).style.display = 'flex';
+        return;
+    }
 
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
@@ -26,11 +39,11 @@ function addFileToUI(name, id, content = "") {
             <div class="window-controls">
                 <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
                 <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
-                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
+                <i class="fas fa-trash" onclick="deleteBox('${id}', '${name}')"></i>
             </div>
         </div>
         <div class="window-body">
-            <textarea id="${id}-code" spellcheck="false" data-lang="${id}">${content}</textarea>
+            <textarea id="${id}-code" spellcheck="false" data-lang="${id}" oninput="updateFileContent('${name}', this.value)">${content}</textarea>
         </div>
     `;
     wrapper.appendChild(newBox);
@@ -39,7 +52,14 @@ function addFileToUI(name, id, content = "") {
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
 
-// --- 3. AUTO-COMPLETE & POSITION LOGIC ---
+// फाईलचा कंटेंट अपडेट करण्यासाठी फंक्शन
+function updateFileContent(fileName, newContent) {
+    if(files[fileName]) {
+        files[fileName].content = newContent;
+    }
+}
+
+// --- 3. AUTO-COMPLETE LOGIC ---
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
@@ -47,7 +67,6 @@ function attachInputListeners(txt) {
         const char = e.data;
         currentLang = txt.getAttribute('data-lang') || 'html';
 
-        // Auto-Bracket/Pairing
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
@@ -70,30 +89,20 @@ function showSuggestions(txt) {
 
     if (matches.length > 0) {
         selectedIdx = 0;
-        
-        // --- POSITION FIX: Cursor chya exact khali dakhvne ---
-        const { offsetLeft, offsetTop } = getCursorXY(txt, pos);
         const rect = txt.getBoundingClientRect();
         
-        sBox.style.top = `${rect.top + offsetTop + 25}px`; 
-        sBox.style.left = `${rect.left + offsetLeft}px`;
+        // Suggestion box ची पोझिशन थोडी सुधारली आहे
+        sBox.style.top = `${rect.top + 30}px`; 
+        sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
 
         sBox.innerHTML = matches.map((m, i) => `
             <div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
-                <i class="fas fa-bolt" style="font-size:10px; opacity:0.5; margin-right:5px;"></i>${m}
+                <i class="fas fa-bolt" style="font-size:10px; color:var(--accent); margin-right:5px;"></i>${m}
             </div>`).join('');
     } else { sBox.style.display = 'none'; }
 }
 
-// Helper: Cursor chi position calculate karne (X, Y)
-function getCursorXY(textarea, selectionStart) {
-    const { offsetLeft, offsetTop } = textarea;
-    // He basic offset calculation aahe, layout nusar +/- karu shakto
-    return { offsetLeft: 20, offsetTop: textarea.scrollTop + (selectionStart / 10) }; 
-}
-
-// --- 4. AUTO TAG CLOSE & INSERT ---
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
@@ -103,7 +112,6 @@ function insertWord(word, id) {
     
     let wordToInsert = word;
 
-    // VS CODE STYLE AUTO-TAG CLOSE (Fakt HTML sathi)
     if (currentLang === 'html') {
         const selfClosing = ['img', 'br', 'hr', 'input', 'meta', 'link'];
         if (!selfClosing.includes(word.toLowerCase())) {
@@ -115,10 +123,8 @@ function insertWord(word, id) {
 
     txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
     
-    // Cursor position tag chya madhe set karne <h1>|</h1>
     if (currentLang === 'html' && wordToInsert.includes('></')) {
-        const newPos = startPos + word.length + 2; 
-        txt.selectionStart = txt.selectionEnd = newPos;
+        txt.selectionStart = txt.selectionEnd = startPos + word.length + 2;
     }
 
     sBox.style.display = 'none';
@@ -134,20 +140,21 @@ function handleNav(e, txt) {
         else if (e.key === 'Escape') { sBox.style.display = 'none'; }
     }
 }
+
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
-// --- 5. REALITY-BASED RUN CODE ---
+// --- 4. RUN & EXPORT (ZIP System) ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     if (!overlay || !frame) return;
 
     overlay.style.display = 'flex';
-    if(typeof setPreviewSize === "function") setPreviewSize('100%');
 
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    // फाईल्स ऑब्जेक्ट मधून लेटेस्ट डेटा घेणे
+    const h = files["index.html"]?.content || '';
+    const c = `<style>${files["style.css"]?.content || ''}</style>`;
+    const j = `<script>${files["script.js"]?.content || ''}<\/script>`;
 
     const doc = frame.contentWindow.document;
     doc.open();
@@ -155,41 +162,73 @@ function runCode() {
     doc.close();
 }
 
-// --- 6. UTILS & WINDOWS ---
-function beautifyCode() {
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
-    });
-}
 function exportCode() {
+    // index.html मध्ये JSZip लायब्ररी असणे आवश्यक आहे
+    if (typeof JSZip === "undefined") {
+        alert("JSZip library not loaded!");
+        return;
+    }
+
     const zip = new JSZip();
-    
-    // प्रोजेक्टमधील सर्व फाईल्स ZIP मध्ये ॲड करा
     Object.keys(files).forEach(fileName => {
         zip.file(fileName, files[fileName].content);
     });
 
-    // ZIP फाईल तयार करून डाऊनलोड करा
     zip.generateAsync({ type: "blob" }).then(function(content) {
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
-        link.download = "craby_project.zip"; // प्रोजेक्टचे नाव
+        link.download = "Craby_Project.zip";
         link.click();
     });
 }
 
+// --- 5. UTILS ---
+function toggleShutter() {
+    const shutter = document.getElementById('shutter');
+    shutter.classList.toggle('open');
+}
 
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; }
-function restoreBox(id) { 
-    const box = document.getElementById(`box-${id}`);
-    if (box) { box.style.display = 'flex'; box.classList.remove('fullscreen'); }
-}
-function deleteBox(id) { if(confirm("Delete this file?")) document.getElementById(`box-${id}`).remove(); }
 
+function deleteBox(id, fileName) { 
+    if(confirm(`Delete ${fileName}?`)) {
+        document.getElementById(`box-${id}`).remove();
+        delete files[fileName];
+        renderFileList();
+    } 
+}
+
+// टास्कबारमध्ये फाईल्सची लिस्ट दाखवण्यासाठी
+function renderFileList() {
+    const list = document.getElementById('shutter-file-list');
+    if(!list) return;
+    list.innerHTML = "";
+    Object.keys(files).forEach(name => {
+        const div = document.createElement('div');
+        div.className = "file-item";
+        div.innerHTML = `<i class="fas fa-file-code"></i> ${name}`;
+        div.onclick = () => addFileToUI(name, files[name].type, files[name].content);
+        list.appendChild(div);
+    });
+}
+
+// नवीन फाईल ॲड करण्यासाठी
+function addNewFilePrompt() {
+    const name = prompt("Enter file name (e.g. about.html):");
+    if(name) {
+        const ext = name.split('.').pop();
+        files[name] = { content: "", type: ext };
+        renderFileList();
+        addFileToUI(name, ext, "");
+    }
+}
+
+// विंडो लोड झाल्यावर डिफॉल्ट फाईल्स दाखवा
 window.onload = () => { 
-    addFileToUI("index.html", "html", "<h1>Craby Editor</h1>");
-    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
+    renderFileList();
+    addFileToUI("index.html", "html", files["index.html"].content);
+    addFileToUI("style.css", "css", files["style.css"].content);
 };
 
 document.addEventListener('mousedown', (e) => { 
