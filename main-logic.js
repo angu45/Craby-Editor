@@ -238,5 +238,98 @@ window.toggleLeftSidebar = () => {
     const shutter = document.getElementById('shutterBtn');
     sidebar.classList.toggle('open');
     shutter.classList.toggle('active');
+};// --- FILE MANAGEMENT LOGIC ---
+
+window.addNewFile = () => {
+    const fileName = prompt("Enter file name (e.g. index.html, style.css):");
+    
+    if (fileName) {
+        const extension = fileName.split('.').pop().toLowerCase();
+        let lang = '';
+        
+        if (extension === 'html') lang = 'html';
+        else if (extension === 'css') lang = 'css';
+        else if (extension === 'js') lang = 'js';
+        else {
+            alert("Please use .html, .css, or .js extension!");
+            return;
+        }
+
+        // Window open kara jar ti closed asel
+        const checkbox = document.getElementById(`chk-${lang}`);
+        if (checkbox && !checkbox.checked) {
+            checkbox.checked = true;
+            updateVisibility();
+        }
+        
+        alert(`${fileName} added to workspace!`);
+        updateFileList();
+    }
 };
+
+window.updateFileList = () => {
+    const container = document.getElementById('file-list-container');
+    const langs = ['html', 'css', 'js'];
+    let html = '';
+
+    langs.forEach(lang => {
+        const isChecked = document.getElementById(`chk-${lang}`).checked;
+        
+        // Fakt open aslelya files dakhva
+        if (isChecked) {
+            const icon = lang === 'html' ? 'fa-code' : (lang === 'css' ? 'fa-css3-alt' : 'fa-js');
+            const color = lang === 'html' ? '#e34c26' : (lang === 'css' ? '#264de4' : '#f7df1e');
+
+            html += `
+                <div class="file-item">
+                    <div class="file-info">
+                        <i class="fab ${icon}" style="color: ${color}"></i>
+                        <span>index.${lang}</span>
+                    </div>
+                    <div class="file-actions">
+                        <i class="fas fa-trash" onclick="deleteFileFromShutter('${lang}')" title="Remove File"></i>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    container.innerHTML = html || '<p style="font-size:12px; opacity:0.5; text-align:center;">No files open</p>';
+};
+
+window.deleteFileFromShutter = (lang) => {
+    if (confirm(`Are you sure you want to close index.${lang}?`)) {
+        const checkbox = document.getElementById(`chk-${lang}`);
+        if (checkbox) {
+            checkbox.checked = false;
+            updateVisibility();
+            updateFileList(); // Refresh list
+        }
+    }
+};
+
+// Toggle Sidebar function update
+window.toggleLeftSidebar = () => {
+    const sidebar = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+    sidebar.classList.toggle('open');
+    shutter.classList.toggle('active');
+
+    if (sidebar.classList.contains('open')) {
+        updateFileList(); // List refresh kara jeva shutter ughdel
+    }
+};
+
+// Settings madhun visibility badalli ki list update kara
+const oldUpdateVisibility = window.updateVisibility;
+window.updateVisibility = () => {
+    const langs = ['html', 'css', 'js'];
+    langs.forEach(lang => {
+        const box = document.getElementById(`${lang}-code`).closest('.editor-box');
+        const isChecked = document.getElementById(`chk-${lang}`).checked;
+        box.style.display = isChecked ? 'flex' : 'none';
+    });
+    if (typeof updateFileList === 'function') updateFileList();
+};
+
 
