@@ -1,8 +1,8 @@
 // --- 1. CONFIGURATION & DICTIONARY ---
 const dictionary = {
-    html: ['div','span','h1','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul'],
-    css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition'],
-    js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor']
+    html: ['div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul','main','strong','em','hr'],
+    css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items'],
+    js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
 };
 
 const sBox = document.createElement('div');
@@ -30,7 +30,7 @@ function addFileToUI(name, id, content = "") {
             </div>
         </div>
         <div class="window-body">
-            <textarea id="${id}-code" spellcheck="false">${content}</textarea>
+            <textarea id="${id}-code" spellcheck="false" data-lang="${id}">${content}</textarea>
         </div>
     `;
     wrapper.appendChild(newBox);
@@ -39,14 +39,15 @@ function addFileToUI(name, id, content = "") {
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
 
-// --- 3. AUTO-COMPLETE ENGINE ---
+// --- 3. AUTO-COMPLETE & POSITION LOGIC ---
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const val = txt.value;
         const char = e.data;
-        currentLang = txt.id.split('-')[0];
+        currentLang = txt.getAttribute('data-lang') || 'html';
 
+        // Auto-Bracket/Pairing
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
             txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
@@ -64,25 +65,62 @@ function showSuggestions(txt) {
     const lastWord = words[words.length - 1].toLowerCase();
 
     if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
-    const matches = dictionary[currentLang].filter(word => word.startsWith(lastWord));
+    
+    const matches = (dictionary[currentLang] || []).filter(word => word.startsWith(lastWord));
 
     if (matches.length > 0) {
         selectedIdx = 0;
+        
+        // --- POSITION FIX: Cursor chya exact khali dakhvne ---
+        const { offsetLeft, offsetTop } = getCursorXY(txt, pos);
         const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 30}px`; 
-        sBox.style.left = `${rect.left + 20}px`;
+        
+        sBox.style.top = `${rect.top + offsetTop + 25}px`; 
+        sBox.style.left = `${rect.left + offsetLeft}px`;
         sBox.style.display = 'block';
-        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
+
+        sBox.innerHTML = matches.map((m, i) => `
+            <div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
+                <i class="fas fa-bolt" style="font-size:10px; opacity:0.5; margin-right:5px;"></i>${m}
+            </div>`).join('');
     } else { sBox.style.display = 'none'; }
 }
 
+// Helper: Cursor chi position calculate karne (X, Y)
+function getCursorXY(textarea, selectionStart) {
+    const { offsetLeft, offsetTop } = textarea;
+    // He basic offset calculation aahe, layout nusar +/- karu shakto
+    return { offsetLeft: 20, offsetTop: textarea.scrollTop + (selectionStart / 10) }; 
+}
+
+// --- 4. AUTO TAG CLOSE & INSERT ---
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
-    txt.value = txt.value.substring(0, startPos) + word + txt.value.substring(pos);
+    
+    let wordToInsert = word;
+
+    // VS CODE STYLE AUTO-TAG CLOSE (Fakt HTML sathi)
+    if (currentLang === 'html') {
+        const selfClosing = ['img', 'br', 'hr', 'input', 'meta', 'link'];
+        if (!selfClosing.includes(word.toLowerCase())) {
+            wordToInsert = `<${word}></${word}>`;
+        } else {
+            wordToInsert = `<${word}>`;
+        }
+    }
+
+    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
+    
+    // Cursor position tag chya madhe set karne <h1>|</h1>
+    if (currentLang === 'html' && wordToInsert.includes('></')) {
+        const newPos = startPos + word.length + 2; 
+        txt.selectionStart = txt.selectionEnd = newPos;
+    }
+
     sBox.style.display = 'none';
     txt.focus();
 }
@@ -93,57 +131,34 @@ function handleNav(e, txt) {
         if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
         else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
         else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+        else if (e.key === 'Escape') { sBox.style.display = 'none'; }
     }
 }
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
-// --- 4. UPDATED REALITY-BASED RUN CODE ---
+// --- 5. REALITY-BASED RUN CODE ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
-    
-    if (!overlay || !frame) {
-        alert("Preview setup incomplete! Please check IDs.");
-        return;
-    }
+    if (!overlay || !frame) return;
 
-    // Overlay dakhva
     overlay.style.display = 'flex';
-    
-    // By default Desktop view set kara (Reality based logic)
-    if(typeof setPreviewSize === "function") {
-        setPreviewSize('100%');
-    }
+    if(typeof setPreviewSize === "function") setPreviewSize('100%');
 
-    // Sagle codes ekatra kara
-    const htmlCode = document.getElementById('html-code')?.value || '';
-    const cssCode = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const jsCode = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    const h = document.getElementById('html-code')?.value || '';
+    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
+    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
 
-    // Iframe content write kara (Real Document structure sobat)
     const doc = frame.contentWindow.document;
     doc.open();
-    doc.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            ${cssCode}
-        </head>
-        <body style="margin:0; padding:0;">
-            ${htmlCode}
-            ${jsCode}
-        </body>
-        </html>
-    `);
+    doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">${c}</head><body>${h}${j}</body></html>`);
     doc.close();
 }
 
-// --- 5. OTHER ACTIONS ---
+// --- 6. UTILS & WINDOWS ---
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = tx.value.replace(/>\s+</g, '><').replace(/</g, '>\n<').replace(/;/g, ';\n  ');
+        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
     });
 }
 
@@ -153,26 +168,19 @@ function exportCode() {
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
 }
 
-// --- 6. WINDOW CONTROLS ---
-function expandBox(id) {
-    const targetBox = document.getElementById(`box-${id}`);
-    targetBox.classList.toggle('fullscreen');
-}
-
-function minimizeBox(id) {
-    document.getElementById(`box-${id}`).style.display = 'none';
-}
-
-function restoreBox(id) {
+function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; }
+function restoreBox(id) { 
     const box = document.getElementById(`box-${id}`);
     if (box) { box.style.display = 'flex'; box.classList.remove('fullscreen'); }
 }
-
-function deleteBox(id) { 
-    if(confirm("Delete this file?")) document.getElementById(`box-${id}`).remove(); 
-}
+function deleteBox(id) { if(confirm("Delete this file?")) document.getElementById(`box-${id}`).remove(); }
 
 window.onload = () => { 
     addFileToUI("index.html", "html", "<h1>Craby Editor</h1>");
-    addFileToUI("style.css", "css", "h1 { color: orange; text-align: center; }");
+    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; }");
 };
+
+document.addEventListener('mousedown', (e) => { 
+    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none'; 
+});
