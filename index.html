@@ -10,19 +10,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-</head>
-<body>
+</head><body>
 
 <header>
     <div class="logo-container">
-        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
-        <h1 class="logo-text">Craby Smart Layout</h1>
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
+        <span class="logo-text">Craby Editor</span>
     </div>
     <div class="header-actions">
-        <button id="run-btn" class="run-btn icon-btn"><i class="fas fa-play"></i> Run</button>
-        <button id="settings-btn" class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+        <button class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
+        <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
     </div>
 </header>
+
+<div id="shutter-trigger" onclick="toggleShutter()">
+    <i class="fas fa-chevron-right"></i>
+</div>
 
 <div class="main-container">
     <div id="editor-grid" class="editor-grid">
@@ -30,65 +33,22 @@
 </div>
 
 <div id="shutter" class="shutter">
-    <div class="shutter-header">
-        <h4><i class="fas fa-folder-open"></i> Taskbar</h4>
-        <i class="fas fa-times close-shutter" onclick="toggleShutter()"></i>
+    <div style="display:flex; justify-content:space-between; color:var(--accent); margin-bottom:20px;">
+        <h3>FILES</h3>
+        <i class="fas fa-times" onclick="toggleShutter()" style="cursor:pointer"></i>
     </div>
-    
-    <button class="add-file-btn" onclick="addNewFilePrompt()">
-        <i class="fas fa-plus"></i> NEW FILE
-    </button>
-
-    <div id="shutter-file-list" class="shutter-file-list">
-        </div>
+    <div id="shutter-file-list"></div>
 </div>
 
-<div id="preview-overlay" class="preview-overlay">
-    <div class="overlay-header">
-        <div class="logo-container">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
-            <span class="logo-text">Live Preview</span>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
-            <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
-            <button class="icon-btn overlay-cancel-btn" onclick="closePreview()"><b>Close</b></button>
-        </div>
+<div id="settings-panel" class="settings-panel">
+    <div style="display:flex; justify-content:space-between; color:var(--accent); margin-bottom:20px;">
+        <h3>IDE SETTINGS</h3>
+        <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer"></i>
     </div>
-    <div class="overlay-body">
-        <div id="iframe-wrapper" class="iframe-wrapper">
-            <iframe id="output-frame"></iframe>
-        </div>
     </div>
-</div>
-
-<div class="settings-panel" id="settings-panel">
-    <div class="settings-header">
-        <h3><i class="fas fa-sliders-h"></i> Settings</h3>
-        <i class="fas fa-times" onclick="toggleSettings()"></i>
-    </div>
-    <div class="settings-group">
-        <label>Theme</label>
-        <select id="theme-select" onchange="updateTheme()">
-            <option value="dark">Dark (GitHub)</option>
-            <option value="light">Light</option>
-            <option value="monokai">Monokai</option>
-            <option value="dracula">Dracula</option>
-            <option value="cyberpunk">Cyberpunk</option>
-            <option value="oceanic">Oceanic</option>
-        </select>
-    </div>
-    <div class="settings-group">
-        <label>Font Size (Editor)</label>
-        <input type="range" id="font-size-slider" min="10" max="24" value="14" oninput="updateFontSize()">
-    </div>
-    <div class="settings-group-btns">
-        <button class="settings-btn" onclick="beautifyCode()"><i class="fas fa-magic"></i> Beautify All</button>
-        <button class="settings-btn" onclick="exportCode()"><i class="fas fa-download"></i> Export Project</button>
-    </div>
-</div>
 
 <script src="main-logic.js"></script>
+</body>
 
 </body>
 </html>
