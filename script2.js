@@ -1,5 +1,4 @@
 // --- 1. SHUTTER (LEFT SIDEBAR) LOGIC ---
-
 function toggleShutter() {
     const shutter = document.getElementById('shutter');
     const trigger = document.getElementById('shutter-trigger');
@@ -18,54 +17,40 @@ function toggleShutter() {
     }
 }
 
-function addNewFilePrompt() {
-    const fileName = prompt("Navin file che naav dya (e.g. index.html, style.css, main.js):");
-    
-    if (fileName && fileName.trim() !== "") {
-        const id = fileName.split('.')[0].toLowerCase().replace(/\s+/g, '-') + "-" + Math.floor(Math.random() * 1000);
-        
-        if (typeof addFileToUI === "function") {
-            addFileToUI(fileName, id, "");
-            updateShutterFileList(fileName, id);
-        }
-    }
-}
-
-function updateShutterFileList(name, id) {
-    const list = document.getElementById('shutter-file-list');
-    if (!list) return;
-
-    const item = document.createElement('div');
-    item.className = 'shutter-item';
-    item.style.cssText = "padding:10px; margin-top:5px; background:rgba(255,255,255,0.05); border-radius:4px; cursor:pointer; font-size:13px;";
-    item.id = `tab-${id}`;
-    item.innerHTML = `<span><i class="fas fa-file-code" style="color:var(--accent);"></i> ${name}</span>`;
-    
-    item.onclick = () => {
-        if (typeof restoreBox === "function") {
-            restoreBox(id);
-            toggleShutter();
-        }
-    };
-    list.appendChild(item);
-}
-
-// --- 2. SETTINGS PANEL (RIGHT SIDEBAR) LOGIC ---
-
+// --- 2. SETTINGS PANEL (RIGHT SIDEBAR) FIX ---
 function toggleSettings() {
-    // HTML madhe 'settingsPanel' ID aahe
+    // Tumchya HTML madhla correct ID 'settingsPanel' aahe
     const panel = document.getElementById('settingsPanel');
-    if (!panel) return;
-
-    panel.classList.toggle('open');
     
+    if (!panel) {
+        console.error("Settings panel ID 'settingsPanel' sapdla nahi!");
+        return;
+    }
+
+    // CSS transition work honyasathi display block asne garjeche aahe
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'block';
+        // Thoda delay jyamule transition effect disel
+        setTimeout(() => {
+            panel.classList.add('open');
+        }, 10);
+    } else {
+        panel.classList.remove('open');
+        // Animation purn jhalya var display none karne
+        setTimeout(() => {
+            panel.style.display = 'none';
+        }, 300);
+    }
+    
+    // Jar shutter open asel tar band karne
     const shutter = document.getElementById('shutter');
-    if (shutter && shutter.classList.contains('open') && panel.classList.contains('open')) {
-        toggleShutter();
+    if (shutter && shutter.classList.contains('open')) {
+        shutter.classList.remove('open');
+        document.getElementById('shutter-trigger').style.left = '0';
     }
 }
 
-// Settings: Editors Show/Hide Logic
+// Settings: Editors Show/Hide
 function updateVisibility() {
     const htmlBox = document.getElementById('box-html');
     const cssBox = document.getElementById('box-css');
@@ -76,7 +61,7 @@ function updateVisibility() {
     if(jsBox) jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
 }
 
-// Settings: Theme aani Font Change Logic
+// Settings: Theme aani Font Change
 function updateThemeAndFont() {
     const fontFamily = document.getElementById('font-family-sel').value;
     const theme = document.getElementById('theme-sel').value;
@@ -84,39 +69,15 @@ function updateThemeAndFont() {
 
     textareas.forEach(ta => {
         ta.style.fontFamily = fontFamily;
-        // Theme badalnyache logic (main-logic.js madhe aslyas tithe apply hoil)
-        applyThemeToEditor(ta, theme); 
     });
+    // Yethil theme logic main-logic.js madhle asave
 }
 
-function applyThemeToEditor(el, theme) {
-    // Basic theme colors
-    const themes = {
-        'dark': { bg: '#161b22', text: '#9cdcfe' },
-        'monokai': { bg: '#272822', text: '#f8f8f2' },
-        'dracula': { bg: '#282a36', text: '#f8f8f2' },
-        'cyberpunk': { bg: '#000', text: '#0ff' },
-        'matrix': { bg: '#000', text: '#0f0' }
-    };
-    
-    if (themes[theme]) {
-        el.parentElement.style.background = themes[theme].bg;
-        el.style.color = themes[theme].text;
-    }
-}
-
-// --- 3. CORE ACTION FUNCTIONS ---
-
+// --- 3. OTHER ACTIONS ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
-    if (!overlay) return;
-
-    overlay.style.display = 'flex';
-
-    // main-logic.js madhle code execution trigger karne
-    if (typeof updatePreview === "function") {
-        updatePreview();
-    }
+    if (overlay) overlay.style.display = 'flex';
+    if (typeof updatePreview === "function") updatePreview();
 }
 
 function closePreview() {
@@ -124,33 +85,25 @@ function closePreview() {
 }
 
 function exportCode() {
-    alert("Project Download hot aahe...");
-    // main-logic.js madhle download logic asel tar te call kara
-    if (typeof downloadProject === "function") {
-        downloadProject();
-    }
-}
-
-function beautifyCode() {
-    alert("Code Format kela jat aahe...");
-    // Prettier kiwa itar library che logic yethil
+    if (typeof downloadProject === "function") downloadProject();
+    else alert("Project Exporting...");
 }
 
 // --- 4. INITIAL SYNC ---
-
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        const defaultFiles = [
-            { name: "index.html", id: "html" },
-            { name: "style.css", id: "css" },
-            { name: "main.js", id: "js" }
-        ];
-
-        defaultFiles.forEach(file => {
-            // Check karne ki main-logic ne he boxes create kele aahet ka
-            if (document.getElementById(`box-${file.id}`)) {
-                updateShutterFileList(file.name, file.id);
-            }
-        });
-    }, 800);
+        const list = document.getElementById('shutter-file-list');
+        if(list) {
+            // Default list items yethil
+            const files = ["index.html", "style.css", "main.js"];
+            files.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'shutter-item';
+                div.style.padding = "10px";
+                div.style.cursor = "pointer";
+                div.innerHTML = `<i class="fas fa-file-code"></i> ${f}`;
+                list.appendChild(div);
+            });
+        }
+    }, 1000);
 });
