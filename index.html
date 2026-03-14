@@ -1,92 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Craby Editor - Smart Mobile-First Code Editor</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/q3zXdVb3/1000176146-removebg-preview.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> </head>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<div id="shutterBtn" onclick="toggleLeftSidebar()">
-    <i class="fas fa-chevron-right"></i>
+<header>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        <h1 class="logo-text">Craby Smart Layout</h1>
+    </div>
+    <div class="header-actions">
+        <button id="run-btn" class="run-btn icon-btn"><i class="fas fa-play"></i> Run</button>
+        <button id="settings-btn" class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+    </div>
+</header>
+
+<div class="main-container">
+    <div id="editor-grid" class="editor-grid">
+        </div>
 </div>
 
-<div class="left-sidebar" id="leftSidebar">
-    <div class="sidebar-header" style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-        <h4>EXPLORER</h4>
-        <i class="fas fa-times" onclick="toggleLeftSidebar()" style="cursor:pointer; color:var(--accent)"></i>
+<div id="shutter" class="shutter">
+    <div class="shutter-header">
+        <h4><i class="fas fa-folder-open"></i> Taskbar</h4>
+        <i class="fas fa-times close-shutter" onclick="toggleShutter()"></i>
     </div>
     
-    <button class="icon-btn new-file-btn" onclick="addNewFile()">
+    <button class="add-file-btn" onclick="addNewFilePrompt()">
         <i class="fas fa-plus"></i> NEW FILE
     </button>
 
-    <div class="file-list" id="file-list-container">
+    <div id="shutter-file-list" class="shutter-file-list">
         </div>
-</div>
-
-<div class="main-container">
-    <div class="editor-section" id="editorSection">
-        <div class="editor-box">
-            <div class="label">
-                <span>HTML <i class="fas fa-code"></i></span>
-                <div class="window-actions">
-                    <i class="fas fa-minus" onclick="toggleMinimize('html-code')" title="Minimize"></i>
-                    <i class="fas fa-expand" onclick="toggleFullscreen('html-code')" title="Fullscreen"></i>
-                    <i class="fas fa-trash" onclick="deleteFile('html-code')" title="Delete"></i>
-                </div>
-            </div>
-            <textarea id="html-code" spellcheck="false"><!DOCTYPE html>
-<html>
-<body>
-    <h1>Welcome to Craby Editor</h1>
-</body>
-</html></textarea>
-        </div>
-        
-        <div class="editor-box">
-            <div class="label">
-                <span>CSS <i class="fas fa-paint-brush"></i></span>
-                <div class="window-actions">
-                    <i class="fas fa-minus" onclick="toggleMinimize('css-code')" title="Minimize"></i>
-                    <i class="fas fa-expand" onclick="toggleFullscreen('css-code')" title="Fullscreen"></i>
-                    <i class="fas fa-trash" onclick="deleteFile('css-code')" title="Delete"></i>
-                </div>
-            </div>
-            <textarea id="css-code" spellcheck="false">h1 { 
-    color: #ffb400; 
-}</textarea>
-        </div>
-        
-        <div class="editor-box">
-            <div class="label">
-                <span>JS <i class="fab fa-js"></i></span>
-                <div class="window-actions">
-                    <i class="fas fa-minus" onclick="toggleMinimize('js-code')" title="Minimize"></i>
-                    <i class="fas fa-expand" onclick="toggleFullscreen('js-code')" title="Fullscreen"></i>
-                    <i class="fas fa-trash" onclick="deleteFile('js-code')" title="Delete"></i>
-                </div>
-            </div>
-            <textarea id="js-code" spellcheck="false">console.log('Smart Height Active');</textarea>
-        </div>
-    </div>
 </div>
 
 <div id="preview-overlay" class="preview-overlay">
     <div class="overlay-header">
         <div class="logo-container">
-            <span class="logo-text">LIVE PREVIEW</span>
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
+            <span class="logo-text">Live Preview</span>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="icon-btn" onclick="allowFullscreen()"><i class="fas fa-desktop"></i></button>
-            <button class="icon-btn" style="background: #ff4d4d !important; color: white !important; border:none;" onclick="closePreview()"><b>CANCEL</b></button>
+        <div style="display: flex; gap: 8px;">
+            <button class="icon-btn" onclick="setDevice('desktop')"><i class="fas fa-desktop"></i></button>
+            <button class="icon-btn" onclick="setDevice('mobile')"><i class="fas fa-mobile-alt"></i></button>
+            <button class="icon-btn overlay-cancel-btn" onclick="closePreview()"><b>Close</b></button>
         </div>
     </div>
     <div class="overlay-body">
-        <div id="wrapper" class="iframe-wrapper">
-            <iframe id="output"></iframe>
+        <div id="iframe-wrapper" class="iframe-wrapper">
+            <iframe id="output-frame"></iframe>
         </div>
     </div>
 </div>
 
-<script src="main-logic.js"></script> </body>
+<div class="settings-panel" id="settings-panel">
+    <div class="settings-header">
+        <h3><i class="fas fa-sliders-h"></i> Settings</h3>
+        <i class="fas fa-times" onclick="toggleSettings()"></i>
+    </div>
+    <div class="settings-group">
+        <label>Theme</label>
+        <select id="theme-select" onchange="updateTheme()">
+            <option value="dark">Dark (GitHub)</option>
+            <option value="light">Light</option>
+            <option value="monokai">Monokai</option>
+            <option value="dracula">Dracula</option>
+            <option value="cyberpunk">Cyberpunk</option>
+            <option value="oceanic">Oceanic</option>
+        </select>
+    </div>
+    <div class="settings-group">
+        <label>Font Size (Editor)</label>
+        <input type="range" id="font-size-slider" min="10" max="24" value="14" oninput="updateFontSize()">
+    </div>
+    <div class="settings-group-btns">
+        <button class="settings-btn" onclick="beautifyCode()"><i class="fas fa-magic"></i> Beautify All</button>
+        <button class="settings-btn" onclick="exportCode()"><i class="fas fa-download"></i> Export Project</button>
+    </div>
+</div>
+
+<script src="main-logic.js"></script>
+
+</body>
 </html>
