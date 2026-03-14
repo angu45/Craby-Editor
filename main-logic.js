@@ -47,15 +47,16 @@ function addFileToUI(name, type, content = "") {
                 <i class="fas fa-trash" onclick="deleteBox('${safeId}', '${name}')" title="Delete"></i>
             </div>
         </div>
-        <div class="window-body editor-container" style="display: flex; position: relative; background: #0d1b1e;">
+        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
             <div class="line-numbers" id="${safeId}-lines" 
                  style="${showLineNumbers ? 'display:block;' : 'display:none;'} 
-                        text-align: right; padding: 10px 10px; border-right: 1px solid #333; 
-                        color: #555; user-select: none; background: rgba(255,255,255,0.03); overflow: hidden; font-weight: bold;">
+                        text-align: right; padding: 10px 5px; border-right: 1.5px solid rgba(255,255,255,0.1); 
+                        color: rgba(255,255,255,0.3); user-select: none; background: transparent; 
+                        overflow: hidden; white-space: nowrap; min-width: 25px;">
                 1.
             </div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
-                style="flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: #d1d1d1; resize: none; white-space: pre; overflow-x: auto;"
+                style="flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: #e0e0e0; resize: none; white-space: pre; overflow: auto; line-height: 1.5;"
                 oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
                 onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
@@ -74,7 +75,7 @@ function updateLineNumbers(safeId) {
 
     const computedStyle = window.getComputedStyle(tx);
     
-    // Exact match for font size and spacing
+    // Font size आणि Line Height मॅच करणे
     lineBox.style.fontSize = computedStyle.fontSize;
     lineBox.style.fontFamily = computedStyle.fontFamily;
     lineBox.style.lineHeight = computedStyle.lineHeight;
@@ -83,10 +84,13 @@ function updateLineNumbers(safeId) {
     const lines = tx.value.split('\n').length;
     let lineHTML = '';
     for(let i = 1; i <= lines; i++) {
-        // Adding dot after number like '1.' as requested
         lineHTML += i + '.<br>';
     }
     lineBox.innerHTML = lineHTML;
+
+    // नंबर्सच्या आकड्यानुसार पॅनची रुंदी आपोआप कमी-जास्त करणे
+    const charCount = lines.toString().length;
+    lineBox.style.width = (charCount * (parseFloat(computedStyle.fontSize) * 0.8)) + "px";
 }
 
 function syncScroll(safeId) {
