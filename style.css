@@ -162,20 +162,28 @@ header {
     height: calc(100vh - 60px); /* Occupies remaining screen height */
 }
 
-.editor-section { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
+.editor-section {
+    display: flex;
+    flex-direction: column; /* Hya mule windows ekmekanchya khali yetil */
+    gap: 15px;             /* Windows madhe thodi jaga rahel */
+    padding: 15px;
     height: 100%;
+    overflow-y: auto;      /* Jar files jast zalya tar scroll karta yeil */
 }
 
-.editor-box { 
-    display: flex; 
-    flex-direction: column; 
-    border-bottom: 1px solid var(--border); 
-    flex: 1; 
-    position: relative; 
-    min-height: 0; /* Prevents flex items from breaking layout */
+.editor-box {
+    flex: 0 0 auto;        /* Window chi size fix rahel, collapse honar nahi */
+    min-height: 300px;     /* Pratyek window chi kami-t-kami unchi */
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+textarea {
+    flex-grow: 1;          /* Textarea urleli sagli jaga ghel */
+    resize: vertical;      /* User la pahije tashi window mothi karta yeil */
 }
 
 .label { 
