@@ -54,7 +54,6 @@ header {
     cursor: pointer;
 }
 
-/* Download/Settings button icons theme color follow kartil */
 .icon-btn i { color: var(--accent); }
 
 .run-btn {
@@ -63,19 +62,19 @@ header {
     font-weight: bold;
 }
 
-/* --- 3. SMART EDITOR AREA (Auto-Height Logic) --- */
+/* --- 3. SMART EDITOR AREA --- */
 .main-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Main scroll band kela aahe jyamule editors screen fit hoti */
+    overflow: hidden; 
     padding: 10px;
 }
 
 .editor-grid {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Purna height vaparnar */
+    height: 100%; 
     gap: 10px;
 }
 
@@ -86,13 +85,12 @@ header {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    flex: 1; /* Hya mule jevdhya files open astil tevdhi jaga automatic vatli jail */
+    flex: 1; 
     min-height: 40px; 
     overflow: hidden;
     transition: flex 0.3s ease;
 }
 
-/* Fullscreen Mode Class */
 .window-frame.fullscreen {
     position: fixed;
     top: 60px;
@@ -114,7 +112,6 @@ header {
 
 .window-title { font-size: 11px; font-weight: 800; color: var(--accent); }
 
-/* Control Buttons Size Choti kelye */
 .window-controls {
     display: flex;
     gap: 10px;
@@ -122,8 +119,8 @@ header {
 
 .window-controls i { 
     cursor: pointer; 
-    font-size: 11px; /* Size Choti kelye */
-    color: var(--accent); /* Theme color logic */
+    font-size: 11px; 
+    color: var(--accent); 
     opacity: 0.7;
 }
 
@@ -150,7 +147,7 @@ textarea {
     overflow: auto;
 }
 
-/* --- 5. SHUTTER --- */
+/* --- 5. SHUTTER (SMOOTH FIX) --- */
 #shutter-trigger {
     position: fixed;
     left: 0;
@@ -160,13 +157,14 @@ textarea {
     color: #000;
     padding: 15px 8px;
     border-radius: 0 8px 8px 0;
-    z-index: 999;
+    z-index: 2001; /* Shutter chya var pahije */
     cursor: pointer;
+    transition: 0.3s ease; /* Trigger pan slide honyasathi */
 }
 
 .shutter {
     position: fixed;
-    left: -320px;
+    left: -300px; /* Width evdhich minus kara */
     top: 0;
     width: 300px;
     height: 100%;
@@ -175,14 +173,28 @@ textarea {
     transition: 0.3s ease;
     z-index: 2000;
     padding: 20px;
+    display: block !important; /* Display none asel tar transition dist nahi */
 }
 
-.shutter.open { left: 0; }
+.shutter.open { 
+    left: 0; 
+}
 
-/* --- 6. SETTINGS PANEL --- */
+/* Shutter list items style */
+.shutter-item {
+    padding: 10px;
+    margin-bottom: 5px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.shutter-item:hover { background: rgba(255,255,255,0.1); }
+
+/* --- 6. SETTINGS PANEL (FIXED) --- */
 .settings-panel {
     position: fixed;
-    right: -320px;
+    right: -300px;
     top: 0;
     width: 300px;
     height: 100%;
@@ -191,12 +203,11 @@ textarea {
     transition: 0.3s ease;
     z-index: 2000;
     padding: 20px;
-    visibility: hidden;
+    /* Visibility hidden kadhun takle jyamule transition disel */
 }
 
 .settings-panel.open {
     right: 0;
-    visibility: visible;
 }
 
 /* --- 7. RUN OVERLAY --- */
@@ -207,4 +218,19 @@ textarea {
     z-index: 9999;
     display: none;
     flex-direction: column;
+}
+
+.overlay-header {
+    height: 50px;
+    background: #161b22;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+#output-frame {
+    flex: 1;
+    border: none;
+    width: 100%;
 }
