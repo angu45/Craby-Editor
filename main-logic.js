@@ -438,4 +438,30 @@ function exportCode() {
 document.addEventListener('mousedown', (e) => {
     // Hide suggestion box when clicking outside
     if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
-});
+});// Shutter Toggle Function
+function toggleShutter() {
+    document.getElementById('shutter').classList.toggle('open');
+}
+
+// Settings Toggle Function
+function toggleSettings() {
+    document.getElementById('settings-panel').classList.toggle('open');
+}
+
+// Fullscreen Logic
+function toggleFullscreen(id) {
+    const win = document.getElementById(`win-${id}`);
+    if (win.requestFullscreen) {
+        win.requestFullscreen();
+    } else if (win.webkitRequestFullscreen) { /* Safari */
+        win.webkitRequestFullscreen();
+    }
+}
+
+// Minimize Logic (Toggle Display)
+function minimizeWindow(id) {
+    const win = document.getElementById(`win-${id}`);
+    win.style.display = 'none';
+    updateShutter(); // Shutter madhe status change kara
+}
+
