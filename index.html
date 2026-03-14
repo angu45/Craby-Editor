@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craby Editor - Free Online HTML, CSS, JS Editor</title>
+    <title>Craby Editor - Professional Web IDE</title>
     
-    <meta name="description" content="Craby Editor is a powerful and lightweight online HTML editor by Anguworkshop. Write, preview, and export HTML, CSS, and JS code instantly.">
-    <meta name="keywords" content="free online html editor,html editor,Html compiler,Craby Editor, Anguworkshop, Online HTML Editor">
+    <meta name="description" content="Craby Editor is a powerful and lightweight online HTML editor.">
+    <meta name="keywords" content="free online html editor, Craby Editor, Anguworkshop">
     <meta name="author" content="Anguworkshop">
 
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -14,24 +14,65 @@
     
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://craby-editor-ieoz2pm6f-angutais-projects.vercel.app/style.css">
+
+    <style>
+        /* जास्तीची स्टाईल जी दोन्ही लेआउटला मॅच करेल */
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --accent: #ffb400;
+            --border-color: #30363d;
+        }
+        body { background-color: var(--bg); color: white; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; }
+        .icon-btn i { color: var(--accent); }
+        .run-btn { background: rgba(255, 180, 0, 0.1) !important; border: 1px solid var(--accent) !important; color: var(--accent) !important; font-weight: bold; }
+        
+        /* Settings Panel Style */
+        .settings-panel {
+            display: none;
+            position: fixed;
+            right: 20px;
+            top: 70px;
+            width: 320px;
+            background: var(--panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 9999;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .s-group { margin-bottom: 20px; }
+        .s-group label { display: block; font-size: 13px; color: #8b949e; margin-bottom: 8px; }
+        .s-group select, .s-group input {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .checkbox-group { display: flex; gap: 15px; }
+        .checkbox-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; color: white; }
+    </style>
 </head>
 <body>
 
-<header>
-    <div class="logo-container">
-        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
-        <span class="logo-text">Craby Editor</span>
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--border-color);">
+    <div class="logo-container" style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" height="35">
+        <span class="logo-text" style="font-weight: 800; font-size: 1.2rem; letter-spacing: 1px;">CRABY EDITOR</span>
     </div>
-    <div class="header-actions">
-        <button class="icon-btn" title="Format Code"><i class="fas fa-magic" style="color: var(--accent);"></i></button>
-        <button class="icon-btn" onclick="exportCode()" title="Download Project"><i class="fas fa-download" style="color: var(--accent);"></i></button>
-        <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><b><i class="fas fa-play" style="color: var(--accent);"></i> RUN</b></button>
-        <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-cog" style="color: var(--accent);"></i></button>
+    
+    <div class="header-actions" style="display: flex; gap: 15px;">
+        <button class="icon-btn" title="Format Code"><i class="fas fa-magic"></i></button>
+        <button class="icon-btn" onclick="exportCode()" title="Download Project"><i class="fas fa-download"></i></button>
+        <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-sliders-h"></i></button>
     </div>
 </header>
 
-<div id="shutter-trigger" onclick="toggleShutter()">
-    <i class="fas fa-chevron-right"></i>
+<div id="shutter-trigger" onclick="toggleShutter()" style="position: fixed; left: 0; top: 50%; transform: translateY(-50%); background: var(--panel); padding: 10px; border-radius: 0 8px 8px 0; border: 1px solid var(--border-color); cursor: pointer; z-index: 100;">
+    <i class="fas fa-chevron-right" style="color: var(--accent);"></i>
 </div>
 
 <div class="main-container">
@@ -40,62 +81,73 @@
 </div>
 
 <div id="shutter" class="shutter">
-    <div class="shutter-header">
-        <h3>TASKBAR</h3>
-        <i class="fas fa-times" onclick="toggleShutter()"></i>
+    <div class="shutter-header" style="display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border-color);">
+        <h3 style="margin: 0; font-size: 1rem; color: var(--accent);">TASKBAR</h3>
+        <i class="fas fa-times" onclick="toggleShutter()" style="cursor: pointer;"></i>
     </div>
-    <button class="add-btn" onclick="addNewFilePrompt()"><i class="fas fa-plus"></i> NEW FILE</button>
+    <div style="padding: 15px;">
+        <button class="add-btn" onclick="addNewFilePrompt()" style="width: 100%; padding: 10px; background: var(--accent); border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"><i class="fas fa-plus"></i> NEW FILE</button>
+    </div>
     <div id="shutter-file-list" class="shutter-list"></div>
 </div>
 
-<div id="preview-overlay" class="preview-overlay">
-    <div class="overlay-header">
-        <div class="logo-container">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" style="height: 25px;">
-            <span class="logo-text" style="font-size: 1rem;">LIVE PREVIEW</span>
-        </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="icon-btn"><i class="fas fa-desktop" style="color: var(--accent);"></i></button>
-            <button class="icon-btn"><i class="fas fa-mobile-alt" style="color: var(--accent);"></i></button>
-            <button class="close-btn" onclick="closePreview()" style="background: #ff4d4d !important; color: white !important; border:none; padding: 5px 15px; border-radius: 4px; cursor: pointer;"><b>CLOSE</b></button>
-        </div>
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: var(--accent);">IDE Settings</h3>
+        <i class="fas fa-times" onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d;"></i>
     </div>
-    <div class="overlay-body">
-        <div id="wrapper" class="iframe-wrapper">
-            <iframe id="output-frame"></iframe>
-        </div>
-    </div>
-</div>
 
-<div class="settings-panel" id="settingsPanel" style="display: none; position: fixed; right: 20px; top: 80px; background: var(--panel); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; z-index: 1000; width: 300px;">
-    <h3 style="color: var(--accent); display: flex; justify-content: space-between; margin-top: 0;">
-        IDE Settings <i class="fas fa-times" onclick="toggleSettings()" style="cursor:pointer; color: #ff4d4d;"></i>
-    </h3>
-    <div class="s-group" style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Show/Hide Editors</label>
-        <div style="display: flex; gap: 10px; font-size: 12px;">
-            <label><input type="checkbox" id="chk-html" checked=""> HTML</label>
-            <label><input type="checkbox" id="chk-css" checked=""> CSS</label>
+    <div class="s-group">
+        <label>SHOW/HIDE EDITORS</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="chk-html" checked> HTML</label>
+            <label><input type="checkbox" id="chk-css" checked> CSS</label>
             <label><input type="checkbox" id="chk-js"> JS</label>
         </div>
     </div>
-    <div class="s-group" style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Font Family</label>
-        <select id="font-family-sel" style="width: 100%; background: #0d1117; color: white; border: 1px solid var(--border-color); padding: 5px;">
+
+    <div class="s-group">
+        <label>FONT FAMILY</label>
+        <select id="font-family-sel">
             <option value="'Fira Code', monospace">Fira Code</option>
             <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
             <option value="monospace">System Monospace</option>
         </select>
     </div>
-    <div class="s-group" style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 5px; font-size: 14px;">Editor Theme</label>
-        <select id="theme-sel" style="width: 100%; background: #0d1117; color: white; border: 1px solid var(--border-color); padding: 5px;">
-            <option value="dark">Github Dark</option>
+
+    <div class="s-group">
+        <label>EDITOR THEME</label>
+        <select id="theme-sel">
+            <option value="dark">Github Dark (Default)</option>
             <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="matrix">Matrix Green</option>
             <option value="cyberpunk">Cyberpunk Neon</option>
+            <option value="midnight">Midnight Purple</option>
         </select>
     </div>
-    <button onclick="toggleSettings()" class="icon-btn" style="width:100%; background: var(--accent); color: #000; justify-content: center; padding: 10px; border-radius: 4px;"><b>SAVE & CLOSE</b></button>
+
+    <button onclick="toggleSettings()" style="width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<div id="preview-overlay" class="preview-overlay">
+    <div class="overlay-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--border-color);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" height="25">
+            <span style="font-size: 0.9rem; font-weight: bold;">LIVE PREVIEW</span>
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <button class="icon-btn" title="Desktop View"><i class="fas fa-desktop"></i></button>
+            <button class="icon-btn" title="Mobile View"><i class="fas fa-mobile-alt"></i></button>
+            <button onclick="closePreview()" style="background: #ff4d4d; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer;">CLOSE</button>
+        </div>
+    </div>
+    <div class="overlay-body">
+        <div id="wrapper" class="iframe-wrapper" style="height: calc(100vh - 60px); width: 100%;">
+            <iframe id="output-frame" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
+        </div>
+    </div>
 </div>
 
 <div id="suggestion-box" style="display: none;"></div>
@@ -104,10 +156,21 @@
 <script src="script2.js"></script>
 
 <script>
-    // Settings Panel उघडण्यासाठी/बंद करण्यासाठी फंक्शन
+    // Toggle Settings Panel
     function toggleSettings() {
         const panel = document.getElementById('settingsPanel');
-        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+        panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+    }
+
+    // Close Preview (जर तुमच्या फाईलमध्ये नसेल तर)
+    function closePreview() {
+        document.getElementById('preview-overlay').style.display = 'none';
+    }
+
+    // Run Code function (तुमच्या script ला कॉल करेल)
+    function runCode() {
+        document.getElementById('preview-overlay').style.display = 'block';
+        // तुमची मूळ Logic इथे काम करेल
     }
 </script>
 
