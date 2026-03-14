@@ -1,252 +1,241 @@
-// --- 1. CONFIGURATION & DICTIONARY ---
-const dictionary = {
-    html: ['a', 'alt', 'article', 'aside', 'audio', 'b', 'base', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'class', 'code', 'col', 'colgroup', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'height', 'hr', 'html', 'href', 'i', 'id', 'iframe', 'img', 'input', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'meta', 'name', 'nav', 'ol', 'optgroup', 'option', 'p', 'param', 'picture', 'placeholder', 'pre', 'progress', 'q', 'rel', 'required', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'type', 'u', 'ul', 'value', 'var', 'video', 'width'],
-    css: ['absolute', 'align-items', 'animation', 'background', 'background-color', 'border', 'border-radius', 'bottom', 'box-shadow', 'box-sizing', 'clear', 'color', 'column-count', 'content', 'cursor', 'display', 'flex', 'flex-direction', 'flex-wrap', 'float', 'font', 'font-family', 'font-size', 'font-weight', 'gap', 'grid', 'grid-template-columns', 'height', 'inline-block', 'justify-content', 'left', 'letter-spacing', 'line-height', 'margin', 'margin-top', 'max-height', 'min-width', 'none', 'opacity', 'overflow', 'padding', 'pointer', 'position', 'relative', 'right', 'text-align', 'text-decoration', 'top', 'transform', 'transition', 'width', 'z-index'],
-    js: ['addEventListener', 'alert', 'Array', 'async', 'await', 'break', 'catch', 'clearInterval', 'clearTimeout', 'console.log', 'const', 'continue', 'Date', 'default', 'delete', 'document.getElementById', 'document.querySelector', 'else', 'fetch', 'for', 'function', 'if', 'JSON.parse', 'JSON.stringify', 'let', 'Math.floor', 'new', 'null', 'parseFloat', 'parseInt', 'return', 'setInterval', 'setTimeout', 'String', 'switch', 'this', 'typeof', 'undefined', 'var', 'window', 'while']
-};
-
+// --- 1. CONFIGURATION & ALL 12 THEMES ---
 const themes = {
-    dark: { '--bg-main': '#0d1117', '--bg-panel': '#161b22', '--bg-header': '#010409', '--border-color': 'rgba(255,255,255,0.1)', '--accent': '#ffb400', '--text-primary': '#c9d1d9', '--text-textarea': '#9cdcfe', '--shutter-bg': '#161b22', '--window-header-bg': '#21262d' },
-    light: { '--bg-main': '#ffffff', '--bg-panel': '#f8fafc', '--bg-header': '#f1f5f9', '--border-color': '#cbd5e1', '--accent': '#1e40af', '--text-primary': '#0f172a', '--text-textarea': '#111827', '--shutter-bg': '#f1f5f9', '--window-header-bg': '#e2e8f0' }
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
+    light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// --- 2. GLOBAL STATE ---
-let files = [
-    { id: 'f1', name: 'index.html', lang: 'html', content: '<!DOCTYPE html>\n<html>\n<body>\n  <h1>Welcome to Craby Editor</h1>\n</body>\n</html>', minimized: false },
-    { id: 'f2', name: 'style.css', lang: 'css', content: 'h1 { color: #ffb400; text-align: center; }', minimized: false },
-    { id: 'f3', name: 'main.js', lang: 'js', content: 'console.log("Craby Editor is live!");', minimized: false }
-];
-let nextId = 4;
-let sBox = null;
+const dictionary = {
+    html: ['a','alt','article','aside','audio','b','base','body','br','button','canvas','caption','cite','class','code','col','colgroup','datalist','dd','del','details','dfn','dialog','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','h1','h2','h3','h4','h5','h6','head','header','height','hr','html','href','i','id','iframe','img','input','label','legend','li','link','main','map','mark','meta','name','nav','ol','onclick','optgroup','option','p','param','picture','placeholder','pre','progress','q','rel','required','s','samp','script','section','select','small','source','span','strong','style','sub','summary','sup','svg','table','tbody','td','template','textarea','tfoot','th','thead','time','title','tr','track','type','u','ul','value','var','video','width'],
+    css: ['absolute','align-items','animation','background','background-color','border','border-radius','bottom','box-shadow','box-sizing','clear','color','column-count','column-gap','content','cursor','display','flex','flex-direction','flex-wrap','float','font','font-family','font-size','font-style','font-weight','gap','grid','grid-area','grid-template-columns','grid-template-rows','height','inline','inline-block','justify-content','left','letter-spacing','line-height','margin','margin-bottom','margin-left','margin-right','margin-top','max-height','max-width','min-height','min-width','none','opacity','overflow','padding','padding-bottom','padding-left','padding-right','padding-top','pointer','position','relative','right','text-align','text-decoration','text-transform','top','transform','transition','transparent','visibility','width','word-spacing','z-index'],
+    js: ['addEventListener','alert','Array','async','await','break','catch','class','clearInterval','clearTimeout','console','console.log','const','continue','Date','debugger','default','delete','document','document.getElementById','document.querySelector','else','export','fetch','finally','for','forEach','function','if','import','in','instanceof','isNaN','JSON','JSON.parse','JSON.stringify','let','map','Math','Math.floor','Math.random','new','null','Object','parseFloat','parseInt','pop','push','querySelector','querySelectorAll','return','setInterval','setTimeout','shift','slice','some','split','splice','String','this','throw','trim','try','typeof','undefined','var','window','while']
+};
+
+const sBox = document.createElement('div');
+sBox.id = 'suggestion-box';
+document.body.appendChild(sBox);
+
 let selectedIdx = 0;
+let currentLang = '';
 
-// --- 3. INITIALIZATION ---
-window.onload = () => {
-    renderAllFiles();
-    
-    // Create Suggestion Box
-    sBox = document.createElement('div');
-    sBox.id = 'suggestion-box';
-    document.body.appendChild(sBox);
-};
-
-// --- 4. CORE RENDERING LOGIC ---
-function renderAllFiles() {
-    const grid = document.getElementById('editor-grid');
-    grid.innerHTML = '';
-    files.forEach(file => {
-        if (!file.minimized) {
-            createFileWindow(file, grid);
-        }
-    });
-    updateShutter();
-    updateRunButtonState();
-}
-
-function createFileWindow(file, container) {
-    const frame = document.createElement('div');
-    frame.className = 'window-frame';
-    frame.id = `win-${file.id}`;
-
-    frame.innerHTML = `
-        <div class="window-header">
-            <span class="window-title">${file.name}</span>
-            <div class="window-controls">
-                <i class="win-control fas fa-minus" title="Minimize" onclick="minimizeWindow('${file.id}')"></i>
-                <i class="win-control fas fa-expand" title="Fullscreen" onclick="toggleFullscreen('${file.id}')"></i>
-                <i class="win-control fas fa-times" title="Delete" onclick="deleteFile('${file.id}')"></i>
-            </div>
-        </div>
-        <div class="window-body">
-            <textarea id="ta-${file.id}" lang="${file.lang}" spellcheck="false" 
-                oninput="updateFileContent('${file.id}', this.value)" 
-                onkeydown="handleKeyActions(event, '${file.id}')">${file.content}</textarea>
-        </div>
-    `;
-    container.appendChild(frame);
-}
-
-// --- 5. UI CONTROLS (Shutter, Settings, Windows) ---
-function toggleShutter() {
-    document.getElementById('shutter').classList.toggle('open');
+// --- 2. SIDEBARS & SETTINGS LOGIC ---
+function toggleLeftSidebar() {
+    const sb = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+    sb.classList.toggle('open');
+    shutter.classList.toggle('active');
+    shutter.querySelector('i').className = sb.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
 }
 
 function toggleSettings() {
-    document.getElementById('settings-panel').classList.toggle('open');
+    document.getElementById('settingsPanel').classList.toggle('open');
 }
 
-function minimizeWindow(id) {
-    const file = files.find(f => f.id === id);
-    if (file) {
-        file.minimized = true;
-        renderAllFiles();
-    }
+function updateVisibility() {
+    // Shutter मधील फाईल्सच्या निवडीनुसार एडिटर दाखवणे/लपवणे
+    const editors = {
+        'html': document.getElementById('box-html'),
+        'css': document.getElementById('box-css'),
+        'js': document.getElementById('box-js')
+    };
+    
+    if(document.getElementById('chk-html')) editors.html.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    if(document.getElementById('chk-css')) editors.css.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    if(document.getElementById('chk-js')) editors.js.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
 }
 
-function restoreWindow(id) {
-    const file = files.find(f => f.id === id);
-    if (file) {
-        file.minimized = false;
-        renderAllFiles();
-        // Scroll to the restored window
-        setTimeout(() => {
-            const win = document.getElementById(`win-${id}`);
-            if (win) win.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-    }
-}
+function updateThemeAndFont() {
+    const themeKey = document.getElementById('theme-sel').value;
+    const font = document.getElementById('font-family-sel').value;
+    const fontSize = document.getElementById('font-size-bar').value;
+    
+    document.getElementById('fs-display').innerText = fontSize + "px"; 
+    const theme = themes[themeKey] || themes.dark;
 
-function toggleFullscreen(id) {
-    const win = document.getElementById(`win-${id}`);
-    if (!document.fullscreenElement) {
-        win.requestFullscreen().catch(err => alert("Error enabling fullscreen"));
-    } else {
-        document.exitFullscreen();
-    }
-}
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--border-color', theme.border);
+    
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.fontSize = fontSize + "px"; // Slider fix applied here
+        tx.style.color = theme.text;
+        tx.style.background = theme.bg;
+    });
 
-function updateShutter() {
-    const list = document.getElementById('shutter-file-list');
-    list.innerHTML = '';
-    files.forEach(file => {
-        const item = document.createElement('div');
-        item.className = 'shutter-item';
-        item.onclick = () => {
-            if (file.minimized) restoreWindow(file.id);
-            toggleShutter();
-        };
-        item.innerHTML = `
-            <span>${file.name}</span>
-            <span style="font-size:10px; color:${file.minimized ? '#ff4d4d' : '#4ade80'}">
-                ${file.minimized ? 'Minimized' : 'Active'}
-            </span>
-        `;
-        list.appendChild(item);
+    document.querySelectorAll('.label').forEach(label => {
+        label.style.background = theme.panel;
+        label.style.color = theme.accent;
+    });
+
+    document.querySelectorAll('.icon-btn i').forEach(icon => {
+        icon.style.color = theme.accent;
     });
 }
 
-// --- 6. FILE MANAGEMENT ---
-function updateFileContent(id, content) {
-    const file = files.find(f => f.id === id);
-    if (file) file.content = content;
+// --- 3. FILE SYSTEM & EDITOR CREATION ---
+function addFileToUI(name, id, content = "") {
+    // Shutter Explorer मध्ये फाईल ॲड करणे
+    const fileList = document.getElementById('file-list');
+    const newTab = document.createElement('div');
+    newTab.className = 'file-item';
+    newTab.id = `tab-${id}`;
+    newTab.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span> <small id="status-${id}" style="display:none; color:var(--accent)">(min)</small>`;
+    newTab.onclick = () => restoreBox(id);
+    fileList.appendChild(newTab);
+
+    // Editor Wrapper मध्ये बॉक्स ॲड करणे
+    const wrapper = document.getElementById('editor-wrapper');
+    const newBox = document.createElement('div');
+    newBox.className = 'editor-box';
+    newBox.id = `box-${id}`;
+    newBox.innerHTML = `
+        <div class="label">
+            <span>${name.toUpperCase()} <i class="fas fa-code"></i></span>
+            <div class="window-controls">
+                <i class="fas fa-minus" onclick="minimizeBox('${id}')"></i>
+                <i class="fas fa-expand" onclick="expandBox('${id}')"></i>
+                <i class="fas fa-trash" onclick="deleteBox('${id}')"></i>
+            </div>
+        </div>
+        <textarea id="${id}-code" spellcheck="false">${content}</textarea>
+    `;
+    wrapper.appendChild(newBox);
+    
+    const txt = document.getElementById(`${id}-code`);
+    attachInputListeners(txt);
 }
 
-function deleteFile(id) {
-    if (confirm("Delete this file?")) {
-        files = files.filter(f => f.id !== id);
-        renderAllFiles();
-    }
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; document.getElementById(`status-${id}`).style.display = 'inline'; }
+function restoreBox(id) { document.getElementById(`box-${id}`).style.display = 'flex'; document.getElementById(`status-${id}`).style.display = 'none'; }
+function expandBox(id) {
+    const boxes = document.querySelectorAll('.editor-box');
+    const current = document.getElementById(`box-${id}`);
+    if (current.style.flex === "10") { boxes.forEach(b => b.style.flex = "1"); }
+    else { boxes.forEach(b => b.style.flex = "0.1"); current.style.flex = "10"; current.style.display = "flex"; }
+}
+function deleteBox(id) { if(confirm("Delete this file?")) { document.getElementById(`box-${id}`).remove(); document.getElementById(`tab-${id}`).remove(); } }
+
+// --- 4. EDITOR CORE & AUTO-COMPLETE ---
+function attachInputListeners(txt) {
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const val = txt.value;
+        const char = e.data;
+        currentLang = txt.id.split('-')[0];
+
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        } 
+        else if (char === '>') {
+            const match = val.substring(0, pos).match(/<(\w+)>$/);
+            if (match && !['img', 'br', 'hr', 'input'].includes(match[1].toLowerCase())) {
+                txt.value = val.substring(0, pos) + `</${match[1]}>` + val.substring(pos);
+                txt.selectionStart = txt.selectionEnd = pos;
+            }
+        }
+        showSuggestions(txt);
+    });
+    txt.addEventListener('keydown', (e) => handleNav(e, txt));
 }
 
-function updateRunButtonState() {
-    const runBtn = document.getElementById('run-btn');
-    const hasHtml = files.some(f => f.lang === 'html');
-    runBtn.style.opacity = hasHtml ? "1" : "0.5";
-    runBtn.disabled = !hasHtml;
-}
-
-// --- 7. INTELLISENSE & KEY ACTIONS ---
-function handleKeyActions(e, id) {
-    const ta = document.getElementById(`ta-${id}`);
-    const lang = ta.getAttribute('lang');
-
-    if (sBox.style.display === 'block') {
-        const items = sBox.querySelectorAll('.suggestion-item');
-        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActiveSBox(items); return; }
-        if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActiveSBox(items); return; }
-        if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); return; }
-        if (e.key === 'Escape') { sBox.style.display = 'none'; return; }
-    }
-
-    if (e.key === 'Tab') {
-        e.preventDefault();
-        const start = ta.selectionStart;
-        ta.value = ta.value.substring(0, start) + "  " + ta.value.substring(ta.selectionEnd);
-        ta.selectionStart = ta.selectionEnd = start + 2;
-    }
-
-    // Auto-close brackets
-    const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
-    if (pairs[e.key]) {
-        const pos = ta.selectionStart;
-        ta.value = ta.value.substring(0, pos) + pairs[e.key] + ta.value.substring(pos);
-        ta.selectionStart = ta.selectionEnd = pos;
-    }
-
-    clearTimeout(ta.suggestTimeout);
-    ta.suggestTimeout = setTimeout(() => handleSuggestions(ta, lang), 100);
-}
-
-function handleSuggestions(ta, lang) {
-    const pos = ta.selectionStart;
-    const textBefore = ta.value.substring(0, pos);
+function showSuggestions(txt) {
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
     const words = textBefore.split(/[\s<>{}:;()]/);
     const lastWord = words[words.length - 1].toLowerCase();
 
-    if (!dictionary[lang] || lastWord.length < 1) { sBox.style.display = 'none'; return; }
-
-    const matches = dictionary[lang].filter(w => w.startsWith(lastWord)).slice(0, 10);
+    if (lastWord.length < 1) { sBox.style.display = 'none'; return; }
+    const matches = dictionary[currentLang].filter(word => word.startsWith(lastWord));
 
     if (matches.length > 0) {
         selectedIdx = 0;
-        const rect = ta.getBoundingClientRect();
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 35}px`; 
+        sBox.style.left = `${rect.left + 40}px`;
         sBox.style.display = 'block';
-        sBox.style.top = (rect.top + 30) + 'px';
-        sBox.style.left = '20px';
-        sBox.style.width = '80%';
 
-        sBox.innerHTML = matches.map((m, i) => `
-            <div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${ta.id}', '${lang}')">
-                ${m}
-            </div>
-        `).join('');
+        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item ${i === 0 ? 'active' : ''}" onclick="insertWord('${m}', '${txt.id}')">
+            <b>${m}</b> <small>${currentLang}</small>
+        </div>`).join('');
     } else { sBox.style.display = 'none'; }
 }
 
-function updateActiveSBox(items) {
-    items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx));
-}
-
-function insertWord(word, taId, lang) {
-    const ta = document.getElementById(taId);
-    const pos = ta.selectionStart;
-    const textBefore = ta.value.substring(0, pos);
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const textBefore = txt.value.substring(0, pos);
     const lastWordMatch = textBefore.match(/[\w.-]+$/);
     const startPos = lastWordMatch ? pos - lastWordMatch[0].length : pos;
+    let wordToInsert = word;
 
-    let insertText = word;
-    if (lang === 'html') insertText = `<${word}></${word}>`;
-    if (lang === 'css') insertText = `${word}: ;`;
+    if (currentLang === 'html') {
+        const selfClosing = ['img', 'br', 'hr', 'input'];
+        if (selfClosing.includes(word.toLowerCase())) wordToInsert = `<${word}>`;
+        else if (['class', 'id', 'href', 'src'].includes(word)) wordToInsert = `${word}=""`;
+        else wordToInsert = `<${word}></${word}>`;
+    } else if (currentLang === 'css') wordToInsert = `${word}: ;`;
 
-    ta.value = ta.value.substring(0, startPos) + insertText + ta.value.substring(pos);
-    updateFileContent(taId.replace('ta-', ''), ta.value);
+    txt.value = txt.value.substring(0, startPos) + wordToInsert + txt.value.substring(pos);
     sBox.style.display = 'none';
-    ta.focus();
+    txt.focus();
 }
 
-// --- 8. RUN & PREVIEW ---
+function handleNav(e, txt) {
+    if (sBox.style.display === 'block') {
+        const items = sBox.querySelectorAll('.suggestion-item');
+        if (e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = (selectedIdx + 1) % items.length; updateActive(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = (selectedIdx - 1 + items.length) % items.length; updateActive(items); }
+        else if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); if (items[selectedIdx]) items[selectedIdx].click(); }
+    }
+}
+function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
+
+// --- 5. TOOLBAR ACTIONS ---
 function runCode() {
-    let html = "", css = "", js = "";
-    files.forEach(f => {
-        if (f.lang === 'html') html += f.content;
-        if (f.lang === 'css') css += `<style>${f.content}</style>`;
-        if (f.lang === 'js') js += `<script>${f.content}<\/script>`;
+    document.getElementById('preview-overlay').style.display = 'flex';
+    const h = document.getElementById('html-code')?.value || '';
+    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
+    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+    const out = document.getElementById('output').contentWindow.document;
+    out.open(); out.write(h + c + j); out.close();
+}
+
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+function setDevice(m) { document.getElementById('wrapper').className = 'iframe-wrapper ' + (m==='mobile'?'mobile':''); }
+
+function beautifyCode() {
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
     });
+}
 
-    const overlay = document.getElementById('preview-overlay');
-    const frame = document.getElementById('output-frame');
-    overlay.style.display = 'flex';
+function exportCode() {
+    const blob = new Blob([document.getElementById('html-code').value], {type: "text/html"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
+}
+
+// --- 6. INITIAL LOAD (Default 2 Files) ---
+window.onload = () => { 
+    // डिफॉल्ट फक्त १ HTML आणि १ CSS
+    addFileToUI("index.html", "html", "<!DOCTYPE html>\n<html>\n<body>\n  <h1>Craby Editor</h1>\n</body>\n</html>");
+    addFileToUI("style.css", "css", "h1 { color: #ffb400; text-align: center; font-family: sans-serif; }");
     
-    const doc = frame.contentWindow.document;
-    doc.open();
-    doc.write(html + css + js);
-    doc.close();
-}
+    // Theme आणि Slider रिफ्रेश
+    document.getElementById('theme-sel').value = 'dark'; 
+    updateThemeAndFont(); 
+};
 
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
-document.addEventListener('mousedown', (e) => {
-    if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none';
-});
+document.addEventListener('mousedown', (e) => { if (sBox && !sBox.contains(e.target)) sBox.style.display = 'none'; });
