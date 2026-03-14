@@ -1,73 +1,30 @@
-:root {
-    --bg: #1e1e1e;
-    --panel: #252526;
-    --accent: #007acc;
-    --text: #d4d4d4;
-    --border: #3c3c3c;
+/* Settings Panel Styling */
+.settings-panel {
+    position: fixed;
+    right: -320px; /* Suruvatila baher */
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--bg-panel);
+    border-left: 2px solid var(--accent);
+    z-index: 3000; /* Shutter chya hi var */
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    visibility: hidden;
 }
 
-body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.settings-panel.open {
+    right: 0;
+    visibility: visible;
 }
 
-header {
-    background: var(--panel); border-bottom: 1px solid var(--border);
-    display: flex; justify-content: space-between; padding: 5px 15px;
-}
-
-.editor-section { display: flex; flex-direction: column; gap: 10px; padding: 10px; }
-
-.editor-box {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 4px; overflow: hidden; display: flex; flex-direction: column;
-}
-
-/* VS Code Style Label */
-.label {
-    background: var(--panel); padding: 5px 15px; font-size: 11px;
-    text-transform: uppercase; font-weight: 600; color: #969696;
-    display: flex; justify-content: space-between; align-items: center;
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--accent);
+    margin-bottom: 25px;
     border-bottom: 1px solid var(--border);
-}
-
-.window-controls { display: flex; gap: 15px; }
-.window-controls i { cursor: pointer; opacity: 0.6; font-size: 12px; }
-.window-controls i:hover { opacity: 1; color: var(--accent); }
-
-textarea {
-    background: transparent; border: none; outline: none;
-    color: var(--text); padding: 10px; min-height: 250px;
-    font-family: 'Fira Code', monospace; resize: vertical;
-}
-
-/* Shutter Button & Sidebar */
-#shutterBtn {
-    position: fixed; left: 0; top: 50%; transform: translateY(-50%);
-    background: var(--accent); color: white; padding: 12px 6px;
-    border-radius: 0 5px 5px 0; z-index: 10001; cursor: pointer;
-}
-#shutterBtn.active { left: 260px; transform: translateY(-50%) rotate(180deg); }
-
-.left-sidebar {
-    position: fixed; left: -280px; top: 0; width: 260px; height: 100%;
-    background: var(--panel); z-index: 10000; border-right: 1px solid var(--border);
-    transition: 0.3s ease; padding: 20px 15px;
-}
-.left-sidebar.open { left: 0; }
-
-.file-item {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #2d2d2d; padding: 8px 12px; border-radius: 4px;
-    margin-bottom: 5px; font-size: 13px;
-}
-.minimized-file { border-left: 3px solid var(--accent); opacity: 0.8; }
-
-.file-actions i { cursor: pointer; margin-left: 10px; font-size: 12px; opacity: 0.6; }
-.file-actions i:hover { opacity: 1; }
-
-/* Fullscreen Fix */
-.fullscreen-editor {
-    position: fixed !important; top: 0; left: 0; width: 100% !important;
-    height: 100vh !important; z-index: 10005; background: var(--bg);
+    padding-bottom: 10px;
 }
