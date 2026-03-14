@@ -153,4 +153,84 @@ window.exportCode = () => {
     a.href = URL.createObjectURL(blob);
     a.download = "index.html";
     a.click();
+};// --- 1. SHUTTER & WINDOW STATUS LOGIC ---
+
+// Window Status Shutter madhe update karne
+window.updateWindowStatus = () => {
+    const list = document.getElementById('window-status-list');
+    const langs = ['html', 'css', 'js'];
+    let html = '';
+
+    langs.forEach(lang => {
+        const isChecked = document.getElementById(`chk-${lang}`).checked;
+        const statusColor = isChecked ? '#4ade80' : '#ff4d4d'; // Green for Open, Red for Closed
+        const statusText = isChecked ? 'VISIBLE' : 'HIDDEN';
+
+        html += `
+            <div class="status-item">
+                <span><b>${lang.toUpperCase()}</b></span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:10px; color:${statusColor}">${statusText}</span>
+                    <div class="status-dot" style="background:${statusColor}"></div>
+                    <button class="icon-btn" style="padding:4px 8px; font-size:10px;" onclick="toggleFromShutter('${lang}')">
+                        ${isChecked ? 'Hide' : 'Show'}
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    list.innerHTML = html;
 };
+
+// Shutter madhun window toggle karne
+window.toggleFromShutter = (lang) => {
+    const check = document.getElementById(`chk-${lang}`);
+    check.checked = !check.checked;
+    updateVisibility();
+    updateWindowStatus();
+};
+
+// Quick Theme Change via Shutter
+window.quickTheme = () => {
+    const themeSel = document.getElementById('theme-sel');
+    const options = Array.from(themeSel.options);
+    let nextIdx = (themeSel.selectedIndex + 1) % options.length;
+    themeSel.selectedIndex = nextIdx;
+    updateThemeAndFont();
+};
+
+// Shutter Toggle Logic (Center-Left Button)
+window.toggleLeftSidebar = () => {
+    const sidebar = document.getElementById('leftSidebar');
+    const shutter = document.getElementById('shutterBtn');
+    
+    sidebar.classList.toggle('open');
+    shutter.classList.toggle('active');
+
+    if(sidebar.classList.contains('open')) {
+        updateWindowStatus(); // Open zalyavar status refresh kara
+        // Jar Sidebar ughadla tar Settings band kara
+        document.getElementById('settingsPanel').classList.remove('open');
+    }
+};
+
+// Overriding updateVisibility to refresh Shutter status
+const originalUpdateVisibility = window.updateVisibility;
+window.updateVisibility = () => {
+    const langs = ['html', 'css', 'js'];
+    langs.forEach(lang => {
+        const box = document.getElementById(`${lang}-code`).closest('.editor-box');
+        const isChecked = document.getElementById(`chk-${lang}`).checked;
+        box.style.display = isChecked ? 'flex' : 'none';
+    });
+    updateWindowStatus(); // Sync shutter status
+};
+
+// --- Initialization ---
+const originalOnload = window.onload;
+window.onload = () => {
+    if(originalOnload) originalOnload();
+    updateWindowStatus();
+    initWindowControls(); 
+};
+
