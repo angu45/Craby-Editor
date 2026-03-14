@@ -99,19 +99,31 @@ function handleNav(e, txt) {
 }
 function updateActive(items) { items.forEach((it, i) => it.classList.toggle('active', i === selectedIdx)); }
 
-// --- 4. CORE ACTIONS ---
 function runCode() {
     const overlay = document.getElementById('preview-overlay');
-    if(overlay) overlay.style.display = 'flex';
-    const h = document.getElementById('html-code')?.value || '';
-    const c = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
-    const j = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
     const frame = document.getElementById('output-frame');
-    if(frame) {
-        const out = frame.contentWindow.document;
-        out.open(); out.write(h + c + j); out.close();
+    
+    if (!overlay || !frame) {
+        alert("Preview setup incomplete! Please check IDs.");
+        return;
     }
+
+    // Overlay dakhva
+    overlay.style.display = 'flex';
+
+    // Sagle code collect kara
+    // Laksha dya: IDs 'html-code', 'css-code', 'js-code' asaveet
+    const htmlCode = document.getElementById('html-code')?.value || '';
+    const cssCode = `<style>${document.getElementById('css-code')?.value || ''}</style>`;
+    const jsCode = `<script>${document.getElementById('js-code')?.value || ''}<\/script>`;
+
+    // Iframe content write kara
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(htmlCode + cssCode + jsCode);
+    doc.close();
 }
+
 
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
