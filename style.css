@@ -1,4 +1,4 @@
-/* --- 1. GLOBAL SETTINGS --- */
+/* --- 1. GLOBAL RESET --- */
 :root {
     --bg-main: #0d1117;
     --bg-panel: #161b22;
@@ -20,12 +20,13 @@ body {
     color: var(--text-primary);
     font-family: 'Plus Jakarta Sans', sans-serif;
     height: 100vh;
+    width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Body scroll honar nahi, header fix rahel */
+    overflow: hidden; /* Screen baher scroll honar nahi */
 }
 
-/* --- 2. HEADER: Ha kadhich gayab honar nahi --- */
+/* --- 2. HEADER: Fixed at Top --- */
 header {
     height: 60px;
     background: var(--bg-header);
@@ -34,10 +35,10 @@ header {
     align-items: center;
     padding: 0 15px;
     border-bottom: 2px solid var(--accent);
-    position: fixed; /* Sticky chya jaagi fixed vapra jyamule to kadhich halat nahi */
+    position: sticky;
     top: 0;
-    width: 100%;
-    z-index: 1001;
+    z-index: 2000; /* Header saglyanchya var rahel */
+    flex-shrink: 0;
 }
 
 .logo-container {
@@ -47,38 +48,60 @@ header {
 }
 
 .logo-container img {
-    height: 30px;
+    height: 35px;
 }
 
 .logo-text {
     color: var(--accent);
     font-weight: 800;
+    font-size: 1.2rem;
 }
 
-/* --- 3. MAIN CONTAINER & GRID --- */
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.icon-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.run-btn {
+    background: var(--accent) !important;
+    color: #000 !important;
+}
+
+/* --- 3. EDITOR MAIN AREA --- */
 .main-container {
-    margin-top: 60px; /* Header sathi jagga sodli */
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto; /* Fakt editor area scroll hoil */
     padding: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .editor-grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
 }
 
-/* --- 4. WINDOW FRAME & TEXTAREA: Full Box Fix --- */
+/* Window/File Box Fix */
 .window-frame {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    min-height: 300px; /* Box chi size fix keli */
+    min-height: 300px; /* Purishi height */
+    max-height: 500px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
@@ -93,15 +116,28 @@ header {
 }
 
 .window-title {
+    font-size: 12px;
     color: var(--accent);
-    font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
 }
 
-.window-body {
-    flex: 1; /* Purna box bharun ghenar */
+.window-controls {
     display: flex;
+    gap: 12px;
+    color: #fff;
+    opacity: 0.8;
+}
+
+.window-controls i {
+    cursor: pointer;
+}
+
+/* --- 4. TEXTAREA: Full Box Content --- */
+.window-body {
+    flex: 1;
+    display: flex;
+    position: relative;
 }
 
 textarea {
@@ -114,34 +150,45 @@ textarea {
     padding: 15px;
     font-family: 'Fira Code', monospace;
     font-size: 14px;
-    line-height: 1.6; /* Line cut honar nahi */
+    line-height: 1.6;
     outline: none;
     resize: none;
-    white-space: pre; /* Code formatting sathi */
+    white-space: pre;
+    overflow: auto;
 }
 
-/* --- 5. SETTINGS PANEL FIX --- */
+/* --- 5. SETTINGS PANEL --- */
 .settings-panel {
     position: fixed;
-    right: -320px; /* Suruvatila baher */
+    right: -320px; /* Open kelyavar slider logic sathi */
     top: 0;
     width: 300px;
     height: 100%;
     background: var(--bg-panel);
     border-left: 2px solid var(--accent);
-    z-index: 2000;
-    transition: 0.3s ease-in-out;
-    padding: 25px;
-    box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-    visibility: hidden;
+    z-index: 3000;
+    transition: 0.3s ease;
+    padding: 20px;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
 }
 
 .settings-panel.open {
     right: 0;
-    visibility: visible;
 }
 
-/* --- 6. SHUTTER (TASKBAR) --- */
+/* --- 6. SHUTTER (Sidebar) --- */
+#shutter-trigger {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    background: var(--accent);
+    color: #000;
+    padding: 15px 8px;
+    border-radius: 0 5px 5px 0;
+    z-index: 1500;
+    cursor: pointer;
+}
+
 .shutter {
     position: fixed;
     left: -320px;
@@ -150,7 +197,7 @@ textarea {
     height: 100%;
     background: var(--bg-panel);
     border-right: 2px solid var(--accent);
-    z-index: 1999;
+    z-index: 2500;
     transition: 0.3s ease;
     padding: 20px;
 }
@@ -159,24 +206,18 @@ textarea {
     left: 0;
 }
 
-#shutter-trigger {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    background: var(--accent);
-    color: black;
-    padding: 12px 8px;
-    border-radius: 0 5px 5px 0;
-    z-index: 1000;
-    cursor: pointer;
-}
-
-/* --- 7. RUN OVERLAY --- */
+/* --- 7. PREVIEW OVERLAY --- */
 .preview-overlay {
     position: fixed;
     inset: 0;
     background: white;
-    z-index: 9999;
+    z-index: 5000;
     display: none;
     flex-direction: column;
+}
+
+#output-frame {
+    width: 100%;
+    flex: 1;
+    border: none;
 }
