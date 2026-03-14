@@ -1,4 +1,4 @@
-/* --- 1. GLOBAL RESET --- */
+/* --- 1. GLOBAL & RESET --- */
 :root {
     --bg-main: #0d1117;
     --bg-panel: #161b22;
@@ -6,7 +6,7 @@
     --accent: #ffb400;
     --text-primary: #c9d1d9;
     --border: rgba(255, 255, 255, 0.1);
-    --window-header: #21262d;
+    --header-height: 60px;
 }
 
 * {
@@ -18,67 +18,67 @@
 body {
     background: var(--bg-main);
     color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Main screen scroll honar nahi, fakt editor area hoil */
+    overflow: hidden; /* Main page scroll honar nahi */
 }
 
-/* --- 2. HEADER FIX (Kadhich gayab honar nahi) --- */
+/* --- 2. HEADER FIX (Nehamich var rahnar) --- */
 header {
-    height: 60px;
+    height: var(--header-height);
     background: var(--bg-header);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 15px;
     border-bottom: 2px solid var(--accent);
-    position: sticky; /* Yaamule header fix rahto */
+    position: sticky; /* Screen var fix rahnar */
     top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2000; /* Saglyat var header rahil */
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    z-index: 1001;
+    flex-shrink: 0;
 }
 
 .logo-container img {
-    height: 30px;
+    height: 35px;
     width: auto;
 }
 
-/* --- 3. MAIN CONTENT AREA --- */
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* --- 3. MAIN CONTAINER (Fakt ha area scroll hoil) --- */
 .main-container {
     flex: 1;
-    overflow-y: auto; /* Fakt ha area scroll hoil */
+    overflow-y: auto;
     padding: 10px;
-    padding-bottom: 80px; /* Khalchya side la thodi space */
+    display: flex;
+    flex-direction: column;
 }
 
 .editor-grid {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding-bottom: 20px;
 }
 
-/* --- 4. WINDOW/FILE BOX FIX --- */
+/* --- 4. TEXTAREA BOX FIX --- */
 .window-frame {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    min-height: 250px;
+    min-height: 250px; /* Purishi unchi */
     overflow: hidden;
 }
 
 .window-header {
-    background: var(--window-header);
+    background: #21262d;
     padding: 8px 12px;
     display: flex;
     justify-content: space-between;
@@ -86,47 +86,42 @@ header {
     border-bottom: 1px solid var(--border);
 }
 
-.window-title {
-    font-size: 11px;
-    font-weight: bold;
-    color: var(--accent);
+.window-body {
+    flex: 1;
+    display: flex;
 }
 
-/* --- 5. TEXTAREA FIX (Typing problem sathi) --- */
 textarea {
-    flex: 1;
+    flex: 1; /* Purna box madhe pasarnar */
+    width: 100%;
     background: transparent;
     border: none;
     color: #9cdcfe;
     padding: 15px;
-    font-family: 'Fira Code', monospace;
+    font-family: 'Fira Code', 'Courier New', monospace;
     font-size: 14px;
-    line-height: 1.5; /* Line spacing fix */
+    line-height: 1.6;
     outline: none;
     resize: none;
-    white-space: pre; /* Layout fix karnyasaathi */
+    white-space: pre; /* Code formatting fix */
 }
 
-/* --- 6. SHUTTER & SETTINGS FIX --- */
+/* --- 5. SHUTTER & OTHER PANELS --- */
 #shutter-trigger {
     position: fixed;
     left: 0;
     top: 50%;
-    transform: translateY(-50%);
     z-index: 1000;
 }
 
 .shutter, .settings-panel {
-    position: fixed;
-    height: 100%;
-    background: var(--bg-panel);
-    z-index: 3000; /* Header chya hi var */
-    transition: 0.3s ease;
+    z-index: 2000;
 }
 
-.shutter { left: -300px; border-right: 2px solid var(--accent); width: 280px; }
-.settings-panel { right: -320px; border-left: 2px solid var(--accent); width: 300px; }
-
-.shutter.open { left: 0; }
-.settings-panel.open { right: 0; }
-
+/* --- 6. PREVIEW OVERLAY --- */
+.preview-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: white;
+}
