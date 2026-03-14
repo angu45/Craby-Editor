@@ -161,12 +161,23 @@ function beautifyCode() {
         tx.value = tx.value.replace(/>\s+</g, '><').replace(/></g, '>\n<').replace(/;/g, ';\n  ');
     });
 }
-
 function exportCode() {
-    const html = document.getElementById('html-code')?.value || '';
-    const blob = new Blob([html], {type: "text/html"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "index.html"; a.click();
+    const zip = new JSZip();
+    
+    // प्रोजेक्टमधील सर्व फाईल्स ZIP मध्ये ॲड करा
+    Object.keys(files).forEach(fileName => {
+        zip.file(fileName, files[fileName].content);
+    });
+
+    // ZIP फाईल तयार करून डाऊनलोड करा
+    zip.generateAsync({ type: "blob" }).then(function(content) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "craby_project.zip"; // प्रोजेक्टचे नाव
+        link.click();
+    });
 }
+
 
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display = 'none'; }
