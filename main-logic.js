@@ -5,6 +5,7 @@ const dictionary = {
     js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
 };
 
+// Initial file structure
 let files = {
     "index.html": { 
         content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n  <script src="script.js"></script>\n</body>\n</html>`, 
@@ -23,25 +24,37 @@ let lineNumberFontSize = 14;
 
 // --- 2. TASKBAR & UI UPDATES ---
 
-// टास्कबारवर फाईल्सची लिस्ट अपडेट करण्यासाठी
+/**
+ * Updates the file list in the shutter menu
+ * Uses your existing ID: shutter-file-list
+ */
 function updateTaskbar() {
-    const taskbar = document.getElementById('taskbar-files'); // तुमच्या HTML मध्ये हा ID असावा
+    const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
     
-    taskbar.innerHTML = '';
+    taskbar.innerHTML = ''; // Clear existing list
     Object.keys(files).forEach(fileName => {
-        const btn = document.createElement('button');
-        btn.innerText = fileName;
-        btn.onclick = () => addFileToUI(fileName, files[fileName].type, files[fileName].content);
-        taskbar.appendChild(btn);
+        const fileItem = document.createElement('div');
+        fileItem.className = 'shutter-item';
+        fileItem.innerHTML = `<i class="fas fa-file-code"></i> <span>${fileName}</span>`;
+        fileItem.onclick = () => {
+            addFileToUI(fileName, files[fileName].type, files[fileName].content);
+            // Optional: close shutter menu here if needed
+        };
+        taskbar.appendChild(fileItem);
     });
 }
 
+/**
+ * Creates a new editor window for the selected file
+ */
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
 
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+    
+    // If window already exists, just show it
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
@@ -72,24 +85,32 @@ function addFileToUI(name, type, content = "") {
     updateLineNumbers(safeId);
 }
 
+/**
+ * Removes file from logic and UI
+ */
 function deleteFile(name) {
-    if(confirm(`Delete ${name}?`)) {
+    if(confirm(`Are you sure you want to delete ${name}?`)) {
         const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
-        document.getElementById(`box-${safeId}`)?.remove();
+        const element = document.getElementById(`box-${safeId}`);
+        if(element) element.remove();
+        
         delete files[name];
         updateTaskbar();
         trackCrabyEvent('file_delete', { file_name: name });
     }
 }
 
-// --- 3. RUN & DOWNLOAD LOGIC (WITH LIST) ---
+// --- 3. RUN & DOWNLOAD LOGIC ---
 
+/**
+ * Compiles selected HTML and injects linked CSS/JS from the file list
+ */
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if(htmlFiles.length === 0) return alert("No HTML file found!");
+    if(htmlFiles.length === 0) return alert("No HTML files available to run!");
 
-    const selectedFile = prompt("Select HTML file to run:\n" + htmlFiles.join('\n'), htmlFiles[0]);
-    if (!files[selectedFile]) return;
+    const selectedFile = prompt("Enter the name of the HTML file to run:\nAvailable: " + htmlFiles.join(', '), htmlFiles[0]);
+    if (!files[selectedFile]) return alert("File not found!");
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
@@ -97,14 +118,16 @@ function runCode() {
 
     let rawHTML = files[selectedFile].content;
 
-    // व्हर्च्युअल लिंकिंग: CSS आणि JS फाईल्सना आपोआप इंजेक्ट करणे
+    // Virtual linking for CSS and JS
     Object.keys(files).forEach(name => {
         if(name.endsWith('.css')) {
+            // Replace link tag with Base64 encoded data
             rawHTML = rawHTML.replace(new RegExp(`href=["']${name}["']`, 'g'), `href="data:text/css;base64,${btoa(files[name].content)}"`);
-            // Backup injection जर लिंक टॅग नसेल तर
+            // Fallback: Inject style tag if no link is found
             rawHTML += `<style>${files[name].content}</style>`;
         }
         if(name.endsWith('.js')) {
+            // Replace script src with Base64 encoded data
             rawHTML = rawHTML.replace(new RegExp(`src=["']${name}["']`, 'g'), `src="data:text/javascript;base64,${btoa(files[name].content)}"`);
         }
     });
@@ -117,9 +140,12 @@ function runCode() {
     trackCrabyEvent('code_run', { file_name: selectedFile });
 }
 
+/**
+ * Shows list of all files and allows user to download one
+ */
 function exportCode() {
     const allFiles = Object.keys(files);
-    const selectedFile = prompt("Select file to download:\n" + allFiles.join('\n'), allFiles[0]);
+    const selectedFile = prompt("Enter the filename to download:\nFiles: " + allFiles.join(', '), allFiles[0]);
     
     if (files[selectedFile]) {
         const blob = new Blob([files[selectedFile].content], { type: "text/plain" });
@@ -128,10 +154,12 @@ function exportCode() {
         link.download = selectedFile;
         link.click();
         trackCrabyEvent('file_download', { file_name: selectedFile });
+    } else {
+        alert("Invalid file selection.");
     }
 }
 
-// --- 4. CORE FUNCTIONS (UTILITIES) ---
+// --- 4. CORE UTILITIES ---
 
 function updateLineNumbers(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
@@ -159,7 +187,15 @@ function toggleLineNumbers(status) {
     document.querySelectorAll('.line-numbers').forEach(el => el.style.display = status ? 'block' : 'none');
 }
 
-// --- 5. AUTO-COMPLETE & INITIALIZATION ---
+function changeLineNumberSize(size) {
+    lineNumberFontSize = size;
+    document.querySelectorAll('.line-numbers').forEach(el => {
+        const safeId = el.id.replace('-lines', '');
+        updateLineNumbers(safeId);
+    });
+}
+
+// --- 5. SUGGESTION SYSTEM ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
@@ -178,9 +214,14 @@ function showSuggestions(txt) {
     const pos = txt.selectionStart;
     const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
     if (word.length < 1) { sBox.style.display = 'none'; return; }
+    
     const lang = txt.getAttribute('data-lang');
     const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
+    
     if (matches.length > 0) {
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 30}px`; 
+        sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
         sBox.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
     } else { sBox.style.display = 'none'; }
@@ -196,13 +237,15 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
+// --- 6. INITIALIZATION ---
+
 window.onload = () => {
     updateTaskbar();
-    // Default फाईल्स ओपन करणे
+    // Automatically open default files on load
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
 };
 
-// UI Helpers
+// UI Window Helpers
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
