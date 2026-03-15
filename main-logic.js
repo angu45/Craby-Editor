@@ -5,7 +5,7 @@ const dictionary = {
     js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
 };
 
-// Global files object - Starting with your requested defaults
+// Global files object
 let files = {
     "index.html": { 
         content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
@@ -18,21 +18,73 @@ const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
 
-// Default settings: Line numbers HIDDEN by default as requested
 let showLineNumbers = false; 
 let lineNumberFontSize = 14; 
 
-// --- 2. FILE MANAGEMENT & SHUTTER LOGIC ---
+// --- 2. BEAUTIFY CODE LOGIC (NEW) ---
 
 /**
- * Updates the file list in the shutter menu
- * Uses your ID: shutter-file-list
+ * Iterates through all active textareas and formats the code
  */
+function beautifyCode() {
+    document.querySelectorAll('textarea').forEach(tx => {
+        let code = tx.value;
+        tx.value = formatCode(code);
+        
+        // Extract the filename from the textarea's ID to update the files object
+        const fileName = tx.id.replace('file-', '').replace('-code', '');
+        updateFileContent(fileName, tx.value);
+        
+        // Refresh line numbers for the specific editor
+        const safeId = tx.id.replace('-code', '');
+        updateLineNumbers(safeId);
+    });
+}
+
+/**
+ * Basic formatter for HTML, CSS, and JS
+ */
+function formatCode(code) {
+    let tab = "  "; // 2 spaces
+    let indent = "";
+    let result = "";
+
+    // Add line breaks for basic formatting
+    code = code
+        .replace(/>\s*</g, ">\n<")   // HTML tags
+        .replace(/{/g, "{\n")       // open brace
+        .replace(/}/g, "\n}\n")     // close brace
+        .replace(/;/g, ";\n");      // css/js line
+
+    let lines = code.split("\n");
+
+    lines.forEach(line => {
+        line = line.trim();
+        if(line === "") return;
+
+        // reduce indent when closing tag or brace is found
+        if(line.startsWith("}") || line.startsWith("</")) {
+            indent = indent.substring(tab.length);
+        }
+
+        result += indent + line + "\n";
+
+        // increase indent for opening tags or braces
+        if(line.endsWith("{") || line.match(/^<[^\/!][^>]*>$/)) {
+            indent += tab;
+        }
+    });
+
+    return result.trim();
+}
+
+// --- 3. FILE MANAGEMENT & SHUTTER LOGIC ---
+
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
     
-    taskbar.innerHTML = ''; // Clear existing list
+    taskbar.innerHTML = ''; 
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
@@ -44,9 +96,6 @@ function updateTaskbar() {
     });
 }
 
-/**
- * Function to add a NEW file from User Input (Prompt)
- */
 function addNewFilePrompt() {
     const fileName = prompt("Enter file name (e.g., script.js, about.html, theme.css):");
     if (!fileName) return;
@@ -61,10 +110,8 @@ function addNewFilePrompt() {
     if (extension === "css") type = "css";
     if (extension === "js") type = "js";
 
-    // Add to logic
     files[fileName] = { content: "", type: type };
 
-    // Refresh UI
     updateTaskbar();
     addFileToUI(fileName, type, "");
     
@@ -73,16 +120,12 @@ function addNewFilePrompt() {
     }
 }
 
-/**
- * Creates or restores the editor window for a file
- */
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
 
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
     
-    // If window already exists, show it
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
@@ -113,9 +156,6 @@ function addFileToUI(name, type, content = "") {
     updateLineNumbers(safeId);
 }
 
-/**
- * Delete file from logic and UI
- */
 function deleteFile(name) {
     if(confirm(`Are you sure you want to delete ${name}?`)) {
         const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
@@ -127,11 +167,8 @@ function deleteFile(name) {
     }
 }
 
-// --- 3. RUN & DOWNLOAD LOGIC ---
+// --- 4. RUN & DOWNLOAD LOGIC ---
 
-/**
- * Runs the selected HTML file with virtual CSS/JS linking
- */
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
     if(htmlFiles.length === 0) return alert("No HTML files available!");
@@ -145,12 +182,11 @@ function runCode() {
 
     let rawHTML = files[selectedFile].content;
 
-    // Inject files virtually using Base64
     Object.keys(files).forEach(name => {
         const content = files[name].content;
         if(name.endsWith('.css')) {
             rawHTML = rawHTML.replace(new RegExp(`href=["']${name}["']`, 'g'), `href="data:text/css;base64,${btoa(content)}"`);
-            rawHTML += `<style>${content}</style>`; // fallback
+            rawHTML += `<style>${content}</style>`; 
         }
         if(name.endsWith('.js')) {
             rawHTML = rawHTML.replace(new RegExp(`src=["']${name}["']`, 'g'), `src="data:text/javascript;base64,${btoa(unescape(encodeURIComponent(content)))}"`);
@@ -165,9 +201,6 @@ function runCode() {
     if (typeof trackCrabyEvent === 'function') trackCrabyEvent('code_run', { file_name: selectedFile });
 }
 
-/**
- * Downloads a specific file from the list
- */
 function exportCode() {
     const allFiles = Object.keys(files);
     const selectedFile = prompt("Select file to download:\n" + allFiles.join(', '), allFiles[0]);
@@ -182,7 +215,7 @@ function exportCode() {
     }
 }
 
-// --- 4. CORE UTILITIES ---
+// --- 5. CORE UTILITIES ---
 
 function updateLineNumbers(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
@@ -217,7 +250,7 @@ function changeLineNumberSize(size) {
     });
 }
 
-// --- 5. SUGGESTION SYSTEM ---
+// --- 6. SUGGESTION SYSTEM ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
@@ -259,15 +292,13 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 6. INITIALIZATION ---
+// --- 7. INITIALIZATION ---
 
 window.onload = () => {
     updateTaskbar();
-    // Default: Open only HTML and CSS as requested
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
 };
 
-// UI Window Helpers
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
