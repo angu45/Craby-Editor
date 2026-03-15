@@ -14,28 +14,57 @@ function toggleShutter() {
         trigger.style.left = '0';
     }
 }
-
+// Function to update the Shutter List manually (if needed)
 function updateShutterFileList(name, id) {
     const list = document.getElementById('shutter-file-list');
     if (!list) return;
+    
     const item = document.createElement('div');
     item.className = 'shutter-item';
-    item.innerHTML = `<span><i class="fas fa-file-code"></i> ${name}</span>`;
-    item.onclick = () => { restoreBox(id); toggleShutter(); };
+    item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
+    
+    // Using addFileToUI to ensure the file opens/restores correctly
+    item.onclick = () => { 
+        if(typeof addFileToUI === "function") {
+            const type = name.split('.').pop().toLowerCase();
+            addFileToUI(name, type, files[name] ? files[name].content : "");
+        }
+        if(typeof toggleShutter === "function") toggleShutter(); 
+    };
     list.appendChild(item);
 }
 
+// Fixed function to add new file and REFRESH Shutter automatically
 function addNewFilePrompt() {
     const fileName = prompt("File Name (e.g. script.js):");
+    
     if (fileName) {
-        // Generating a unique safe ID for the new file
-        const id = fileName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-        // Checking if extension exists to determine type
-        const type = fileName.split('.').pop();
-        
-        // This assumes addFileToUI is available in main-logic.js
-        if(typeof addFileToUI === "function") {
+        // Checking if file already exists in our global 'files' object
+        if (typeof files !== "undefined" && files[fileName]) {
+            alert("This file already exists!");
+            return;
+        }
+
+        // Determine file type
+        const type = fileName.split('.').pop().toLowerCase();
+
+        // 1. Add file to the global logic (Main Object)
+        if (typeof files !== "undefined") {
+            files[fileName] = { content: "", type: type };
+        }
+
+        // 2. Open the file in UI
+        if (typeof addFileToUI === "function") {
             addFileToUI(fileName, type, "");
+        }
+
+        // 3. AUTO-REFRESH Shutter List
+        if (typeof updateTaskbar === "function") {
+            updateTaskbar();
+        } else {
+            // Fallback if updateTaskbar is missing
+            const safeId = fileName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+            updateShutterFileList(fileName, safeId);
         }
     }
 }
