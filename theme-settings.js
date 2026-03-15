@@ -45,8 +45,54 @@ function updateThemeAndFont() {
     document.querySelectorAll('.icon-btn i').forEach(i => i.style.color = theme.accent);
 }
 
+// --- 1. Update Font Size Function ---
 function updateFontSize(val) {
-    updateThemeAndFont();
+    // Update the label next to the slider
+    const sizeLabel = document.getElementById('font-size-val');
+    if (sizeLabel) sizeLabel.innerText = val + "px";
+
+    // Apply the font size to all textareas in the editor
+    const editors = document.querySelectorAll('.editor-container textarea');
+    editors.forEach(editor => {
+        editor.style.fontSize = val + "px";
+    });
+
+    // Also update line numbers to match the font size
+    const lineNumbers = document.querySelectorAll('.line-numbers');
+    lineNumbers.forEach(ln => {
+        ln.style.fontSize = val + "px";
+    });
+}
+
+// --- 2. Update Theme and Font Family Function ---
+function updateThemeAndFont() {
+    const fontFamily = document.getElementById('font-family-sel').value;
+    const theme = document.getElementById('theme-sel').value;
+
+    // Apply Font Family to all textareas
+    const editors = document.querySelectorAll('.editor-container textarea');
+    editors.forEach(editor => {
+        editor.style.fontFamily = fontFamily;
+    });
+
+    // Apply Theme (Change background and colors based on selection)
+    // This is a simple implementation, you can expand it for different themes
+    const editorFrames = document.querySelectorAll('.window-body');
+    
+    editorFrames.forEach(frame => {
+        if (theme === 'dark') {
+            frame.style.background = "#0b1619";
+        } else if (theme === 'monokai') {
+            frame.style.background = "#272822";
+        } else if (theme === 'light') {
+            frame.style.background = "#ffffff";
+            const tx = frame.querySelector('textarea');
+            if(tx) tx.style.color = "#000000";
+        }
+        // Add more theme conditions as per your dropdown list...
+    });
+
+    console.log("Font changed to: " + fontFamily + " and Theme to: " + theme);
 }
 
 // --- PREVIEW DEVICE REALITY LOGIC ---
