@@ -63,36 +63,53 @@ function updateFontSize(val) {
         ln.style.fontSize = val + "px";
     });
 }
+/**
+ * Updates the Font Size for all editors and line numbers
+ */
+function updateFontSize(val) {
+    // 1. Update the display text next to the slider
+    const sizeLabel = document.getElementById('font-size-val');
+    if (sizeLabel) sizeLabel.innerText = val + "px";
 
-// --- 2. Update Theme and Font Family Function ---
-function updateThemeAndFont() {
-    const fontFamily = document.getElementById('font-family-sel').value;
-    const theme = document.getElementById('theme-sel').value;
-
-    // Apply Font Family to all textareas
+    // 2. Apply font size to all textareas
     const editors = document.querySelectorAll('.editor-container textarea');
     editors.forEach(editor => {
-        editor.style.fontFamily = fontFamily;
+        editor.style.fontSize = val + "px";
     });
 
-    // Apply Theme (Change background and colors based on selection)
-    // This is a simple implementation, you can expand it for different themes
-    const editorFrames = document.querySelectorAll('.window-body');
-    
-    editorFrames.forEach(frame => {
-        if (theme === 'dark') {
-            frame.style.background = "#0b1619";
-        } else if (theme === 'monokai') {
-            frame.style.background = "#272822";
-        } else if (theme === 'light') {
-            frame.style.background = "#ffffff";
-            const tx = frame.querySelector('textarea');
-            if(tx) tx.style.color = "#000000";
-        }
-        // Add more theme conditions as per your dropdown list...
+    // 3. Update line numbers font size to match
+    const lineNumbers = document.querySelectorAll('.line-numbers');
+    lineNumbers.forEach(ln => {
+        ln.style.fontSize = val + "px";
     });
 
-    console.log("Font changed to: " + fontFamily + " and Theme to: " + theme);
+    // Save preference if needed (Optional)
+    lineNumberFontSize = parseInt(val);
+}
+
+/**
+ * Updates the Font Family for all editors
+ * Triggered by the font-family-sel dropdown
+ */
+function updateThemeAndFont() {
+    const fontSelector = document.getElementById('font-family-sel');
+    if (!fontSelector) return;
+
+    const selectedFont = fontSelector.value;
+
+    // Apply the selected font family to all editor textareas
+    const editors = document.querySelectorAll('.editor-container textarea');
+    editors.forEach(editor => {
+        editor.style.fontFamily = selectedFont;
+    });
+
+    // Apply to line numbers as well for alignment
+    const lineNumbers = document.querySelectorAll('.line-numbers');
+    lineNumbers.forEach(ln => {
+        ln.style.fontFamily = selectedFont;
+    });
+
+    console.log("Font Family updated to: " + selectedFont);
 }
 
 // --- PREVIEW DEVICE REALITY LOGIC ---
