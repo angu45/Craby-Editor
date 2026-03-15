@@ -1,4 +1,4 @@
-// --- 1. ALL 12 THEMES ---
+// --- 1. ALL 12 THEMES CONFIGURATION ---
 const themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#ffffff', panel: '#f8fafc', accent: '#1e40af', text: '#0f172a', border: '#cbd5e1' },
@@ -14,112 +14,88 @@ const themes = {
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// --- 2. THEME & FONT APPLICATION ---
+// --- 2. THEME & FONT APPLICATION LOGIC ---
+
+/**
+ * Updates both Theme and Font Family across the IDE
+ */
 function updateThemeAndFont() {
-    const themeKey = document.getElementById('theme-sel').value;
-    const font = document.getElementById('font-family-sel').value;
-    const fontSize = document.getElementById('font-size-range')?.value || 14;
+    const themeSel = document.getElementById('theme-sel');
+    const fontSel = document.getElementById('font-family-sel');
     
-    const fsDisplay = document.getElementById('font-size-val');
-    if(fsDisplay) fsDisplay.innerText = fontSize + "px"; 
-    
+    if (!themeSel || !fontSel) return;
+
+    const themeKey = themeSel.value;
+    const font = fontSel.value;
     const theme = themes[themeKey] || themes.dark;
 
-    // Root Variables
+    // Apply Root CSS Variables for UI elements
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
     document.documentElement.style.setProperty('--border', theme.border);
     
-    document.querySelectorAll('textarea').forEach(tx => {
+    // Apply to Editor Components
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(tx => {
         tx.style.fontFamily = font;
-        tx.style.fontSize = fontSize + "px";
         tx.style.color = theme.text;
         tx.style.background = theme.bg;
         
-        const eb = tx.closest('.window-frame');
-        if(eb) eb.style.borderColor = theme.border;
+        const frame = tx.closest('.window-frame');
+        if(frame) frame.style.borderColor = theme.border;
     });
 
+    // Update Header and Icons
     document.querySelectorAll('.window-header').forEach(h => h.style.background = theme.panel);
     document.querySelectorAll('.icon-btn i').forEach(i => i.style.color = theme.accent);
+    
+    // Sync Line Numbers Font Family
+    document.querySelectorAll('.line-numbers').forEach(ln => {
+        ln.style.fontFamily = font;
+    });
+
+    console.log(`Applied Theme: ${themeKey}, Font: ${font}`);
 }
 
-// --- 1. Update Font Size Function ---
+/**
+ * Updates Font Size for textareas and syncs line numbers
+ */
 function updateFontSize(val) {
-    // Update the label next to the slider
+    // Update label display
     const sizeLabel = document.getElementById('font-size-val');
     if (sizeLabel) sizeLabel.innerText = val + "px";
 
-    // Apply the font size to all textareas in the editor
+    // Apply font size to editors
     const editors = document.querySelectorAll('.editor-container textarea');
     editors.forEach(editor => {
         editor.style.fontSize = val + "px";
     });
 
-    // Also update line numbers to match the font size
-    const lineNumbers = document.querySelectorAll('.line-numbers');
-    lineNumbers.forEach(ln => {
-        ln.style.fontSize = val + "px";
-    });
-}
-/**
- * Updates the Font Size for all editors and line numbers
- */
-function updateFontSize(val) {
-    // 1. Update the display text next to the slider
-    const sizeLabel = document.getElementById('font-size-val');
-    if (sizeLabel) sizeLabel.innerText = val + "px";
-
-    // 2. Apply font size to all textareas
-    const editors = document.querySelectorAll('.editor-container textarea');
-    editors.forEach(editor => {
-        editor.style.fontSize = val + "px";
-    });
-
-    // 3. Update line numbers font size to match
+    // Sync font size with line numbers
     const lineNumbers = document.querySelectorAll('.line-numbers');
     lineNumbers.forEach(ln => {
         ln.style.fontSize = val + "px";
     });
 
-    // Save preference if needed (Optional)
-    lineNumberFontSize = parseInt(val);
+    // Update global variable for line number logic in main-logic.js
+    if (typeof lineNumberFontSize !== 'undefined') {
+        lineNumberFontSize = parseInt(val);
+    }
 }
+
+// --- 3. PREVIEW DEVICE REALITY LOGIC ---
 
 /**
- * Updates the Font Family for all editors
- * Triggered by the font-family-sel dropdown
+ * Changes the Preview Frame size to simulate Desktop or Mobile
  */
-function updateThemeAndFont() {
-    const fontSelector = document.getElementById('font-family-sel');
-    if (!fontSelector) return;
-
-    const selectedFont = fontSelector.value;
-
-    // Apply the selected font family to all editor textareas
-    const editors = document.querySelectorAll('.editor-container textarea');
-    editors.forEach(editor => {
-        editor.style.fontFamily = selectedFont;
-    });
-
-    // Apply to line numbers as well for alignment
-    const lineNumbers = document.querySelectorAll('.line-numbers');
-    lineNumbers.forEach(ln => {
-        ln.style.fontFamily = selectedFont;
-    });
-
-    console.log("Font Family updated to: " + selectedFont);
-}
-
-// --- PREVIEW DEVICE REALITY LOGIC ---
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
-    const overlayBody = frame.parentElement; // Preview body container
+    const overlayBody = document.getElementById('preview-body');
 
     if (!frame || !overlayBody) return;
 
-    // Reset styles aadhi
+    // Animation transition
     frame.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
     
     if (device === '100%') {
@@ -132,13 +108,21 @@ function setPreviewSize(device) {
         overlayBody.style.padding = "0";
     } 
     else if (device === '375px') {
-        // --- REAL MOBILE VIEW (iPhone Size) ---
+        // --- REAL MOBILE VIEW (iPhone Size Simulation) ---
         frame.style.width = "375px";
-        frame.style.height = "750px"; // Mobile height logic
-        frame.style.border = "12px solid #222"; // Mobile bezel
-        frame.style.borderRadius = "35px"; // Rounded corners like phone
+        frame.style.height = "750px"; 
+        frame.style.border = "12px solid #222"; // Phone Bezel
+        frame.style.borderRadius = "35px"; 
         frame.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.5)";
         overlayBody.style.padding = "20px";
         overlayBody.style.overflowY = "auto";
     }
 }
+
+// --- 4. INITIAL SYNC ---
+// Ensuring UI reflects initial settings on load
+window.addEventListener('DOMContentLoaded', () => {
+    const fsRange = document.getElementById('font-size-range');
+    if(fsRange) updateFontSize(fsRange.value);
+    updateThemeAndFont();
+});
