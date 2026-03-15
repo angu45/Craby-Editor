@@ -76,7 +76,6 @@ function updateLineNumbers(safeId) {
 
     const computedStyle = window.getComputedStyle(tx);
     
-    // Line Number ची साईज युजरने सेट केलेल्या 'lineNumberFontSize' नुसार असेल
     lineBox.style.fontSize = lineNumberFontSize + "px";
     lineBox.style.fontFamily = computedStyle.fontFamily;
     lineBox.style.lineHeight = computedStyle.lineHeight;
@@ -89,7 +88,6 @@ function updateLineNumbers(safeId) {
     }
     lineBox.innerHTML = lineHTML;
 
-    // Numbers च्या रुंदीनुसार पॅन ॲडजस्ट करणे
     const charCount = lines.toString().length;
     lineBox.style.width = (charCount * (lineNumberFontSize * 0.8)) + "px";
 }
@@ -107,6 +105,8 @@ function toggleLineNumbers(status) {
     document.querySelectorAll('.line-numbers').forEach(el => {
         el.style.display = showLineNumbers ? 'block' : 'none';
     });
+    // Tracking toggle event
+    if(typeof trackCrabyEvent === 'function') trackCrabyEvent('button_click', { button_id: 'toggle_line_numbers', status: status });
 }
 
 function changeLineNumberSize(size) {
@@ -221,6 +221,9 @@ function runCode() {
         return;
     }
 
+    // TRACK: Code Run Event
+    if(typeof trackCrabyEvent === 'function') trackCrabyEvent('code_run', { file_name: fileToRun });
+
     overlay.style.display = 'flex';
     const htmlContent = files[fileToRun].content || '';
     const cssContent = `<style>${files["style.css"] ? files["style.css"].content : ""}</style>`;
@@ -235,6 +238,9 @@ function runCode() {
 function exportCode() {
     const fileName = prompt("Which file to download? (e.g. index.html) or type 'all' for ZIP:", "index.html");
     if (!fileName) return;
+
+    // TRACK: File Download Event
+    if(typeof trackCrabyEvent === 'function') trackCrabyEvent('file_download', { file_name: fileName });
 
     if (fileName.toLowerCase() === 'all') {
         if (typeof JSZip !== "undefined") {
@@ -265,6 +271,8 @@ function exportCode() {
 function toggleShutter() {
     const shutter = document.getElementById('shutter');
     if(shutter) shutter.classList.toggle('open');
+    // TRACK: Shutter Open
+    if(typeof trackCrabyEvent === 'function') trackCrabyEvent('button_click', { button_id: 'toggle_shutter' });
 }
 
 function expandBox(id) { 
@@ -309,6 +317,8 @@ function addNewFilePrompt() {
         files[name] = { content: "", type: ext };
         renderFileList();
         addFileToUI(name, ext, "");
+        // TRACK: New File Created
+        if(typeof trackCrabyEvent === 'function') trackCrabyEvent('button_click', { button_id: 'add_new_file', file_ext: ext });
     }
 }
 
@@ -318,6 +328,8 @@ function beautifyCode() {
         tx.value = formatCode(code);
         updateLineNumbers(tx.id.replace('-code', ''));
     });
+    // TRACK: Beautify
+    if(typeof trackCrabyEvent === 'function') trackCrabyEvent('button_click', { button_id: 'beautify_code' });
 }
 
 function formatCode(code) {
@@ -343,7 +355,6 @@ window.onload = () => {
     
     const settingsPanel = document.getElementById('settingsPanel');
     if(settingsPanel) {
-        // 1. Toggle Switch for Line Numbers (Default Off)
         const toggleDiv = document.createElement('div');
         toggleDiv.className = 'setting-item';
         toggleDiv.innerHTML = `
@@ -354,7 +365,6 @@ window.onload = () => {
             </label>`;
         settingsPanel.appendChild(toggleDiv);
 
-        // 2. Range Slider for Line Number Font Size
         const rangeDiv = document.createElement('div');
         rangeDiv.className = 'setting-item';
         rangeDiv.style.flexDirection = 'column';
