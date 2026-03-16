@@ -1,13 +1,8 @@
 // --- 1. ALL 12 THEMES CONFIGURATION ---
 const themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
-  light: {
-    bg: '#eef1f4',
-    panel: '#ffffff',
-    accent: '#f59e0b',
-    text: '#374151',
-    border: '#e5e7eb'
-},  monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
+    light: { bg: '#eef1f4', panel: '#ffffff', accent: '#f59e0b', text: '#374151', border: '#e5e7eb' },  
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
     matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
     nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
@@ -21,9 +16,6 @@ const themes = {
 
 // --- 2. THEME & FONT APPLICATION LOGIC ---
 
-/**
- * Updates both Theme and Font Family across the IDE
- */
 function updateThemeAndFont() {
     const themeSel = document.getElementById('theme-sel');
     const fontSel = document.getElementById('font-family-sel');
@@ -34,13 +26,11 @@ function updateThemeAndFont() {
     const font = fontSel.value;
     const theme = themes[themeKey] || themes.dark;
 
-    // Apply Root CSS Variables for UI elements
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
     document.documentElement.style.setProperty('--border', theme.border);
     
-    // Apply to Editor Components
     const textareas = document.querySelectorAll('textarea');
     textareas.forEach(tx => {
         tx.style.fontFamily = font;
@@ -51,81 +41,111 @@ function updateThemeAndFont() {
         if(frame) frame.style.borderColor = theme.border;
     });
 
-    // Update Header and Icons
     document.querySelectorAll('.window-header').forEach(h => h.style.background = theme.panel);
     document.querySelectorAll('.icon-btn i').forEach(i => i.style.color = theme.accent);
     
-    // Sync Line Numbers Font Family
     document.querySelectorAll('.line-numbers').forEach(ln => {
         ln.style.fontFamily = font;
     });
-
-    console.log(`Applied Theme: ${themeKey}, Font: ${font}`);
 }
 
-/**
- * Updates Font Size for textareas and syncs line numbers
- */
 function updateFontSize(val) {
-    // Update label display
     const sizeLabel = document.getElementById('font-size-val');
     if (sizeLabel) sizeLabel.innerText = val + "px";
 
-    // Apply font size to editors
     const editors = document.querySelectorAll('.editor-container textarea');
     editors.forEach(editor => {
         editor.style.fontSize = val + "px";
     });
 
-    // Sync font size with line numbers
     const lineNumbers = document.querySelectorAll('.line-numbers');
     lineNumbers.forEach(ln => {
         ln.style.fontSize = val + "px";
     });
 
-    // Update global variable for line number logic in main-logic.js
     if (typeof lineNumberFontSize !== 'undefined') {
         lineNumberFontSize = parseInt(val);
     }
 }
 
-// --- 3. PREVIEW DEVICE REALITY LOGIC ---
+// --- 3. RUN CODE LOGIC (ADDED) ---
 
-/**
- * Changes the Preview Frame size to simulate Desktop or Mobile
- */
+function runCode() {
+    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
+    if(htmlFiles.length === 0) return alert("No HTML files available!");
+
+    // जर index.html असेल तर ते आधी निवडा, नसेल तर पहिले उपलब्ध HTML
+    const defaultFile = files["index.html"] ? "index.html" : htmlFiles[0];
+    
+    const overlay = document.getElementById('preview-overlay');
+    const frame = document.getElementById('output-frame');
+    overlay.style.display = 'flex';
+
+    let rawHTML = files[defaultFile].content;
+
+    // CSS आणि JS फाईल्सना HTML मध्ये इंजेक्ट करणे
+    Object.keys(files).forEach(name => {
+        const content = files[name].content;
+        if(name.endsWith('.css')) {
+            rawHTML = rawHTML.replace(`href="${name}"`, `href="data:text/css;base64,${btoa(content)}"`);
+            rawHTML = rawHTML.replace('</head>', `<style>${content}</style></head>`);
+        }
+        if(name.endsWith('.js')) {
+            const encodedJS = btoa(unescape(encodeURIComponent(content)));
+            rawHTML = rawHTML.replace(`src="${name}"`, `src="data:text/javascript;base64,${encodedJS}"`);
+            rawHTML = rawHTML.replace('</body>', `<script>${content}<\/script></body>`);
+        }
+    });
+
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(rawHTML);
+    doc.close();
+
+    // प्रिव्ह्यू उघडताना तो नेहमी डेस्कटॉप साईजमध्ये उघडेल
+    setPreviewSize('100%');
+}
+
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+}
+
+// --- 4. PREVIEW DEVICE REALITY LOGIC (FIXED) ---
+
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
     const overlayBody = document.getElementById('preview-body');
 
     if (!frame || !overlayBody) return;
 
-    // Animation transition
-    frame.style.transition = "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+    // स्मूद ट्रांझिशन
+    frame.style.transition = "all 0.4s ease-in-out";
     
     if (device === '100%') {
-        // --- REAL DESKTOP VIEW ---
+        // Desktop View Fix
         frame.style.width = "100%";
         frame.style.height = "100%";
+        frame.style.maxWidth = "100%";
         frame.style.border = "none";
         frame.style.borderRadius = "0";
-        frame.style.boxShadow = "none";
         overlayBody.style.padding = "0";
+        overlayBody.style.alignItems = "stretch"; // फुल स्क्रीन करण्यासाठी
     } 
     else if (device === '375px') {
-        // --- REAL MOBILE VIEW (iPhone Size Simulation) ---
+        // Mobile View Fix (iPhone Style)
         frame.style.width = "375px";
-        frame.style.height = "750px"; 
-        frame.style.border = "12px solid #222"; // Phone Bezel
-        frame.style.borderRadius = "35px"; 
-        frame.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.5)";
-        overlayBody.style.padding = "20px";
-        overlayBody.style.overflowY = "auto";
+        frame.style.height = "667px"; // स्टँडर्ड मोबाईल हाईट
+        frame.style.maxWidth = "90vw";
+        frame.style.maxHeight = "80vh";
+        frame.style.border = "14px solid #333"; // मोबाईल फ्रेम (बेझल)
+        frame.style.borderRadius = "40px"; 
+        frame.style.boxShadow = "0 30px 60px rgba(0,0,0,0.8)";
+        overlayBody.style.padding = "40px 10px";
+        overlayBody.style.alignItems = "center"; // फ्रेम सेंटरला ठेवण्यासाठी
     }
 }
 
-// --- 4. INITIAL SYNC ---
-// Ensuring UI reflects initial settings on load
+// --- 5. INITIAL SYNC ---
 window.addEventListener('DOMContentLoaded', () => {
     const fsRange = document.getElementById('font-size-range');
     if(fsRange) updateFontSize(fsRange.value);
