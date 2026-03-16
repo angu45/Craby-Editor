@@ -1,87 +1,64 @@
-/* --- LOADING SCREEN STYLES --- */
 #craby-loader {
     position: fixed;
     inset: 0;
-    background: #0d1117; /* तुमचा मूळ बॅकग्राउंड कलर */
+    background: #0d1117;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 99999; /* सर्वात वर राहण्यासाठी */
-    transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+    z-index: 99999;
+    transition: opacity 0.4s ease-out; /* वेगाने गायब होण्यासाठी */
 }
 
-.loader-content {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
-
-/* SVG Animation: Floating & Pulsing */
-.loading-svg {
-    width: 150px;
+.loading-logo {
+    width: 100px;
     height: auto;
-    filter: drop-shadow(0 0 20px rgba(255, 180, 0, 0.4));
-    animation: crabFloat 3s ease-in-out infinite, crabPulse 1.5s ease-in-out infinite alternate;
+    margin-bottom: 10px;
+    animation: logoPop 0.5s ease-out;
 }
 
-@keyframes crabFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
+@keyframes logoPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-@keyframes crabPulse {
-    from { filter: drop-shadow(0 0 10px rgba(255, 180, 0, 0.2)); }
-    to { filter: drop-shadow(0 0 30px rgba(255, 180, 0, 0.6)); }
-}
-
-.loader-text {
-    color: #ffb400;
+.percentage-wrapper {
+    font-size: 2rem;
     font-weight: 800;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    animation: textFade 1.5s infinite;
+    color: #ffb400;
+    font-family: sans-serif;
+    margin-bottom: 5px;
 }
 
-/* Liquid Loading Bar */
 .liquid-bar-container {
-    width: 200px;
-    height: 6px;
+    width: 220px;
+    height: 8px;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    border-radius: 20px;
     overflow: hidden;
-    position: relative;
     border: 1px solid rgba(255, 180, 0, 0.2);
 }
 
 .liquid-bar {
-    position: absolute;
     height: 100%;
-    width: 50%;
-    background: #ffb400;
-    border-radius: 10px;
-    box-shadow: 0 0 15px #ffb400;
-    animation: liquidMove 2s infinite ease-in-out;
+    width: 0%; /* JS द्वारे कंट्रोल होईल */
+    background: linear-gradient(90deg, #ffb400, #ffcc33);
+    box-shadow: 0 0 15px rgba(255, 180, 0, 0.5);
+    transition: width 0.1s linear;
 }
 
-@keyframes liquidMove {
-    0% { left: -50%; width: 30%; }
-    50% { width: 60%; }
-    100% { left: 100%; width: 30%; }
+.loader-status {
+    margin-top: 10px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255, 180, 0, 0.6);
+    text-transform: uppercase;
 }
 
-@keyframes textFade {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
-}
-
-/* Loader बाहेर जाताना अ‍ॅनिमेशन */
 .loader-hidden {
     opacity: 0;
     pointer-events: none;
 }
+
 @keyframes fadeinout {
     0% { opacity: 0; bottom: 0; }
     20% { opacity: 1; bottom: 20px; }
