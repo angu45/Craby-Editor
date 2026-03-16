@@ -249,25 +249,59 @@ function changeLineNumberSize(size) {
         updateLineNumbers(el.id.replace('-lines', ''));
     });
 }
-// --- 6. SUGGESTION SYSTEM (Updated) ---
+// --- Global State for Selection ---
+let selectedIndex = 0; // नेहमी पहिल्या आयटमवर राहण्यासाठी
 
 function attachInputListeners(txt) {
+    txt.addEventListener('keydown', (e) => {
+        const items = document.querySelectorAll('.suggestion-item');
+        
+        // जर सजेशन बॉक्स उघडा असेल तर Enter की हँडल करा
+        if (sBox.style.display === 'block' && items.length > 0) {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // नवीन लाईनवर जाण्यापासून रोखा
+                items[selectedIndex].click(); // सिलेक्ट केलेल्या आयटमला क्लिक करा
+            }
+            // एरो कीज ने वर-खाली करण्यासाठी (Optional Bonus)
+            else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateHighlight(items);
+            }
+            else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateHighlight(items);
+            }
+        }
+    });
+
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const char = e.data;
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
-            const val = txt.value;
-            txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
+            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
         } 
         showSuggestions(txt);
     });
 }
 
+function updateHighlight(items) {
+    items.forEach((item, index) => {
+        if (index === selectedIndex) {
+            item.classList.add('active-suggestion');
+            item.style.backgroundColor = '#3e4451'; // हायलाइट कलर
+        } else {
+            item.classList.remove('active-suggestion');
+            item.style.backgroundColor = ''; 
+        }
+    });
+}
+
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
-    // शब्दाचा शेवटचा भाग काढण्यासाठी Regex
     const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
     
     if (word.length < 1) { 
@@ -280,17 +314,21 @@ function showSuggestions(txt) {
 
     if (matches.length > 0) {
         const rect = txt.getBoundingClientRect();
-        // टीप: कर्सरच्या जागी बॉक्स दाखवण्यासाठी अधिक चांगले लॉजिक वापरता येईल
         sBox.style.top = `${rect.top + 30}px`; 
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
         
-        // Suggestion list मध्ये बदल
-        sBox.innerHTML = matches.map(m => {
+        selectedIndex = 0; // प्रत्येक वेळी नवीन सजेशन आल्यावर पहिल्याला सिलेक्ट करा
+
+        sBox.innerHTML = matches.map((m, index) => {
             let displayLabel = m;
-            // जर क्लास असेल तर युजरला समजण्यासाठी वेगळे दाखवा
-            if(m === 'h1 class') displayLabel = '<h1 class="">';
-            return `<div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}')">${displayLabel}</div>`;
+            if(m === 'h1 class') displayLabel = 'h1 class=""';
+            
+            // पहिला आयटम 'active-suggestion' क्लाससह येईल
+            const activeClass = index === 0 ? 'active-suggestion' : '';
+            const activeStyle = index === 0 ? 'style="background-color: #3e4451;"' : '';
+
+            return `<div class="suggestion-item ${activeClass}" ${activeStyle} onclick="insertWord('${m}', '${txt.id}')">${displayLabel}</div>`;
         }).join('');
     } else { 
         sBox.style.display = 'none'; 
@@ -302,29 +340,37 @@ function insertWord(word, id) {
     const pos = txt.selectionStart;
     const lang = txt.getAttribute('data-lang');
     
-    // वर्तमान शब्द काढण्यासाठी
     const textBeforeCursor = txt.value.substring(0, pos);
     const beforeWord = textBeforeCursor.replace(/[\w.-]+$/, "");
     const afterWord = txt.value.substring(pos);
 
     let finalInsert = word;
-    let cursorOffset = word.length; // कर्सर कुठे ठेवायचा
+    let cursorOffset = word.length;
 
-    // --- HTML Special Logic ---
+    // HTML साठी तुमची विशेष मागणी
     if (lang === 'html' || id.includes('html')) {
         if (word === 'h1') {
             finalInsert = `<h1></h1>`;
-            cursorOffset = 4; // <h1> च्या नंतर कर्सर नेण्यासाठी
+            cursorOffset = 4; // <h1>|</h1> च्या मध्ये
         } else if (word === 'h1 class') {
             finalInsert = `<h1 class=""></h1>`;
-            cursorOffset = 10; // class="" च्या मध्ये कर्सर नेण्यासाठी
+            cursorOffset = 10; // class="|" च्या मध्ये
         } else if (!word.includes('<')) {
-            // इतर सामान्य टॅग्ससाठी (उदा. p, div)
             finalInsert = `<${word}></${word}>`;
             cursorOffset = word.length + 2;
         }
     }
 
+    txt.value = beforeWord + finalInsert + afterWord;
+    
+    const newCursorPos = beforeWord.length + cursorOffset;
+    txt.selectionStart = txt.selectionEnd = newCursorPos;
+
+    sBox.style.display = 'none';
+    txt.focus();
+    
+    updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
+}
     // टेक्स्ट अपडेट करा
     txt.value = beforeWord + finalInsert + afterWord;
     
