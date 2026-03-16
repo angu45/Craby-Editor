@@ -39,7 +39,6 @@ window.addEventListener('load', () => {
     trackCrabyEvent('editor_open', { platform: 'Vercel' });
 });
 
-// १. लोडर फंक्शन जे रँडम उड्या मारेल
 function startCrabyLoader() {
     const loadVal = document.getElementById('load-val');
     const barFill = document.getElementById('bar-fill');
@@ -50,8 +49,8 @@ function startCrabyLoader() {
     let currentPct = 0;
 
     function fastRandomJumps() {
-        // २० ते ५० च्या दरम्यान मोठी रँडम उडी
-        let nextJump = Math.floor(Math.random() * 30) + 20; 
+        // Randomly 20% te 45% chi udi
+        let nextJump = Math.floor(Math.random() * 25) + 20; 
         currentPct += nextJump;
 
         if (currentPct >= 100) {
@@ -59,40 +58,34 @@ function startCrabyLoader() {
             loadVal.innerText = currentPct;
             barFill.style.width = currentPct + "%";
             
-            // १००% झाले की लगेच लोडर गायब करा
+            // 100% zalya zalya thoda thambun (Coolness sathi) lagech editor open
             setTimeout(() => {
                 loader.classList.add('hide-loader');
-                // ३००ms नंतर मेमरीमधून काढून टाका
                 setTimeout(() => {
-                    loader.style.display = 'none';
                     loader.remove();
-                }, 300);
-            }, 150); // थोडा वेळ १००% दिसू द्या
+                    // Editor loading functions
+                    if (typeof updateTaskbar === 'function') updateTaskbar();
+                }, 500);
+            }, 300); // 300ms cha delay 100% status dakhavnyasathi
             return;
         }
 
-        // अपडेट स्क्रीन
+        // Screen update
         loadVal.innerText = currentPct;
         barFill.style.width = currentPct + "%";
 
-        // पुढची उडी एकदम फास्ट (१५०ms ते ३००ms च्या आत)
-        let nextDelay = Math.floor(Math.random() * 150) + 150;
+        // Random Delay: 250ms te 500ms (Thoda delay sathi)
+        let nextDelay = Math.floor(Math.random() * 250) + 250;
         setTimeout(fastRandomJumps, nextDelay);
     }
 
-    fastRandomJumps();
+    // Pehla jump thodya velane start kara (Visual impact sathi)
+    setTimeout(fastRandomJumps, 400);
 }
 
-// २. 'window.onload' ची वाट न पाहता, स्क्रिप्ट येताच काम सुरू करा!
-// यामुळे ०% वर अडकण्याचा प्रश्नच येणार नाही.
+// Initial Trigger
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startCrabyLoader);
 } else {
     startCrabyLoader();
 }
-
-// ३. एडिटरचे बाकीचे फंक्शन नेहमीप्रमाणे चालू राहतील
-window.addEventListener('load', () => {
-    if (typeof updateTaskbar === 'function') updateTaskbar();
-    // इतर फाईल्स लोड करण्याचे लॉजिक...
-});
