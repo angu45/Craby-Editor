@@ -39,40 +39,38 @@ window.addEventListener('load', () => {
     trackCrabyEvent('editor_open', { platform: 'Vercel' });
 });
 
-
 window.onload = () => {
-    // 1. आधी एडिटरची बॅकग्राउंडची कामे उरकून घेऊ
-    updateTaskbar();
-    if(files["index.html"]) addFileToUI("index.html", "html", files["index.html"].content);
-    if(files["style.css"]) addFileToUI("style.css", "css", files["style.css"].content);
-
-    // 2. Percentage Logic (1.5 Seconds total)
-    const pctLabel = document.getElementById('load-pct');
-    const bar = document.getElementById('progress-fill');
+    // १. बॅकग्राउंडला एडिटरचे काम सुरू करू द्या
+    if (typeof updateTaskbar === 'function') updateTaskbar();
+    
+    const loadVal = document.getElementById('load-val');
+    const barFill = document.getElementById('bar-fill');
     const loader = document.getElementById('craby-loader');
     
-    let count = 0;
-    const duration = 1200; // १.२ सेकंदात १००% होणार
-    const startTime = performance.now();
+    let start = null;
+    const duration = 1200; // १.२ सेकंद (1.2 Seconds Fixed)
 
-    function updateLoader(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
+    function animate(timestamp) {
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+        let percentage = Math.min(Math.floor((progress / duration) * 100), 100);
         
-        count = Math.floor(progress * 100);
-        pctLabel.innerText = count;
-        bar.style.width = count + "%";
+        // अपडेट व्हॅल्यू आणि बार
+        loadVal.innerText = percentage;
+        barFill.style.width = percentage + "%";
 
-        if (progress < 1) {
-            requestAnimationFrame(updateLoader);
+        if (progress < duration) {
+            window.requestAnimationFrame(animate);
         } else {
-            // १००% झाले की लगेच गायब
+            // १००% झाले! आता झटक्यात बाहेर
             setTimeout(() => {
-                loader.classList.add('loader-hidden');
-                setTimeout(() => loader.remove(), 400); // डोममधून पूर्णपणे बाहेर
+                loader.classList.add('hide-loader');
+                // ३००ms नंतर डोममधून काढून टाका
+                setTimeout(() => loader.remove(), 300);
             }, 100);
         }
     }
 
-    requestAnimationFrame(updateLoader);
+    // अ‍ॅनिमेशन सुरू करा
+    window.requestAnimationFrame(animate);
 };
