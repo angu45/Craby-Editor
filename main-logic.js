@@ -249,8 +249,7 @@ function changeLineNumberSize(size) {
         updateLineNumbers(el.id.replace('-lines', ''));
     });
 }
-
-// --- 6. SUGGESTION SYSTEM ---
+// --- 6. SUGGESTION SYSTEM (Updated) ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('input', (e) => {
@@ -258,7 +257,8 @@ function attachInputListeners(txt) {
         const char = e.data;
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
         if (pairs[char]) {
-            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
+            const val = txt.value;
+            txt.value = val.substring(0, pos) + pairs[char] + val.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
         } 
         showSuggestions(txt);
@@ -267,29 +267,79 @@ function attachInputListeners(txt) {
 
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
+    // शब्दाचा शेवटचा भाग काढण्यासाठी Regex
     const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
-    if (word.length < 1) { sBox.style.display = 'none'; return; }
     
+    if (word.length < 1) { 
+        sBox.style.display = 'none'; 
+        return; 
+    }
+
     const lang = txt.getAttribute('data-lang');
     const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
-    
+
     if (matches.length > 0) {
         const rect = txt.getBoundingClientRect();
+        // टीप: कर्सरच्या जागी बॉक्स दाखवण्यासाठी अधिक चांगले लॉजिक वापरता येईल
         sBox.style.top = `${rect.top + 30}px`; 
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
-        sBox.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
-    } else { sBox.style.display = 'none'; }
+        
+        // Suggestion list मध्ये बदल
+        sBox.innerHTML = matches.map(m => {
+            let displayLabel = m;
+            // जर क्लास असेल तर युजरला समजण्यासाठी वेगळे दाखवा
+            if(m === 'h1 class') displayLabel = '<h1 class="">';
+            return `<div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}')">${displayLabel}</div>`;
+        }).join('');
+    } else { 
+        sBox.style.display = 'none'; 
+    }
 }
 
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
-    txt.value = before + word + txt.value.substring(pos);
+    const lang = txt.getAttribute('data-lang');
+    
+    // वर्तमान शब्द काढण्यासाठी
+    const textBeforeCursor = txt.value.substring(0, pos);
+    const beforeWord = textBeforeCursor.replace(/[\w.-]+$/, "");
+    const afterWord = txt.value.substring(pos);
+
+    let finalInsert = word;
+    let cursorOffset = word.length; // कर्सर कुठे ठेवायचा
+
+    // --- HTML Special Logic ---
+    if (lang === 'html' || id.includes('html')) {
+        if (word === 'h1') {
+            finalInsert = `<h1></h1>`;
+            cursorOffset = 4; // <h1> च्या नंतर कर्सर नेण्यासाठी
+        } else if (word === 'h1 class') {
+            finalInsert = `<h1 class=""></h1>`;
+            cursorOffset = 10; // class="" च्या मध्ये कर्सर नेण्यासाठी
+        } else if (!word.includes('<')) {
+            // इतर सामान्य टॅग्ससाठी (उदा. p, div)
+            finalInsert = `<${word}></${word}>`;
+            cursorOffset = word.length + 2;
+        }
+    }
+
+    // टेक्स्ट अपडेट करा
+    txt.value = beforeWord + finalInsert + afterWord;
+    
+    // कर्सरची जागा सेट करा
+    const newCursorPos = beforeWord.length + cursorOffset;
+    txt.selectionStart = txt.selectionEnd = newCursorPos;
+
     sBox.style.display = 'none';
     txt.focus();
-    updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
+    
+    // फाईल अपडेट कॉल
+    const fileKey = id.replace('file-','').replace('-code','');
+    if (typeof updateFileContent === 'function') {
+        updateFileContent(fileKey, txt.value);
+    }
 }
 
 // --- 7. INITIALIZATION ---
