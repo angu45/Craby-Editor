@@ -14,7 +14,7 @@ function toggleShutter() {
         trigger.style.left = '0';
     }
 }
-// Function to update the Shutter List manually (if needed)
+
 function updateShutterFileList(name, id) {
     const list = document.getElementById('shutter-file-list');
     if (!list) return;
@@ -23,7 +23,6 @@ function updateShutterFileList(name, id) {
     item.className = 'shutter-item';
     item.innerHTML = `<i class="fas fa-file-code"></i> <span>${name}</span>`;
     
-    // Using addFileToUI to ensure the file opens/restores correctly
     item.onclick = () => { 
         if(typeof addFileToUI === "function") {
             const type = name.split('.').pop().toLowerCase();
@@ -34,44 +33,111 @@ function updateShutterFileList(name, id) {
     list.appendChild(item);
 }
 
-// Fixed function to add new file and REFRESH Shutter automatically
 function addNewFilePrompt() {
     const fileName = prompt("File Name (e.g. script.js):");
     
     if (fileName) {
-        // Checking if file already exists in our global 'files' object
         if (typeof files !== "undefined" && files[fileName]) {
             alert("This file already exists!");
             return;
         }
 
-        // Determine file type
         const type = fileName.split('.').pop().toLowerCase();
 
-        // 1. Add file to the global logic (Main Object)
         if (typeof files !== "undefined") {
             files[fileName] = { content: "", type: type };
         }
 
-        // 2. Open the file in UI
         if (typeof addFileToUI === "function") {
             addFileToUI(fileName, type, "");
         }
 
-        // 3. AUTO-REFRESH Shutter List
         if (typeof updateTaskbar === "function") {
             updateTaskbar();
         } else {
-            // Fallback if updateTaskbar is missing
             const safeId = fileName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
             updateShutterFileList(fileName, safeId);
         }
     }
 }
 
-// --- 2. SETTINGS PANEL & LOCALSTORAGE LOGIC ---
+// --- 2. BEAUTIFY FUNCTION (ALL FILES) ---
+function beautifyCode() {
+    const textareas = document.querySelectorAll('.editor-grid textarea');
+    if (typeof files === "undefined") return;
 
-// Function to save all settings to localStorage
+    Object.keys(files).forEach(fileName => {
+        let content = files[fileName].content;
+        const type = fileName.split('.').pop().toLowerCase();
+
+        if (!content) return;
+
+        if (type === 'html') {
+            content = content
+                .replace(/>\s+</g, '>\n<') 
+                .replace(/(<[^/][^>]*>)/g, '  $1')
+                .split('\n').map(line => line.trim()).join('\n');
+        } 
+        else if (type === 'css') {
+            content = content
+                .replace(/\s*\{\s*/g, ' {\n  ')
+                .replace(/;\s*/g, ';\n  ')
+                .replace(/\s*\}\s*/g, '\n}\n')
+                .replace(/\s*:\s*/g, ': ')
+                .replace(/\n\s*\n/g, '\n'); 
+        } 
+        else if (type === 'js') {
+            content = content
+                .replace(/;\s*/g, ';\n')
+                .replace(/\{\s*/g, ' {\n  ')
+                .replace(/\}\s*/g, '\n}\n')
+                .replace(/,\s*/g, ', ');
+        }
+
+        files[fileName].content = content;
+
+        textareas.forEach(tx => {
+            if (tx.getAttribute('data-filename') === fileName || tx.id.includes(type)) {
+                tx.value = content;
+            }
+        });
+    });
+}
+
+// --- 3. DOWNLOAD FUNCTION (FILE SELECTION) ---
+function exportCode() {
+    if (typeof files === "undefined" || Object.keys(files).length === 0) {
+        alert("No files found to download.");
+        return;
+    }
+
+    const fileList = Object.keys(files);
+    let promptText = "Type the number of the file to download:\n\n";
+    fileList.forEach((name, index) => {
+        promptText += `${index + 1}. ${name}\n`;
+    });
+
+    const choice = prompt(promptText);
+    const selectedIndex = parseInt(choice) - 1;
+
+    if (fileList[selectedIndex]) {
+        const fileName = fileList[selectedIndex];
+        const content = files[fileName].content;
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName; 
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }
+}
+
+// --- 4. SETTINGS PANEL LOGIC ---
 function saveSettings() {
     const settings = {
         theme: document.getElementById('theme-sel').value,
@@ -86,42 +152,30 @@ function saveSettings() {
     localStorage.setItem('craby_settings', JSON.stringify(settings));
 }
 
-// Function to load settings from localStorage
 function loadSettings() {
     const saved = localStorage.getItem('craby_settings');
     if (!saved) return;
-
     const settings = JSON.parse(saved);
 
-    // Apply Theme
     if(settings.theme) document.getElementById('theme-sel').value = settings.theme;
-    
-    // Apply Font Size
     if(settings.fontSize) {
         document.getElementById('font-size-range').value = settings.fontSize;
         document.getElementById('font-size-val').innerText = settings.fontSize + "px";
         updateFontSize(settings.fontSize);
     }
-
-    // Apply Font Family
     if(settings.fontFamily) document.getElementById('font-family-sel').value = settings.fontFamily;
-
-    // Apply Visibility Checks
     if(settings.visibility) {
         document.getElementById('chk-html').checked = settings.visibility.html;
         document.getElementById('chk-css').checked = settings.visibility.css;
         document.getElementById('chk-js').checked = settings.visibility.js;
         updateVisibility();
     }
-
-    // Apply Visuals
     if(typeof updateThemeAndFont === "function") updateThemeAndFont();
 }
 
 function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
     if (!panel) return;
-
     if (panel.style.display === 'none' || !panel.classList.contains('open')) {
         panel.style.display = 'block';
         setTimeout(() => panel.classList.add('open'), 10);
@@ -129,13 +183,12 @@ function toggleSettings() {
         panel.classList.remove('open');
         setTimeout(() => {
             panel.style.display = 'none';
-            saveSettings(); // Save settings automatically when panel closes
+            saveSettings();
         }, 300);
     }
 }
 
 function updateVisibility() {
-    // Note: This logic depends on the IDs generated in main-logic.js
     const htmlBox = document.querySelector('[id*="index-html"]')?.closest('.window-frame');
     const cssBox = document.querySelector('[id*="style-css"]')?.closest('.window-frame');
     const jsBox = document.querySelector('[id*="script-js"]')?.closest('.window-frame');
@@ -152,11 +205,9 @@ function updateFontSize(val) {
     });
 }
 
-// --- 3. RESET FUNCTION ---
 function resetAllSettings() {
-    if(confirm("Are you sure you want to reset all settings to default?")) {
+    if(confirm("Reset all settings to default?")) {
         localStorage.removeItem('craby_settings');
-        alert("Settings Reset! The page will now reload.");
         location.reload();
     }
 }
@@ -169,23 +220,16 @@ function setPreviewSize(width) {
     const frame = document.getElementById('output-frame');
     if(frame) frame.style.width = width;
 }
-// --- PAGE REFRESH WARNING FUNCTION ---
+
 function enableExitWarning() {
     window.onbeforeunload = function (e) {
-        const message = "Do you want to leave this page? Your unsaved changes might be lost.";
-        e = e || window.event;
-        if (e) {
-            e.returnValue = message;
-        }
-        return message;
+        return "Unsaved changes might be lost.";
     };
 }
 
 enableExitWarning();
 
-// --- 4. INITIALIZATION ---
 window.addEventListener('DOMContentLoaded', () => {
-    // Add Reset Button to settings panel dynamically if not present in HTML
     const settingsPanel = document.getElementById('settingsPanel');
     if (settingsPanel && !document.getElementById('reset-btn')) {
         const resetBtn = document.createElement('button');
@@ -197,106 +241,5 @@ window.addEventListener('DOMContentLoaded', () => {
         resetBtn.onclick = resetAllSettings;
         settingsPanel.appendChild(resetBtn);
     }
-
     loadSettings();
-});function beautifyCode() {
-    // 1. Target all open editor textareas
-    const textareas = document.querySelectorAll('.editor-grid textarea');
-    
-    // 2. Target the global files object (where your Taskbar data lives)
-    if (typeof files === "undefined") return;
-
-    // Loop through every file in your project
-    Object.keys(files).forEach(fileName => {
-        let content = files[fileName].content;
-        const type = fileName.split('.').pop().toLowerCase();
-
-        if (!content) return;
-
-        // --- Clean Formatting Logic ---
-        if (type === 'html') {
-            content = content
-                .replace(/>\s+</g, '>\n<') 
-                .replace(/(<[^/][^>]*>)/g, '  $1')
-                .split('\n').map(line => line.trim()).join('\n');
-        } 
-        else if (type === 'css') {
-            content = content
-                .replace(/\s*\{\s*/g, ' {\n  ')
-                .replace(/;\s*/g, ';\n  ')
-                .replace(/\s*\}\s*/g, '\n}\n')
-                .replace(/\s*:\s*/g, ': ')
-                .replace(/\n\s*\n/g, '\n'); // Remove double empty lines
-        } 
-        else if (type === 'js') {
-            content = content
-                .replace(/;\s*/g, ';\n')
-                .replace(/\{\s*/g, ' {\n  ')
-                .replace(/\}\s*/g, '\n}\n')
-                .replace(/,\s*/g, ', ')
-                .replace(/if\s*\(/g, 'if (')
-                .replace(/for\s*\(/g, 'for (');
-        }
-
-        // 3. Update the global data
-        files[fileName].content = content;
-
-        // 4. Update the UI Textareas immediately
-        textareas.forEach(tx => {
-            if (tx.getAttribute('data-filename') === fileName || tx.id.includes(type)) {
-                tx.value = content;
-            }
-        });
-    });
-
-    // Code is now arranged beautifully for all files in one click.
-}
-
- * 2. DOWNLOAD FUNCTION
- * Targets the logic for the file-download action.
- * Shows a list of active files from your taskbar/files object.
- */
-function exportCode() {
-    // Accessing your global 'files' object from main-logic.js
-    if (typeof files === "undefined" || Object.keys(files).length === 0) {
-        alert("No files found in Taskbar to download.");
-        return;
-    }
-
-    const fileList = Object.keys(files);
-    let promptText = "Enter the number of the file you want to download:\n\n";
-    
-    fileList.forEach((name, index) => {
-        promptText += `${index + 1}. ${name}\n`;
-    });
-
-    const choice = prompt(promptText);
-    const selectedIndex = parseInt(choice) - 1;
-
-    if (fileList[selectedIndex]) {
-        const fileName = fileList[selectedIndex];
-        const content = files[fileName].content;
-        
-        // Create the download trigger
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        
-        a.style.display = 'none';
-        a.href = url;
-        // Setting the download name
-        a.download = fileName; 
-        
-        document.body.appendChild(a);
-        a.click();
-        
-        // Cleanup
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-    } else if (choice !== null) {
-        alert("Invalid selection. Please try again.");
-    }
-}
-
-// Ensure the buttons in your header point to these functions
-// (Your HTML already has onclick="beautifyCode()" and onclick="exportCode()")
+});
