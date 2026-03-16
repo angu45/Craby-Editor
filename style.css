@@ -1,59 +1,69 @@
 #craby-loader {
     position: fixed;
     inset: 0;
-    background: #0d1117;
+    background: var(--bg-main); /* Theme cha background */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 99999;
-    transition: opacity 0.3s ease; /* झटक्यात गायब होण्यासाठी */
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .loader-content {
     text-align: center;
-    width: 200px;
+    width: 250px;
 }
 
+/* Logo Animation: Floating + Pulsing Glow */
 .fast-logo {
-    width: 80px;
+    width: 110px;
     height: auto;
-    margin-bottom: 15px;
-    /* साधे पल्सर अ‍ॅनिमेशन */
-    animation: pulse 1s infinite ease-in-out;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px var(--accent));
+    animation: premiumFloat 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
+@keyframes premiumFloat {
+    0%, 100% { 
+        transform: translateY(0) scale(1); 
+        filter: drop-shadow(0 0 10px var(--accent));
+    }
+    50% { 
+        transform: translateY(-15px) scale(1.05); 
+        filter: drop-shadow(0 0 25px var(--accent));
+    }
 }
 
 .pct-text {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 900;
-    color: #ffb400;
-    font-family: 'Segoe UI', sans-serif;
-    margin-bottom: 10px;
+    color: var(--accent); /* Theme accent colour */
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
 }
 
 .bar-bg {
     width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
     overflow: hidden;
+    border: 1px solid var(--border);
 }
 
 #bar-fill {
     height: 100%;
     width: 0%;
-    background: #ffb400;
-    box-shadow: 0 0 10px #ffb400;
-    /* ट्रान्झिशन काढून टाकले कारण आपण JS मधून स्मूथ करणार आहोत */
+    background: var(--accent); /* Theme accent colour */
+    box-shadow: 0 0 20px var(--accent);
+    transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth liquid bounce */
 }
 
 .hide-loader {
     opacity: 0 !important;
     pointer-events: none;
+    transform: scale(1.1); /* Zoom out effect while hiding */
 }
 
 @keyframes fadeinout {
