@@ -37,4 +37,18 @@ function trackCrabyEvent(eventName, params = {}) {
 // ऑटो ट्रॅकर
 window.addEventListener('load', () => {
     trackCrabyEvent('editor_open', { platform: 'Vercel' });
-});
+});window.onload = () => {
+    // विद्यमान फंक्शन्स रन करा
+    updateTaskbar();
+    addFileToUI("index.html", "html", files["index.html"].content);
+    addFileToUI("style.css", "css", files["style.css"].content);
+
+    // लोडर बंद करण्याची लॉजिक
+    const loader = document.getElementById('craby-loader');
+    setTimeout(() => {
+        loader.classList.add('loader-hidden');
+        // मेमरी वाचवण्यासाठी १ सेकंदानंतर लोडर पूर्णपणे काढून टाका
+        setTimeout(() => loader.remove(), 1000);
+    }, 2500); // २.५ सेकंद लोडर दिसेल
+};
+
