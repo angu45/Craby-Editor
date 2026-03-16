@@ -40,37 +40,43 @@ window.addEventListener('load', () => {
 });
 
 window.onload = () => {
-    // १. बॅकग्राउंडला एडिटरचे काम सुरू करू द्या
+    // १. बॅकग्राउंडला एडिटरचे काम (फाईल्स लोड करणे) सुरू करू द्या
     if (typeof updateTaskbar === 'function') updateTaskbar();
     
     const loadVal = document.getElementById('load-val');
     const barFill = document.getElementById('bar-fill');
     const loader = document.getElementById('craby-loader');
     
-    let start = null;
-    const duration = 1200; // १.२ सेकंद (1.2 Seconds Fixed)
+    let currentPct = 0;
 
-    function animate(timestamp) {
-        if (!start) start = timestamp;
-        let progress = timestamp - start;
-        let percentage = Math.min(Math.floor((progress / duration) * 100), 100);
-        
-        // अपडेट व्हॅल्यू आणि बार
-        loadVal.innerText = percentage;
-        barFill.style.width = percentage + "%";
+    // २. Random Jumps Logic (Total duration ~1.2s)
+    function fastRandomLoader() {
+        // ३ ते ४ स्टेप्समध्ये १००% पूर्ण करायचे आहे
+        let nextJump = Math.floor(Math.random() * 40) + 20; // २० ते ६० च्या दरम्यान रँडम उडी
+        currentPct += nextJump;
 
-        if (progress < duration) {
-            window.requestAnimationFrame(animate);
-        } else {
-            // १००% झाले! आता झटक्यात बाहेर
+        if (currentPct >= 100) {
+            currentPct = 100;
+            loadVal.innerText = currentPct;
+            barFill.style.width = currentPct + "%";
+            
+            // १००% झाल्यावर लगेच (१००ms नंतर) गायब
             setTimeout(() => {
                 loader.classList.add('hide-loader');
-                // ३००ms नंतर डोममधून काढून टाका
                 setTimeout(() => loader.remove(), 300);
             }, 100);
+            return;
         }
+
+        // व्हॅल्यू आणि बार अपडेट करा
+        loadVal.innerText = currentPct;
+        barFill.style.width = currentPct + "%";
+
+        // पुढची उडी किती वेळानंतर घ्यायची (Random delay between 200ms to 400ms)
+        let nextDelay = Math.floor(Math.random() * 200) + 200;
+        setTimeout(fastRandomLoader, nextDelay);
     }
 
-    // अ‍ॅनिमेशन सुरू करा
-    window.requestAnimationFrame(animate);
+    // लोडर सुरू करा
+    fastRandomLoader();
 };
