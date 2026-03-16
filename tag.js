@@ -39,20 +39,19 @@ window.addEventListener('load', () => {
     trackCrabyEvent('editor_open', { platform: 'Vercel' });
 });
 
-window.onload = () => {
-    // १. बॅकग्राउंडला एडिटरचे काम (फाईल्स लोड करणे) सुरू करू द्या
-    if (typeof updateTaskbar === 'function') updateTaskbar();
-    
+// १. लोडर फंक्शन जे रँडम उड्या मारेल
+function startCrabyLoader() {
     const loadVal = document.getElementById('load-val');
     const barFill = document.getElementById('bar-fill');
     const loader = document.getElementById('craby-loader');
     
+    if (!loadVal || !barFill || !loader) return;
+
     let currentPct = 0;
 
-    // २. Random Jumps Logic (Total duration ~1.2s)
-    function fastRandomLoader() {
-        // ३ ते ४ स्टेप्समध्ये १००% पूर्ण करायचे आहे
-        let nextJump = Math.floor(Math.random() * 40) + 20; // २० ते ६० च्या दरम्यान रँडम उडी
+    function fastRandomJumps() {
+        // २० ते ५० च्या दरम्यान मोठी रँडम उडी
+        let nextJump = Math.floor(Math.random() * 30) + 20; 
         currentPct += nextJump;
 
         if (currentPct >= 100) {
@@ -60,23 +59,40 @@ window.onload = () => {
             loadVal.innerText = currentPct;
             barFill.style.width = currentPct + "%";
             
-            // १००% झाल्यावर लगेच (१००ms नंतर) गायब
+            // १००% झाले की लगेच लोडर गायब करा
             setTimeout(() => {
                 loader.classList.add('hide-loader');
-                setTimeout(() => loader.remove(), 300);
-            }, 100);
+                // ३००ms नंतर मेमरीमधून काढून टाका
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    loader.remove();
+                }, 300);
+            }, 150); // थोडा वेळ १००% दिसू द्या
             return;
         }
 
-        // व्हॅल्यू आणि बार अपडेट करा
+        // अपडेट स्क्रीन
         loadVal.innerText = currentPct;
         barFill.style.width = currentPct + "%";
 
-        // पुढची उडी किती वेळानंतर घ्यायची (Random delay between 200ms to 400ms)
-        let nextDelay = Math.floor(Math.random() * 200) + 200;
-        setTimeout(fastRandomLoader, nextDelay);
+        // पुढची उडी एकदम फास्ट (१५०ms ते ३००ms च्या आत)
+        let nextDelay = Math.floor(Math.random() * 150) + 150;
+        setTimeout(fastRandomJumps, nextDelay);
     }
 
-    // लोडर सुरू करा
-    fastRandomLoader();
-};
+    fastRandomJumps();
+}
+
+// २. 'window.onload' ची वाट न पाहता, स्क्रिप्ट येताच काम सुरू करा!
+// यामुळे ०% वर अडकण्याचा प्रश्नच येणार नाही.
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startCrabyLoader);
+} else {
+    startCrabyLoader();
+}
+
+// ३. एडिटरचे बाकीचे फंक्शन नेहमीप्रमाणे चालू राहतील
+window.addEventListener('load', () => {
+    if (typeof updateTaskbar === 'function') updateTaskbar();
+    // इतर फाईल्स लोड करण्याचे लॉजिक...
+});
