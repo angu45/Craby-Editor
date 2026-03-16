@@ -200,3 +200,88 @@ window.addEventListener('DOMContentLoaded', () => {
 
     loadSettings();
 });
+/**
+ * 1. BEAUTIFY FUNCTION
+ * Formats HTML, CSS, and JS code using a built-in regex-based approach 
+ * (Since we aren't changing index.html to add external libraries).
+ */
+function beautifyCode() {
+    const editors = document.querySelectorAll('.editor-grid textarea');
+    
+    if (editors.length === 0) {
+        alert("No code found to format!");
+        return;
+    }
+
+    editors.forEach(textarea => {
+        let code = textarea.value;
+        const fileName = textarea.getAttribute('data-filename') || "";
+
+        // Simple formatting logic
+        if (fileName.endsWith('.html') || textarea.id.includes('html')) {
+            code = code.replace(/>\s+</g, '>\n<'); // Basic line breaking
+        } else if (fileName.endsWith('.css') || textarea.id.includes('css')) {
+            code = code.replace(/{\s*/g, ' {\n  ').replace(/;\s*/g, ';\n  ').replace(/\s*}/g, '\n}');
+        } else if (fileName.endsWith('.js') || textarea.id.includes('js')) {
+            code = code.replace(/{\s*/g, ' {\n  ').replace(/;\s*/g, ';\n  ');
+        }
+
+        textarea.value = code;
+        
+        // Sync with your global files object if it exists
+        if (typeof files !== "undefined" && fileName && files[fileName]) {
+            files[fileName].content = code;
+        }
+    });
+    alert("Code formatted!");
+}
+
+/**
+ * 2. DOWNLOAD FUNCTION
+ * Targets the logic for the file-download action.
+ * Shows a list of active files from your taskbar/files object.
+ */
+function exportCode() {
+    // Accessing your global 'files' object from main-logic.js
+    if (typeof files === "undefined" || Object.keys(files).length === 0) {
+        alert("No files found in Taskbar to download.");
+        return;
+    }
+
+    const fileList = Object.keys(files);
+    let promptText = "Enter the number of the file you want to download:\n\n";
+    
+    fileList.forEach((name, index) => {
+        promptText += `${index + 1}. ${name}\n`;
+    });
+
+    const choice = prompt(promptText);
+    const selectedIndex = parseInt(choice) - 1;
+
+    if (fileList[selectedIndex]) {
+        const fileName = fileList[selectedIndex];
+        const content = files[fileName].content;
+        
+        // Create the download trigger
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        a.style.display = 'none';
+        a.href = url;
+        // Setting the download name
+        a.download = fileName; 
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    } else if (choice !== null) {
+        alert("Invalid selection. Please try again.");
+    }
+}
+
+// Ensure the buttons in your header point to these functions
+// (Your HTML already has onclick="beautifyCode()" and onclick="exportCode()")
