@@ -6,56 +6,53 @@
     justify-content: center;
     align-items: center;
     z-index: 99999;
-    transition: opacity 0.4s ease-out; /* वेगाने गायब होण्यासाठी */
+    transition: opacity 0.3s ease; /* झटक्यात गायब होण्यासाठी */
 }
 
-.loading-logo {
-    width: 100px;
+.loader-content {
+    text-align: center;
+    width: 200px;
+}
+
+.fast-logo {
+    width: 80px;
     height: auto;
-    margin-bottom: 10px;
-    animation: logoPop 0.5s ease-out;
+    margin-bottom: 15px;
+    /* साधे पल्सर अ‍ॅनिमेशन */
+    animation: pulse 1s infinite ease-in-out;
 }
 
-@keyframes logoPop {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
 }
 
-.percentage-wrapper {
-    font-size: 2rem;
-    font-weight: 800;
+.pct-text {
+    font-size: 24px;
+    font-weight: 900;
     color: #ffb400;
-    font-family: sans-serif;
-    margin-bottom: 5px;
+    font-family: 'Segoe UI', sans-serif;
+    margin-bottom: 10px;
 }
 
-.liquid-bar-container {
-    width: 220px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
+.bar-bg {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
     overflow: hidden;
-    border: 1px solid rgba(255, 180, 0, 0.2);
 }
 
-.liquid-bar {
+#bar-fill {
     height: 100%;
-    width: 0%; /* JS द्वारे कंट्रोल होईल */
-    background: linear-gradient(90deg, #ffb400, #ffcc33);
-    box-shadow: 0 0 15px rgba(255, 180, 0, 0.5);
-    transition: width 0.1s linear;
+    width: 0%;
+    background: #ffb400;
+    box-shadow: 0 0 10px #ffb400;
+    /* ट्रान्झिशन काढून टाकले कारण आपण JS मधून स्मूथ करणार आहोत */
 }
 
-.loader-status {
-    margin-top: 10px;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: rgba(255, 180, 0, 0.6);
-    text-transform: uppercase;
-}
-
-.loader-hidden {
-    opacity: 0;
+.hide-loader {
+    opacity: 0 !important;
     pointer-events: none;
 }
 
