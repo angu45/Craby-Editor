@@ -1,3 +1,9 @@
+@keyframes fadeinout {
+    0% { opacity: 0; bottom: 0; }
+    20% { opacity: 1; bottom: 20px; }
+    80% { opacity: 1; bottom: 20px; }
+    100% { opacity: 0; bottom: 0; }
+}
 /* --- 1. CORE LAYOUT --- */
 :root {
     --bg-main: #0d1117;
