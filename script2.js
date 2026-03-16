@@ -61,48 +61,7 @@ function addNewFilePrompt() {
     }
 }
 
-// --- 2. BEAUTIFY FUNCTION (ALL FILES) ---
-function beautifyCode() {
-    const textareas = document.querySelectorAll('.editor-grid textarea');
-    if (typeof files === "undefined") return;
 
-    Object.keys(files).forEach(fileName => {
-        let content = files[fileName].content;
-        const type = fileName.split('.').pop().toLowerCase();
-
-        if (!content) return;
-
-        if (type === 'html') {
-            content = content
-                .replace(/>\s+</g, '>\n<') 
-                .replace(/(<[^/][^>]*>)/g, '  $1')
-                .split('\n').map(line => line.trim()).join('\n');
-        } 
-        else if (type === 'css') {
-            content = content
-                .replace(/\s*\{\s*/g, ' {\n  ')
-                .replace(/;\s*/g, ';\n  ')
-                .replace(/\s*\}\s*/g, '\n}\n')
-                .replace(/\s*:\s*/g, ': ')
-                .replace(/\n\s*\n/g, '\n'); 
-        } 
-        else if (type === 'js') {
-            content = content
-                .replace(/;\s*/g, ';\n')
-                .replace(/\{\s*/g, ' {\n  ')
-                .replace(/\}\s*/g, '\n}\n')
-                .replace(/,\s*/g, ', ');
-        }
-
-        files[fileName].content = content;
-
-        textareas.forEach(tx => {
-            if (tx.getAttribute('data-filename') === fileName || tx.id.includes(type)) {
-                tx.value = content;
-            }
-        });
-    });
-}
 
 // --- 3. DOWNLOAD FUNCTION (FILE SELECTION) ---
 function exportCode() {
@@ -214,6 +173,97 @@ function resetAllSettings() {
 
 function closePreview() {
     document.getElementById('preview-overlay').style.display = 'none';
+}
+
+
+function beautifyCode(){
+
+const textareas=document.querySelectorAll('.editor-grid textarea');
+
+if(typeof files==="undefined") return;
+
+Object.keys(files).forEach(fileName=>{
+
+let content=files[fileName].content;
+const type=fileName.split('.').pop().toLowerCase();
+
+if(!content) return;
+
+
+/* ---------- HTML FORMAT ---------- */
+if(type==="html"){
+
+let indent=0;
+
+content=content
+.replace(/>\s*</g,"><")
+.replace(/</g,"\n<")
+.trim()
+.split("\n")
+.map(line=>{
+
+line=line.trim();
+
+if(line.match(/^<\/.+/)) indent--;
+
+let formatted=" ".repeat(indent*2)+line;
+
+if(line.match(/^<[^!\/].*[^\/]>$/)) indent++;
+
+return formatted;
+
+}).join("\n");
+
+}
+
+
+/* ---------- CSS FORMAT ---------- */
+else if(type==="css"){
+
+content=content
+.replace(/\s*\{\s*/g," {\n  ")
+.replace(/;\s*/g,";\n  ")
+.replace(/\s*\}\s*/g,"\n}\n")
+.replace(/\s*:\s*/g,": ")
+.replace(/,\s*/g,", ")
+.replace(/\n\s*\n/g,"\n")
+.trim();
+
+}
+
+
+/* ---------- JS FORMAT ---------- */
+else if(type==="js"){
+
+content=content
+.replace(/\{\s*/g," {\n  ")
+.replace(/\}\s*/g,"\n}\n")
+.replace(/;\s*/g,";\n")
+.replace(/,\s*/g,", ")
+.replace(/if\s*\(/g,"if (")
+.replace(/for\s*\(/g,"for (")
+.replace(/while\s*\(/g,"while (")
+.replace(/\n\s*\n/g,"\n")
+.trim();
+
+}
+
+
+/* Save formatted code */
+files[fileName].content=content;
+
+
+/* Update UI */
+textareas.forEach(tx=>{
+
+if(tx.getAttribute("data-filename")===fileName || tx.id.includes(type)){
+tx.value=content;
+}
+
+});
+
+});
+
 }
 
 function setPreviewSize(width) {
