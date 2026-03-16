@@ -200,40 +200,51 @@ window.addEventListener('DOMContentLoaded', () => {
 
     loadSettings();
 });
-/**
- * 1. BEAUTIFY FUNCTION
- * Formats HTML, CSS, and JS code using a built-in regex-based approach 
- * (Since we aren't changing index.html to add external libraries).
- */
 function beautifyCode() {
-    const editors = document.querySelectorAll('.editor-grid textarea');
-    
-    if (editors.length === 0) {
-        alert("No code found to format!");
-        return;
-    }
+    // Select all textareas inside your editor grid
+    const textareas = document.querySelectorAll('.editor-grid textarea');
 
-    editors.forEach(textarea => {
-        let code = textarea.value;
+    textareas.forEach(textarea => {
+        let code = textarea.value.trim();
         const fileName = textarea.getAttribute('data-filename') || "";
+        const id = textarea.id.toLowerCase();
 
-        // Simple formatting logic
-        if (fileName.endsWith('.html') || textarea.id.includes('html')) {
-            code = code.replace(/>\s+</g, '>\n<'); // Basic line breaking
-        } else if (fileName.endsWith('.css') || textarea.id.includes('css')) {
-            code = code.replace(/{\s*/g, ' {\n  ').replace(/;\s*/g, ';\n  ').replace(/\s*}/g, '\n}');
-        } else if (fileName.endsWith('.js') || textarea.id.includes('js')) {
-            code = code.replace(/{\s*/g, ' {\n  ').replace(/;\s*/g, ';\n  ');
+        // 1. HTML Formatting Logic
+        if (fileName.endsWith('.html') || id.includes('html')) {
+            code = code
+                .replace(/>\s+</g, '>\n<') // New line between tags
+                .replace(/(<[^/][^>]*>)/g, '  $1') // Basic indent
+                .split('\n').map(line => line.trim()).join('\n'); // Clean edges
+        } 
+        
+        // 2. CSS Formatting Logic
+        else if (fileName.endsWith('.css') || id.includes('css')) {
+            code = code
+                .replace(/\s*\{\s*/g, ' {\n  ') // Space before { and newline after
+                .replace(/;\s*/g, ';\n  ')      // Newline after ;
+                .replace(/\s*\}\s*/g, '\n}\n\n') // Newline before and after }
+                .replace(/\s*:\s*/g, ': ');     // Space after :
+        } 
+        
+        // 3. JavaScript Formatting Logic
+        else if (fileName.endsWith('.js') || id.includes('js')) {
+            code = code
+                .replace(/;\s*/g, ';\n')        // Newline after semicolon
+                .replace(/\{\s*/g, ' {\n  ')    // Newline after {
+                .replace(/\}\s*/g, '\n}\n')     // Newline before }
+                .replace(/,\s*/g, ', ');        // Space after comma
         }
 
+        // Apply formatted code back to the UI
         textarea.value = code;
-        
-        // Sync with your global files object if it exists
+
+        // Sync with the global files object for saving/running
         if (typeof files !== "undefined" && fileName && files[fileName]) {
             files[fileName].content = code;
         }
     });
-    alert("Code formatted!");
+    
+    // No alert notification shown as requested
 }
 
 /**
