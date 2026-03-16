@@ -1,32 +1,51 @@
-# 🦀 Craby Code Editor - Documentation
+It looks like you're setting up the tracking infrastructure for Craby Editor. I've organized the details from your JavaScript file into a clean, professional README.md file.
+This documentation explains what the script does, the IDs used, and how to trigger events so other developers (or your future self) can understand it easily.
+# Craby Editor - Analytics & Tracking System
 
-Craby Editor ha ek powerful, lightweight web-based code editor aahe jo HTML, CSS ani JS development sathi banvla aahe.
+This repository contains the configuration for the **Google Tag Manager (GTM)** and **Google Analytics 4 (GA4)** integration used in the Craby Editor web application.
 
-## 🖼️ Branding & Assets
-* **Logo & Favicon:** Craby cha official logo browser tab ani preview header madhe vaprlela aahe.
-* **Link:** `https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png`
+## 📊 Tracking Identifiers
 
-## 📂 Project Structure & Function Mapping
-
-### 1. `main-logic.js` (The Engine)
-* **Auto-Complete:** VS Code sarkhe keywords recommendation.
-* **Auto-Tag Closing:** HTML tag automatic close hoto (e.g., `h1` -> `<h1></h1>`).
-* **Dynamic Position:** Cursor chya exact location nusar suggestion box disto.
-* **Run Code:** Live code compilation ani execution logic.
-
-### 2. `theme-settings.js` (Appearance)
-* **12 Global Themes:** Dark, Matrix, Cyberpunk, etc.
-* **Font Controls:** Size ani Family management.
-* **Reality Preview:** Device-specific resizing (Desktop vs iPhone Frame).
-
-### 3. `script2.js` (UI Interaction)
-* **Shutter Logic:** Left sidebar file explorer management.
-* **Settings Toggle:** Right sidebar appearance panel.
-* **Visibility Sync:** Editors hide/show karnyachi setting.
+| Service | ID |
+| :--- | :--- |
+| **Google Tag Manager** | `GTM-TTVQBL6S` |
+| **Google Analytics (GA4)** | `G-Z0BGJ1913H` |
 
 ---
 
-## 🚀 Key Features
-1. **Visual Favicon:** Browser tab madhe Craby logo disto.
-2. **Professional Preview:** Mobile frame madhe real device look.
-3. **Smooth UX:** Panels ani suggestions sathi smooth animations.
+## 🛠️ Implementation Details
+
+The system uses a dual-layer tracking approach:
+1.  **Direct GA4 Config:** Initialized via `gtag.js` for immediate page view tracking.
+2.  **GTM Container:** Injected asynchronously to manage third-party tags and marketing pixels without changing the code.
+
+### Global Tracking Function
+A helper function `trackCrabyEvent` is provided to ensure data is sent consistently to both the `dataLayer` and `gtag`.
+
+```javascript
+trackCrabyEvent(eventName, params);
+
+🚀 Usage
+Automatic Events
+The system automatically tracks the following on window load:
+ * Event: editor_open
+ * Parameters: { platform: 'Vercel' }
+Manual Event Tracking
+To track custom user interactions (like button clicks or file saves), use the following syntax:
+// Example: Tracking a file save action
+trackCrabyEvent('file_saved', {
+    file_type: 'markdown',
+    file_size: '2kb'
+});
+
+📂 File Structure
+ * tag.js: The core script handled for GTM injection and global event definitions.
+📝 Console Debugging
+In the development environment, every event triggered will be logged to the browser console for easy verification:
+[Analytics] event_name { params }
+
+---
+
+### What's next?
+Would you like me to add a section on how to **test** these tags using Google Tag Assistant, or perhaps help you write more custom event triggers for specific editor features?
+
