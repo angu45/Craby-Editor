@@ -199,55 +199,59 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     loadSettings();
-});
-function beautifyCode() {
-    // Select all textareas inside your editor grid
+});function beautifyCode() {
+    // 1. Target all open editor textareas
     const textareas = document.querySelectorAll('.editor-grid textarea');
-
-    textareas.forEach(textarea => {
-        let code = textarea.value.trim();
-        const fileName = textarea.getAttribute('data-filename') || "";
-        const id = textarea.id.toLowerCase();
-
-        // 1. HTML Formatting Logic
-        if (fileName.endsWith('.html') || id.includes('html')) {
-            code = code
-                .replace(/>\s+</g, '>\n<') // New line between tags
-                .replace(/(<[^/][^>]*>)/g, '  $1') // Basic indent
-                .split('\n').map(line => line.trim()).join('\n'); // Clean edges
-        } 
-        
-        // 2. CSS Formatting Logic
-        else if (fileName.endsWith('.css') || id.includes('css')) {
-            code = code
-                .replace(/\s*\{\s*/g, ' {\n  ') // Space before { and newline after
-                .replace(/;\s*/g, ';\n  ')      // Newline after ;
-                .replace(/\s*\}\s*/g, '\n}\n\n') // Newline before and after }
-                .replace(/\s*:\s*/g, ': ');     // Space after :
-        } 
-        
-        // 3. JavaScript Formatting Logic
-        else if (fileName.endsWith('.js') || id.includes('js')) {
-            code = code
-                .replace(/;\s*/g, ';\n')        // Newline after semicolon
-                .replace(/\{\s*/g, ' {\n  ')    // Newline after {
-                .replace(/\}\s*/g, '\n}\n')     // Newline before }
-                .replace(/,\s*/g, ', ');        // Space after comma
-        }
-
-        // Apply formatted code back to the UI
-        textarea.value = code;
-
-        // Sync with the global files object for saving/running
-        if (typeof files !== "undefined" && fileName && files[fileName]) {
-            files[fileName].content = code;
-        }
-    });
     
-    // No alert notification shown as requested
+    // 2. Target the global files object (where your Taskbar data lives)
+    if (typeof files === "undefined") return;
+
+    // Loop through every file in your project
+    Object.keys(files).forEach(fileName => {
+        let content = files[fileName].content;
+        const type = fileName.split('.').pop().toLowerCase();
+
+        if (!content) return;
+
+        // --- Clean Formatting Logic ---
+        if (type === 'html') {
+            content = content
+                .replace(/>\s+</g, '>\n<') 
+                .replace(/(<[^/][^>]*>)/g, '  $1')
+                .split('\n').map(line => line.trim()).join('\n');
+        } 
+        else if (type === 'css') {
+            content = content
+                .replace(/\s*\{\s*/g, ' {\n  ')
+                .replace(/;\s*/g, ';\n  ')
+                .replace(/\s*\}\s*/g, '\n}\n')
+                .replace(/\s*:\s*/g, ': ')
+                .replace(/\n\s*\n/g, '\n'); // Remove double empty lines
+        } 
+        else if (type === 'js') {
+            content = content
+                .replace(/;\s*/g, ';\n')
+                .replace(/\{\s*/g, ' {\n  ')
+                .replace(/\}\s*/g, '\n}\n')
+                .replace(/,\s*/g, ', ')
+                .replace(/if\s*\(/g, 'if (')
+                .replace(/for\s*\(/g, 'for (');
+        }
+
+        // 3. Update the global data
+        files[fileName].content = content;
+
+        // 4. Update the UI Textareas immediately
+        textareas.forEach(tx => {
+            if (tx.getAttribute('data-filename') === fileName || tx.id.includes(type)) {
+                tx.value = content;
+            }
+        });
+    });
+
+    // Code is now arranged beautifully for all files in one click.
 }
 
-/**
  * 2. DOWNLOAD FUNCTION
  * Targets the logic for the file-download action.
  * Shows a list of active files from your taskbar/files object.
