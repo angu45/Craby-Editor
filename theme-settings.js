@@ -176,13 +176,28 @@ function insertWord(word, id) {
 }
 
 // --- 1. RUN CODE LOGIC (WITH HTML SELECTION & VIEWPORT FIX) ---
+// --- Global State for Run Logic ---
+let currentActiveFile = null; // सध्या रन असलेली फाईल स्टोअर करण्यासाठी
+
+// --- 1. RUN CODE LOGIC (WITH PERSISTENCE) ---
 
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if (htmlFiles.length === 0) return alert("कोणतीही HTML फाईल उपलब्ध नाही!");
+    if (htmlFiles.length === 0) {
+        alert("No HTML files available!");
+        return;
+    }
 
-    let choice = prompt("रन करण्यासाठी फाईल निवडा:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
-    let selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
+    // जर आधीच एखादी फाईल रन असेल, तर तीच वापरा. नसेल तर विचारा.
+    let selectedFile;
+    if (currentActiveFile && files[currentActiveFile]) {
+        selectedFile = currentActiveFile;
+    } else {
+        let choice = prompt("Select file to run:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
+        selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
+    }
+
+    currentActiveFile = selectedFile; // फाईल सेव्ह करा जेणेकरून रिफ्रेशला सोपे जाईल
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
@@ -190,31 +205,39 @@ function runCode() {
 
     let content = files[selectedFile].content;
 
-    // मोबाईलवर फॉन्ट आणि स्केलिंग व्यवस्थित दिसण्यासाठी Viewport Injection
-    const viewportTag = `<meta name="viewport" content="width=device-width, initial-scale=1.0">`;
-    
-    // CSS आणि JS इंजेक्ट करणे
-    let cssContent = "";
-    let jsContent = "";
+    // थीमची CSS मिळवा
+    let themeCSS = "";
     Object.keys(files).forEach(name => {
-        if(name.endsWith('.css')) cssContent += files[name].content + "\n";
-        if(name.endsWith('.js')) jsContent += files[name].content + "\n";
+        if(name.endsWith('.css')) themeCSS += files[name].content + "\n";
     });
 
-    // फायनल HTML तयार करणे
+    // Final HTML Construction (External Layout CSS Blocked)
     let finalHTML = `
         <!DOCTYPE html>
         <html>
         <head>
-            ${viewportTag}
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
-                body { background-color: white !important; margin: 0; padding: 10px; font-family: sans-serif; }
-                ${cssContent}
+                /* Manual Reset to block external layout interference */
+                html, body { 
+                    margin: 0 !important; 
+                    padding: 0 !important; 
+                    width: 100% !important; 
+                    height: 100% !important; 
+                    background-color: white !important;
+                    overflow-x: hidden;
+                }
+                body { padding: 15px !important; box-sizing: border-box !important; font-family: sans-serif; }
+                
+                /* Inject User Theme CSS */
+                ${themeCSS}
             </style>
         </head>
         <body>
             ${content}
-            <script>${jsContent}<\/script>
+            <script>
+                ${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}
+            </script>
         </body>
         </html>
     `;
@@ -224,14 +247,22 @@ function runCode() {
     doc.write(finalHTML);
     doc.close();
 
-    setPreviewSize('100%'); // सुरुवातीला डेस्कटॉप व्ह्यू
+    // Default View on first run
+    if (!frame.style.width || frame.style.width === "100%") {
+        setPreviewSize('100%');
+    }
 }
 
-// --- 2. REFRESH LOGIC ---
+// --- 2. REFRESH LOGIC (NO PROMPT) ---
 
 function refreshPreview() {
-    runCode();
-    showToast("Output has been refreshed!");
+    if (!currentActiveFile) {
+        runCode();
+    } else {
+        // थेट सध्याच्या फाईलला रिफ्रेश करा
+        runCode();
+        showToast("Output has been refreshed!");
+    }
 }
 
 function showToast(msg) {
@@ -239,14 +270,15 @@ function showToast(msg) {
     toast.innerText = msg;
     toast.style.cssText = `
         position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-        background: #222; color: #fff; padding: 12px 24px; border-radius: 50px;
-        font-size: 14px; z-index: 20000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        background: #333; color: #fff; padding: 10px 25px; border-radius: 5px;
+        font-size: 14px; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     `;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2000);
 }
 
-// --- 3. FIX MOBILE & DESKTOP BORDER LOGIC ---
+// --- 3. MANUAL RESIZE LOGIC (DESKTOP & MOBILE) ---
 
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
@@ -254,40 +286,44 @@ function setPreviewSize(device) {
 
     if (!frame || !container) return;
 
-    // स्मूद ट्रांझिशन
-    frame.style.transition = "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
-    
+    // Manual Styling - No external CSS allowed for size
+    frame.style.transition = "all 0.4s ease";
+    container.style.display = "flex";
+    container.style.justifyContent = "center";
+    container.style.alignItems = "center";
+    container.style.overflow = "auto";
+    container.style.background = "#1a1a1a"; // Dark background for contrast
+
     if (device === '100%') {
-        // --- DESKTOP MODE ---
-        container.style.background = "#f0f0f0"; // बाहेरील भाग हलका राखाडी
+        // Desktop View
         frame.style.width = "100%";
         frame.style.height = "100%";
         frame.style.border = "none";
         frame.style.borderRadius = "0";
-        frame.style.boxShadow = "none";
         frame.style.marginTop = "0";
+        frame.style.boxShadow = "none";
     } 
     else {
-        // --- MOBILE MODE (iPhone Realistic Fix) ---
-        container.style.background = "#1e1e1e"; // मोबाईल मागे डार्क बॅकग्राउंड जेणेकरून तो उठावदार दिसेल
+        // Mobile View (iPhone Simulation)
         frame.style.width = "375px";
-        frame.style.height = "750px";
-        frame.style.maxWidth = "90vw";
-        frame.style.maxHeight = "85vh";
-        
-        // मोबाईलची खरी बॉर्डर आणि बेझल
+        frame.style.height = "667px";
         frame.style.background = "white";
-        frame.style.border = "12px solid #333"; // फोनची फ्रेम
-        frame.style.borderTop = "45px solid #333"; // वरचा भाग (Speaker/Camera)
-        frame.style.borderBottom = "45px solid #333"; // खालचा भाग
-        frame.style.borderRadius = "40px";
-        frame.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.8)";
+        frame.style.border = "14px solid #333"; // Frame Bezel
+        frame.style.borderTop = "40px solid #333";
+        frame.style.borderBottom = "40px solid #333";
+        frame.style.borderRadius = "35px";
+        frame.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
         
-        // स्क्रीनवर मोबाईल मधोमध ठेवण्यासाठी
-        container.style.display = "flex";
-        container.style.alignItems = "center";
-        container.style.justifyContent = "center";
+        // Ensure it fits small screens
+        frame.style.maxWidth = "95vw";
+        frame.style.maxHeight = "85vh";
     }
+}
+
+// Close Preview - Reset Active File if needed
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+    currentActiveFile = null; // पुढच्या वेळी विचारण्यासाठी रिसेट करा
 }
 
 // --- 5. THEME, FONT & SETTINGS ---
