@@ -37,18 +37,42 @@ function trackCrabyEvent(eventName, params = {}) {
 // ऑटो ट्रॅकर
 window.addEventListener('load', () => {
     trackCrabyEvent('editor_open', { platform: 'Vercel' });
-});window.onload = () => {
-    // विद्यमान फंक्शन्स रन करा
+});
+
+
+window.onload = () => {
+    // 1. आधी एडिटरची बॅकग्राउंडची कामे उरकून घेऊ
     updateTaskbar();
-    addFileToUI("index.html", "html", files["index.html"].content);
-    addFileToUI("style.css", "css", files["style.css"].content);
+    if(files["index.html"]) addFileToUI("index.html", "html", files["index.html"].content);
+    if(files["style.css"]) addFileToUI("style.css", "css", files["style.css"].content);
 
-    // लोडर बंद करण्याची लॉजिक
+    // 2. Percentage Logic (1.5 Seconds total)
+    const pctLabel = document.getElementById('load-pct');
+    const bar = document.getElementById('progress-fill');
     const loader = document.getElementById('craby-loader');
-    setTimeout(() => {
-        loader.classList.add('loader-hidden');
-        // मेमरी वाचवण्यासाठी १ सेकंदानंतर लोडर पूर्णपणे काढून टाका
-        setTimeout(() => loader.remove(), 1000);
-    }, 2500); // २.५ सेकंद लोडर दिसेल
-};
+    
+    let count = 0;
+    const duration = 1200; // १.२ सेकंदात १००% होणार
+    const startTime = performance.now();
 
+    function updateLoader(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        count = Math.floor(progress * 100);
+        pctLabel.innerText = count;
+        bar.style.width = count + "%";
+
+        if (progress < 1) {
+            requestAnimationFrame(updateLoader);
+        } else {
+            // १००% झाले की लगेच गायब
+            setTimeout(() => {
+                loader.classList.add('loader-hidden');
+                setTimeout(() => loader.remove(), 400); // डोममधून पूर्णपणे बाहेर
+            }, 100);
+        }
+    }
+
+    requestAnimationFrame(updateLoader);
+};
