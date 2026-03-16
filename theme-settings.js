@@ -175,45 +175,108 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 4. PREVIEW & RUN LOGIC (REFRESH & DEVICE FIX) ---
+// --- 1. RUN CODE WITH FILE SELECTION ---
 
 function runCode() {
+    // सर्व HTML फाइल्सची यादी मिळवा
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if(htmlFiles.length === 0) return alert("No HTML files!");
+    
+    if (htmlFiles.length === 0) {
+        return alert("कोणतीही HTML फाईल उपलब्ध नाही!");
+    }
+
+    // युजरला फाईल निवडायला सांगण्यासाठी प्रॉम्प्ट (किंवा लिस्ट)
+    let message = "रन करण्यासाठी फाईल निवडा:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n');
+    let choice = prompt(message, htmlFiles[0]);
+
+    // जर युजरने नंबर टाकला किंवा नाव, तर ती फाईl शोधा
+    let selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
+
+    if (!files[selectedFile]) return;
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
 
-    let rawHTML = files["index.html"] ? files["index.html"].content : files[htmlFiles[0]].content;
+    // निवडलेल्या फाईलचा कंटेंट घ्या
+    let rawHTML = files[selectedFile].content;
 
-    // Injection Logic
+    // CSS आणि JS इंजेक्ट करा
     Object.keys(files).forEach(name => {
         const content = files[name].content;
-        if(name.endsWith('.css')) rawHTML = rawHTML.replace('</head>', `<style>${content}</style></head>`);
-        if(name.endsWith('.js')) rawHTML = rawHTML.replace('</body>', `<script>${content}<\/script></body>`);
+        if(name.endsWith('.css')) {
+            rawHTML = rawHTML.replace('</head>', `<style>${content}</style></head>`);
+        }
+        if(name.endsWith('.js')) {
+            rawHTML = rawHTML.replace('</body>', `<script>${content}<\/script></body>`);
+        }
     });
 
     const doc = frame.contentWindow.document;
-    doc.open(); doc.write(rawHTML); doc.close();
+    doc.open();
+    doc.write(rawHTML);
+    doc.close();
+
+    // रन केल्यावर डिफॉल्ट डेस्कटॉप व्ह्यू ठेवा
+    setPreviewSize('100%');
 }
 
-function refreshPreview() { runCode(); }
+// --- 2. REFRESH WITH NOTIFICATION ---
+
+function refreshPreview() {
+    const frame = document.getElementById('output-frame');
+    if (frame.contentWindow) {
+        runCode(); // कोड पुन्हा इंजेक्ट करा
+        showToast("Output has been refreshed!"); // नोटिफिकेशन दाखवा
+    }
+}
+
+// चोटी नोटिफिकेशन (Toast) फंक्शन
+function showToast(message) {
+    let toast = document.createElement('div');
+    toast.innerText = message;
+    toast.style.cssText = `
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: #4ade80; color: #000; padding: 10px 20px; border-radius: 5px;
+        font-weight: bold; z-index: 10000; font-family: sans-serif;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: fadeinout 2.5s forwards;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
+
+// --- 3. DYNAMIC RESIZE (DESKTOP & MOBILE) ---
 
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
     const body = document.getElementById('preview-body');
-    frame.style.transition = "all 0.4s ease";
+
+    if (!frame || !body) return;
+
+    // स्मूद अ‍ॅनिमेशन
+    frame.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
     
     if (device === '100%') {
-        frame.style.width = "100%"; frame.style.height = "100%";
-        frame.style.border = "none"; frame.style.borderRadius = "0";
-        body.style.alignItems = "stretch";
+        // Desktop Mode
+        body.style.padding = "0";
+        frame.style.width = "100%";
+        frame.style.height = "100%";
+        frame.style.maxWidth = "100%";
+        frame.style.border = "none";
+        frame.style.borderRadius = "0";
+        frame.style.boxShadow = "none";
     } else {
-        frame.style.width = "375px"; frame.style.height = "667px";
-        frame.style.border = "16px solid #222"; frame.style.borderRadius = "36px";
-        frame.style.borderTopWidth = "40px"; frame.style.borderBottomWidth = "40px";
-        body.style.alignItems = "center";
+        // Mobile Mode (Realistic Phone Frame)
+        body.style.padding = "20px";
+        frame.style.width = "375px";
+        frame.style.height = "667px";
+        frame.style.maxWidth = "90vw";
+        frame.style.maxHeight = "80vh";
+        frame.style.border = "16px solid #222"; // Phone Bezel
+        frame.style.borderTopWidth = "40px";
+        frame.style.borderBottomWidth = "45px";
+        frame.style.borderRadius = "36px";
+        frame.style.boxShadow = "0 25px 50px rgba(0,0,0,0.6)";
     }
 }
 
