@@ -175,112 +175,120 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 1. RUN CODE WITH FILE SELECTION ---
+// --- 1. RUN CODE LOGIC (WITH HTML SELECTION & VIEWPORT FIX) ---
 
 function runCode() {
-    // सर्व HTML फाइल्सची यादी मिळवा
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    
-    if (htmlFiles.length === 0) {
-        return alert("कोणतीही HTML फाईल उपलब्ध नाही!");
-    }
+    if (htmlFiles.length === 0) return alert("कोणतीही HTML फाईल उपलब्ध नाही!");
 
-    // युजरला फाईल निवडायला सांगण्यासाठी प्रॉम्प्ट (किंवा लिस्ट)
-    let message = "रन करण्यासाठी फाईल निवडा:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n');
-    let choice = prompt(message, htmlFiles[0]);
-
-    // जर युजरने नंबर टाकला किंवा नाव, तर ती फाईl शोधा
+    let choice = prompt("रन करण्यासाठी फाईल निवडा:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
     let selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
-
-    if (!files[selectedFile]) return;
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
 
-    // निवडलेल्या फाईलचा कंटेंट घ्या
-    let rawHTML = files[selectedFile].content;
+    let content = files[selectedFile].content;
 
-    // CSS आणि JS इंजेक्ट करा
+    // मोबाईलवर फॉन्ट आणि स्केलिंग व्यवस्थित दिसण्यासाठी Viewport Injection
+    const viewportTag = `<meta name="viewport" content="width=device-width, initial-scale=1.0">`;
+    
+    // CSS आणि JS इंजेक्ट करणे
+    let cssContent = "";
+    let jsContent = "";
     Object.keys(files).forEach(name => {
-        const content = files[name].content;
-        if(name.endsWith('.css')) {
-            rawHTML = rawHTML.replace('</head>', `<style>${content}</style></head>`);
-        }
-        if(name.endsWith('.js')) {
-            rawHTML = rawHTML.replace('</body>', `<script>${content}<\/script></body>`);
-        }
+        if(name.endsWith('.css')) cssContent += files[name].content + "\n";
+        if(name.endsWith('.js')) jsContent += files[name].content + "\n";
     });
+
+    // फायनल HTML तयार करणे
+    let finalHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            ${viewportTag}
+            <style>
+                body { background-color: white !important; margin: 0; padding: 10px; font-family: sans-serif; }
+                ${cssContent}
+            </style>
+        </head>
+        <body>
+            ${content}
+            <script>${jsContent}<\/script>
+        </body>
+        </html>
+    `;
 
     const doc = frame.contentWindow.document;
     doc.open();
-    doc.write(rawHTML);
+    doc.write(finalHTML);
     doc.close();
 
-    // रन केल्यावर डिफॉल्ट डेस्कटॉप व्ह्यू ठेवा
-    setPreviewSize('100%');
+    setPreviewSize('100%'); // सुरुवातीला डेस्कटॉप व्ह्यू
 }
 
-// --- 2. REFRESH WITH NOTIFICATION ---
+// --- 2. REFRESH LOGIC ---
 
 function refreshPreview() {
-    const frame = document.getElementById('output-frame');
-    if (frame.contentWindow) {
-        runCode(); // कोड पुन्हा इंजेक्ट करा
-        showToast("Output has been refreshed!"); // नोटिफिकेशन दाखवा
-    }
+    runCode();
+    showToast("Output has been refreshed!");
 }
 
-// चोटी नोटिफिकेशन (Toast) फंक्शन
-function showToast(message) {
+function showToast(msg) {
     let toast = document.createElement('div');
-    toast.innerText = message;
+    toast.innerText = msg;
     toast.style.cssText = `
-        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-        background: #4ade80; color: #000; padding: 10px 20px; border-radius: 5px;
-        font-weight: bold; z-index: 10000; font-family: sans-serif;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: fadeinout 2.5s forwards;
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: #222; color: #fff; padding: 12px 24px; border-radius: 50px;
+        font-size: 14px; z-index: 20000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     `;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
+    setTimeout(() => toast.remove(), 2000);
 }
 
-// --- 3. DYNAMIC RESIZE (DESKTOP & MOBILE) ---
+// --- 3. FIX MOBILE & DESKTOP BORDER LOGIC ---
 
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
-    const body = document.getElementById('preview-body');
+    const container = document.getElementById('preview-body');
 
-    if (!frame || !body) return;
+    if (!frame || !container) return;
 
-    // स्मूद अ‍ॅनिमेशन
-    frame.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+    // स्मूद ट्रांझिशन
+    frame.style.transition = "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
     
     if (device === '100%') {
-        // Desktop Mode
-        body.style.padding = "0";
+        // --- DESKTOP MODE ---
+        container.style.background = "#f0f0f0"; // बाहेरील भाग हलका राखाडी
         frame.style.width = "100%";
         frame.style.height = "100%";
-        frame.style.maxWidth = "100%";
         frame.style.border = "none";
         frame.style.borderRadius = "0";
         frame.style.boxShadow = "none";
-    } else {
-        // Mobile Mode (Realistic Phone Frame)
-        body.style.padding = "20px";
+        frame.style.marginTop = "0";
+    } 
+    else {
+        // --- MOBILE MODE (iPhone Realistic Fix) ---
+        container.style.background = "#1e1e1e"; // मोबाईल मागे डार्क बॅकग्राउंड जेणेकरून तो उठावदार दिसेल
         frame.style.width = "375px";
-        frame.style.height = "667px";
+        frame.style.height = "750px";
         frame.style.maxWidth = "90vw";
-        frame.style.maxHeight = "80vh";
-        frame.style.border = "16px solid #222"; // Phone Bezel
-        frame.style.borderTopWidth = "40px";
-        frame.style.borderBottomWidth = "45px";
-        frame.style.borderRadius = "36px";
-        frame.style.boxShadow = "0 25px 50px rgba(0,0,0,0.6)";
+        frame.style.maxHeight = "85vh";
+        
+        // मोबाईलची खरी बॉर्डर आणि बेझल
+        frame.style.background = "white";
+        frame.style.border = "12px solid #333"; // फोनची फ्रेम
+        frame.style.borderTop = "45px solid #333"; // वरचा भाग (Speaker/Camera)
+        frame.style.borderBottom = "45px solid #333"; // खालचा भाग
+        frame.style.borderRadius = "40px";
+        frame.style.boxShadow = "0 25px 50px -12px rgba(0, 0, 0, 0.8)";
+        
+        // स्क्रीनवर मोबाईल मधोमध ठेवण्यासाठी
+        container.style.display = "flex";
+        container.style.alignItems = "center";
+        container.style.justifyContent = "center";
     }
 }
-
-function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
 
 // --- 5. THEME, FONT & SETTINGS ---
 
