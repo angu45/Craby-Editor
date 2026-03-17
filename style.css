@@ -271,7 +271,12 @@ textarea {
     padding: 10px;
     border-radius: 6px;
     outline: none;
-}
+}.tag{color:#ff7b72}
+.attr{color:#79c0ff}
+.keyword{color:#d2a8ff}
+.string{color:#a5d6ff}
+.number{color:#79c0ff}
+.comment{color:#6a9955}
 
 .checkbox-group { display: flex; gap: 15px; }
 .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
