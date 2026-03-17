@@ -367,13 +367,26 @@ function updateLineNumbers(safeId) {
 }
 
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+
 function syncScroll(id) { 
     const tx = document.getElementById(`${id}-code`);
     const lb = document.getElementById(`${id}-lines`);
     if(tx && lb) lb.scrollTop = tx.scrollTop; 
 }
+
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
+
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+
+function deleteFile(name) {
+    if (confirm(`Delete ${name}?`)) {
+        const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+        delete files[name];
+        const box = document.getElementById(`box-${safeId}`);
+        if (box) box.remove();
+        updateTaskbar();
+    }
+}
 
 // --- 7. INITIALIZATION ---
 window.onload = () => {
