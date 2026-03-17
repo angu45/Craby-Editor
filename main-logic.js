@@ -245,3 +245,50 @@ window.onload = () => {
 
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+function highlightCode(code, lang) {
+    if (lang === 'html') {
+        return code
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            // Tags (Blue)
+            .replace(/(&lt;\/?[a-z1-6]+)/gi, '<span style="color: #569cd6;">$1</span>')
+            // Attributes (Light Blue)
+            .replace(/\s([a-z-]+)(?==)/gi, ' <span style="color: #9cdcfe;">$1</span>')
+            // Strings/Values (Orange)
+            .replace(/"(.*?)"/g, '<span style="color: #ce9178;">"$1"</span>');
+    } 
+    else if (lang === 'css') {
+        return code
+            // Properties (Light Blue)
+            .replace(/([a-z-]+)(?=\s*:)/gi, '<span style="color: #9cdcfe;">$1</span>')
+            // Values (Orange)
+            .replace(/(?<=:\s*)([^;]+)/gi, '<span style="color: #ce9178;">$1</span>')
+            // Selectors (Yellow)
+            .replace(/^([^\{]+)(?=\{)/gm, '<span style="color: #dcdcaa;">$1</span>');
+    }
+    else if (lang === 'js') {
+        const keywords = /\b(const|let|var|function|if|else|for|return|class|export|import)\b/g;
+        return code
+            .replace(keywords, '<span style="color: #c586c0;">$1</span>') // Keywords (Purple)
+            .replace(/\b(\d+)\b/g, '<span style="color: #b5cea8;">$1</span>') // Numbers (Green)
+            .replace(/"(.*?)"/g, '<span style="color: #ce9178;">"$1"</span>'); // Strings
+    }
+    return code;
+}
+function deleteFile(fileName) {
+    if (confirm(`Are you sure you want to delete "${fileName}"?`)) {
+        // 1. Object madhun delete kara
+        delete files[fileName];
+
+        // 2. Editor UI madhun remove kara
+        const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
+        const editorBox = document.getElementById(`box-${safeId}`);
+        if (editorBox) {
+            editorBox.remove();
+        }
+
+        // 3. Taskbar update kara
+        updateTaskbar();
+        
+        alert("File deleted successfully!");
+    }
+}
