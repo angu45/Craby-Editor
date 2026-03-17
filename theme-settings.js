@@ -1,6 +1,6 @@
 /**
  * Craby Editor - Full System Logic
- * Includes: Analytics, Suggestion System, File Management, Themes & Preview Fixes
+ * Includes: Analytics, Suggestion System, File Management, Themes, Preview & Syntax Highlighting
  */
 
 // --- 1. CONFIGURATION & DICTIONARY ---
@@ -57,6 +57,32 @@ function updateTaskbar() {
     });
 }
 
+// नवीन Syntax Highlight Function
+function highlightSyntax(code, lang) {
+    code = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    if (lang === 'html') {
+        return code.replace(/(&lt;\/?[a-z1-6]+)/gi, '<span style="color: #ff7b72;">$1</span>')
+                   .replace(/(\s)([a-z-]+)(?==)/gi, '$1<span style="color: #d2a8ff;">$2</span>')
+                   .replace(/"(.*?)"/g, '<span style="color: #a5d6ff;">"$1"</span>');
+    } else if (lang === 'css') {
+        return code.replace(/([a-z-]+)(?=\s*:)/gi, '<span style="color: #79c0ff;">$1</span>')
+                   .replace(/(:\s*)([^;]+)/gi, '$1<span style="color: #ffa657;">$2</span>');
+    } else if (lang === 'js') {
+        const keywords = /\b(const|let|var|function|return|if|else|for|while|class)\b/g;
+        return code.replace(keywords, '<span style="color: #ff7b72;">$1</span>')
+                   .replace(/(\w+)(?=\()/g, '<span style="color: #d2a8ff;">$1</span>');
+    }
+    return code;
+}
+
+function handleInput(name, safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const hl = document.getElementById(`${safeId}-highlight`);
+    updateFileContent(name, tx.value);
+    updateLineNumbers(safeId);
+    if(hl) hl.innerHTML = highlightSyntax(tx.value, tx.getAttribute('data-lang'));
+}
+
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
@@ -79,18 +105,41 @@ function addFileToUI(name, type, content = "") {
         </div>
         <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
             <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'};">1.</div>
-            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
-                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
-                onscroll="syncScroll('${safeId}')">${content}</textarea>
+            <div style="position: relative; flex: 1;">
+                <div id="${safeId}-highlight" class="highlight-layer" style="position: absolute; inset: 0; padding: 10px; pointer-events: none; white-space: pre-wrap; z-index: 1;"></div>
+                <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
+                    style="position: relative; width: 100%; height: 100%; z-index: 2; background: transparent !important; color: transparent !important; caret-color: white; border: none; outline: none; padding: 10px; resize: none;"
+                    oninput="handleInput('${name}', '${safeId}')"
+                    onscroll="syncScroll('${safeId}')">${content}</textarea>
+            </div>
         </div>
     `;
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
     updateLineNumbers(safeId);
-    updateThemeAndFont(); // नवीन विन्डोला थीम लागू करण्यासाठी
+    updateThemeAndFont();
+    handleInput(name, safeId); // Initial highlight
 }
 
-// --- 3. SUGGESTION SYSTEM (ENTER & TOP SELECT FIX) ---
+// --- FIX: DELETE FILE FUNCTION ---
+function deleteFile(name) {
+    if (confirm(`Are you sure you want to delete ${name}?`)) {
+        const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+        // १. डेटा ऑब्जेक्ट मधून डिलीट करा
+        if (files[name]) {
+            delete files[name];
+        }
+        // २. UI मधून बॉक्स काढून टाका
+        const box = document.getElementById(`box-${safeId}`);
+        if (box) {
+            box.remove();
+        }
+        // ३. टास्कबार (Sidebar) रिफ्रेश करा
+        updateTaskbar();
+    }
+}
+
+// --- 3. SUGGESTION SYSTEM ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
@@ -172,23 +221,16 @@ function insertWord(word, id) {
     txt.selectionStart = txt.selectionEnd = before.length + offset;
     sBox.style.display = 'none';
     txt.focus();
-    updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
+    const fileName = id.replace('file-','').replace('-code','');
+    handleInput(fileName, id.replace('-code',''));
 }
 
-// --- 1. RUN CODE LOGIC (WITH HTML SELECTION & VIEWPORT FIX) ---
-// --- Global State for Run Logic ---
-let currentActiveFile = null; // सध्या रन असलेली फाईल स्टोअर करण्यासाठी
-
-// --- 1. RUN CODE LOGIC (WITH PERSISTENCE) ---
+// --- RUN & PREVIEW LOGIC ---
+let currentActiveFile = null;
 
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if (htmlFiles.length === 0) {
-        alert("No HTML files available!");
-        return;
-    }
-
-    // जर आधीच एखादी फाईल रन असेल, तर तीच वापरा. नसेल तर विचारा.
+    if (htmlFiles.length === 0) { alert("No HTML files available!"); return; }
     let selectedFile;
     if (currentActiveFile && files[currentActiveFile]) {
         selectedFile = currentActiveFile;
@@ -196,154 +238,55 @@ function runCode() {
         let choice = prompt("Select file to run:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
         selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
     }
-
-    currentActiveFile = selectedFile; // फाईल सेव्ह करा जेणेकरून रिफ्रेशला सोपे जाईल
-
+    currentActiveFile = selectedFile;
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
-
-    let content = files[selectedFile].content;
-
-    // थीमची CSS मिळवा
     let themeCSS = "";
-    Object.keys(files).forEach(name => {
-        if(name.endsWith('.css')) themeCSS += files[name].content + "\n";
-    });
-
-    // Final HTML Construction (External Layout CSS Blocked)
-    let finalHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                /* Manual Reset to block external layout interference */
-                html, body { 
-                    margin: 0 !important; 
-                    padding: 0 !important; 
-                    width: 100% !important; 
-                    height: 100% !important; 
-                    background-color: white !important;
-                    overflow-x: hidden;
-                }
-                body { padding: 15px !important; box-sizing: border-box !important; font-family: sans-serif; }
-                
-                /* Inject User Theme CSS */
-                ${themeCSS}
-            </style>
-        </head>
-        <body>
-            ${content}
-            <script>
-                ${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}
-            </script>
-        </body>
-        </html>
-    `;
-
+    Object.keys(files).forEach(name => { if(name.endsWith('.css')) themeCSS += files[name].content + "\n"; });
+    let finalHTML = `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html, body { margin: 0; padding: 15px; width: 100%; height: 100%; background: white; box-sizing: border-box; font-family: sans-serif; } ${themeCSS}</style></head><body>${files[selectedFile].content}<script>${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}</script></body></html>`;
     const doc = frame.contentWindow.document;
-    doc.open();
-    doc.write(finalHTML);
-    doc.close();
-
-    // Default View on first run
-    if (!frame.style.width || frame.style.width === "100%") {
-        setPreviewSize('100%');
-    }
+    doc.open(); doc.write(finalHTML); doc.close();
+    setPreviewSize('100%');
 }
 
-// --- 2. REFRESH LOGIC (NO PROMPT) ---
-
-function refreshPreview() {
-    if (!currentActiveFile) {
-        runCode();
-    } else {
-        // थेट सध्याच्या फाईलला रिफ्रेश करा
-        runCode();
-        showToast("Output has been refreshed!");
-    }
-}
+function refreshPreview() { runCode(); showToast("Refreshed!"); }
 
 function showToast(msg) {
     let toast = document.createElement('div');
     toast.innerText = msg;
-    toast.style.cssText = `
-        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-        background: #333; color: #fff; padding: 10px 25px; border-radius: 5px;
-        font-size: 14px; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    `;
+    toast.style.cssText = `position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 25px; border-radius: 5px; z-index: 99999;`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2000);
 }
 
-// --- 3. MANUAL RESIZE LOGIC (DESKTOP & MOBILE) ---
-
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
-    const container = document.getElementById('preview-body');
-
-    if (!frame || !container) return;
-
-    // Manual Styling - No external CSS allowed for size
-    frame.style.transition = "all 0.4s ease";
-    container.style.display = "flex";
-    container.style.justifyContent = "center";
-    container.style.alignItems = "center";
-    container.style.overflow = "auto";
-    container.style.background = "#1a1a1a"; // Dark background for contrast
-
-    if (device === '100%') {
-        // Desktop View
-        frame.style.width = "100%";
-        frame.style.height = "100%";
-        frame.style.border = "none";
-        frame.style.borderRadius = "0";
-        frame.style.marginTop = "0";
-        frame.style.boxShadow = "none";
-    } 
-    else {
-        // Mobile View (iPhone Simulation)
-        frame.style.width = "375px";
-        frame.style.height = "667px";
-        frame.style.background = "white";
-        frame.style.border = "14px solid #333"; // Frame Bezel
-        frame.style.borderTop = "40px solid #333";
-        frame.style.borderBottom = "40px solid #333";
-        frame.style.borderRadius = "35px";
-        frame.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
-        
-        // Ensure it fits small screens
-        frame.style.maxWidth = "95vw";
-        frame.style.maxHeight = "85vh";
-    }
+    if (device === '100%') { frame.style.width = "100%"; frame.style.height = "100%"; frame.style.border = "none"; } 
+    else { frame.style.width = "375px"; frame.style.height = "667px"; frame.style.border = "10px solid #333"; frame.style.borderRadius = "20px"; }
 }
 
-// Close Preview - Reset Active File if needed
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-    currentActiveFile = null; // पुढच्या वेळी विचारण्यासाठी रिसेट करा
-}
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; currentActiveFile = null; }
 
-// --- 5. THEME, FONT & SETTINGS ---
+// --- THEME & SETTINGS ---
 
 function updateThemeAndFont() {
     const tKey = document.getElementById('theme-sel')?.value || 'dark';
     const font = document.getElementById('font-family-sel')?.value || 'monospace';
     const theme = themes[tKey];
-
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
     document.documentElement.style.setProperty('--border', theme.border);
-    
     document.querySelectorAll('textarea').forEach(tx => {
         tx.style.fontFamily = font;
-        tx.style.color = theme.text;
-        tx.style.background = theme.bg;
+        tx.style.color = "transparent"; // Textarea text hidden to show highlight layer
+        tx.style.background = "transparent";
     });
-    document.querySelectorAll('.line-numbers').forEach(ln => ln.style.fontFamily = font);
+    document.querySelectorAll('.highlight-layer').forEach(hl => {
+        hl.style.fontFamily = font;
+        hl.style.color = theme.text;
+    });
 }
 
 function resetAllSettings() {
@@ -352,11 +295,10 @@ function resetAllSettings() {
         document.getElementById('editor-grid').innerHTML = '';
         updateTaskbar();
         window.onload();
-        alert("Reset Done!");
     }
 }
 
-// --- 6. CORE UTILITIES ---
+// --- CORE UTILITIES ---
 
 function updateLineNumbers(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
@@ -367,15 +309,24 @@ function updateLineNumbers(safeId) {
 }
 
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+
 function syncScroll(id) { 
     const tx = document.getElementById(`${id}-code`);
     const lb = document.getElementById(`${id}-lines`);
-    if(tx && lb) lb.scrollTop = tx.scrollTop; 
+    const hl = document.getElementById(`${id}-highlight`);
+    if(tx) {
+        if(lb) lb.scrollTop = tx.scrollTop;
+        if(hl) {
+            hl.scrollTop = tx.scrollTop;
+            hl.scrollLeft = tx.scrollLeft;
+        }
+    }
 }
+
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
 
-// --- 7. INITIALIZATION ---
+// --- INITIALIZATION ---
 window.onload = () => {
     updateTaskbar();
     addFileToUI("index.html", "html", files["index.html"].content);
