@@ -293,3 +293,36 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     loadSettings();
 });
+function highlightCode(text, type){
+
+let html = text
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+
+// strings
+html = html.replace(/(".*?"|'.*?')/g,'<span class="string">$1</span>')
+
+// comments
+html = html.replace(/(\/\/.*)/g,'<span class="comment">$1</span>')
+
+// numbers
+html = html.replace(/\b(\d+)\b/g,'<span class="number">$1</span>')
+
+// dictionary keywords
+dictionary[type].forEach(word=>{
+let reg = new RegExp("\\b"+word+"\\b","g")
+html = html.replace(reg,'<span class="keyword">'+word+'</span>')
+})
+
+
+// HTML tags
+if(type==="html"){
+
+html = html.replace(/(&lt;\/?[a-z0-9]+)/gi,'<span class="tag">$1</span>')
+
+html = html.replace(/([a-z-]+)=/gi,'<span class="attr">$1</span>=')
+
+}
+
+return html
+}
