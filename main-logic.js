@@ -292,3 +292,45 @@ function deleteFile(fileName) {
         alert("File deleted successfully!");
     }
 }
+function deleteFile(fileName) {
+    if (confirm(`तुम्हाला '${fileName}' फाईल खरोखर डिलीट करायची आहे का?`)) {
+        // १. डेटा ऑब्जेक्टमधून फाईल डिलीट करा
+        delete files[fileName];
+
+        // २. UI मधून एडिटर बॉक्स काढून टाका
+        const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
+        const editorBox = document.getElementById(`box-${safeId}`);
+        if (editorBox) {
+            editorBox.remove();
+        }
+
+        // ३. टास्कबार/शटर लिस्ट अपडेट करा
+        updateTaskbar();
+
+        console.log(`${fileName} डिलीट झाली.`);
+    }
+}
+function applyHighlighting(code, type) {
+    if (type === 'html') {
+        return code
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") // Escape HTML
+            .replace(/(&lt;\/?[a-z1-6]+)(&gt;| )/gi, '<span style="color: #ff79c6;">$1</span>$2') // Tags
+            .replace(/([a-z-]+)(?==["'])/gi, '<span style="color: #50fa7b;">$1</span>') // Attributes
+            .replace(/"(.*?)"/g, '<span style="color: #f1fa8c;">"$1"</span>'); // Strings/Values
+    } 
+    else if (type === 'css') {
+        return code
+            .replace(/([a-z-]+)(?=\s*:)/gi, '<span style="color: #8be9fd;">$1</span>') // Properties
+            .replace(/(?<=:\s*)([^;]+)/g, '<span style="color: #f1fa8c;">$1</span>') // Values
+            .replace(/[\{\}]/g, '<span style="color: #bd93f9;">$&</span>'); // Braces
+    }
+    else if (type === 'js') {
+        const keywords = /\b(const|let|var|function|return|if|else|for|while|import|export|class)\b/g;
+        return code
+            .replace(keywords, '<span style="color: #ff79c6;">$1</span>') // Keywords
+            .replace(/\/\/.*/g, '<span style="color: #6272a4;">$&</span>') // Comments
+            .replace(/"(.*?)"|'(.*?)'/g, '<span style="color: #f1fa8c;">$&</span>'); // Strings
+    }
+    return code;
+}
+
