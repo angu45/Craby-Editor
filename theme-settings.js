@@ -56,15 +56,17 @@ function updateTaskbar() {
         taskbar.appendChild(fileItem);
     });
 }
-
+// --- सुधारित addFileToUI Function ---
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+    
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
     }
+
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
     newBox.id = `box-${safeId}`;
@@ -74,21 +76,83 @@ function addFileToUI(name, type, content = "") {
             <div class="window-controls">
                 <i class="fas fa-minus" onclick="minimizeBox('${safeId}')"></i>
                 <i class="fas fa-expand" onclick="expandBox('${safeId}')"></i>
-                <i class="fas fa-trash" onclick="deleteFile('${name}')"></i>
+                <i class="fas fa-trash" onclick="deleteFile('${name}')" style="color: #ff4d4d; cursor:pointer;"></i>
             </div>
         </div>
         <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
-            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'};">1.</div>
-            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
-                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
-                onscroll="syncScroll('${safeId}')">${content}</textarea>
+            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'}; z-index: 5;">1.</div>
+            
+            <div class="editor-wrapper" style="position: relative; flex: 1; overflow: hidden;">
+                <div id="${safeId}-highlight" class="highlight-layer" 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                    padding: 10px; white-space: pre-wrap; word-wrap: break-word; 
+                    font-family: inherit; font-size: inherit; line-height: 1.5; 
+                    pointer-events: none; z-index: 1; color: #ccc;"></div>
+                
+                <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
+                    style="position: relative; width: 100%; height: 100%; z-index: 2; 
+                    background: transparent !important; color: transparent !important; 
+                    caret-color: var(--accent); padding: 10px; border: none; outline: none; 
+                    resize: none; font-family: inherit; font-size: inherit; line-height: 1.5;"
+                    oninput="handleEditorInput('${name}', '${safeId}')"
+                    onscroll="syncEditorScroll('${safeId}')">${content}</textarea>
+            </div>
         </div>
     `;
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
     updateLineNumbers(safeId);
-    updateThemeAndFont(); // नवीन विन्डोला थीम लागू करण्यासाठी
+    updateThemeAndFont();
+    // सुरुवातीलाच रंगात मजकूर दाखवण्यासाठी
+    handleEditorInput(name, safeId);
 }
+
+// नवीन Helper Functions (रंग शोधण्यासाठी)
+function handleEditorInput(name, safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const hl = document.getElementById(`${safeId}-highlight`);
+    
+    updateFileContent(name, tx.value);
+    updateLineNumbers(safeId);
+    
+    // मजकूर डिटेक्ट करून रंगात बदलणे
+    hl.innerHTML = highlightSyntax(tx.value, tx.getAttribute('data-lang'));
+}
+
+function syncEditorScroll(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const hl = document.getElementById(`${safeId}-highlight`);
+    const lb = document.getElementById(`${safeId}-lines`);
+    
+    hl.scrollTop = tx.scrollTop;
+    hl.scrollLeft = tx.scrollLeft;
+    if(lb) lb.scrollTop = tx.scrollTop;
+}
+
+function highlightSyntax(code, lang) {
+    // Escape HTML
+    code = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    if (lang === 'html') {
+        return code
+            .replace(/(&lt;\/?[a-z1-6]+)/gi, '<span style="color: #ff7b72;">$1</span>') // Tags
+            .replace(/(\s)([a-z-]+)(?==)/gi, '$1<span style="color: #d2a8ff;">$2</span>') // Attributes
+            .replace(/"(.*?)"/g, '<span style="color: #a5d6ff;">"$1"</span>'); // Strings
+    } 
+    else if (lang === 'css') {
+        return code
+            .replace(/([a-z-]+)(?=\s*:)/gi, '<span style="color: #79c0ff;">$1</span>') // Properties
+            .replace(/(:\s*)([^;]+)/gi, '$1<span style="color: #ffa657;">$2</span>'); // Values
+    }
+    else if (lang === 'js') {
+        const keywords = /\b(const|let|var|function|return|if|else|for|while|import|export|class)\b/g;
+        return code
+            .replace(keywords, '<span style="color: #ff7b72;">$1</span>')
+            .replace(/(\w+)(?=\()/g, '<span style="color: #d2a8ff;">$1</span>'); // Functions
+    }
+    return code;
+}
+
 
 // --- 3. SUGGESTION SYSTEM (ENTER & TOP SELECT FIX) ---
 
