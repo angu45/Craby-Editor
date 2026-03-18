@@ -12,7 +12,7 @@ const dictionary = {
 
 const defaultFiles = {
     "index.html": { 
-        content: `<!DOCTYPE  html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
+        content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
         type: "html" 
     },
     "style.css": { content: "h1 { color: #ffb400; text-align: center; font-family: sans-serif; margin-top: 50px; }", type: "css" }
@@ -23,8 +23,7 @@ const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
 
-let showLineNumbers = false; 
-let lineNumberFontSize = 14; 
+let showLineNumbers = true; 
 let selectedIndex = 0; 
 
 const themes = {
@@ -87,10 +86,10 @@ function addFileToUI(name, type, content = "") {
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
     updateLineNumbers(safeId);
-    updateThemeAndFont(); // नवीन विन्डोला थीम लागू करण्यासाठी
+    updateThemeAndFont();
 }
 
-// --- 3. SUGGESTION SYSTEM (ENTER & TOP SELECT FIX) ---
+// --- 3. SUGGESTION SYSTEM ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
@@ -175,20 +174,13 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 1. RUN CODE LOGIC (WITH HTML SELECTION & VIEWPORT FIX) ---
-// --- Global State for Run Logic ---
-let currentActiveFile = null; // सध्या रन असलेली फाईल स्टोअर करण्यासाठी
-
-// --- 1. RUN CODE LOGIC (WITH PERSISTENCE) ---
+// --- 4. PREVIEW & RUN LOGIC ---
+let currentActiveFile = null;
 
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if (htmlFiles.length === 0) {
-        alert("No HTML files available!");
-        return;
-    }
+    if (htmlFiles.length === 0) { alert("No HTML files available!"); return; }
 
-    // जर आधीच एखादी फाईल रन असेल, तर तीच वापरा. नसेल तर विचारा.
     let selectedFile;
     if (currentActiveFile && files[currentActiveFile]) {
         selectedFile = currentActiveFile;
@@ -197,166 +189,58 @@ function runCode() {
         selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
     }
 
-    currentActiveFile = selectedFile; // फाईल सेव्ह करा जेणेकरून रिफ्रेशला सोपे जाईल
-
+    currentActiveFile = selectedFile;
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
 
-    let content = files[selectedFile].content;
-
-    // थीमची CSS मिळवा
     let themeCSS = "";
-    Object.keys(files).forEach(name => {
-        if(name.endsWith('.css')) themeCSS += files[name].content + "\n";
-    });
+    Object.keys(files).forEach(name => { if(name.endsWith('.css')) themeCSS += files[name].content + "\n"; });
 
-    // Final HTML Construction (External Layout CSS Blocked)
-    let finalHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                /* Manual Reset to block external layout interference */
-                html, body { 
-                    margin: 0 !important; 
-                    padding: 0 !important; 
-                    width: 100% !important; 
-                    height: 100% !important; 
-                    background-color: white !important;
-                    overflow-x: hidden;
-                }
-                body { padding: 15px !important; box-sizing: border-box !important; font-family: sans-serif; }
-                
-                /* Inject User Theme CSS */
-                ${themeCSS}
-            </style>
-        </head>
-        <body>
-            ${content}
-            <script>
-                ${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}
-            </script>
-        </body>
-        </html>
-    `;
+    let finalHTML = `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;padding:0;width:100%;height:100%;background:white;}body{padding:15px;box-sizing:border-box;font-family:sans-serif;}${themeCSS}</style></head><body>${files[selectedFile].content}<script>${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}</script></body></html>`;
 
     const doc = frame.contentWindow.document;
-    doc.open();
-    doc.write(finalHTML);
-    doc.close();
-
-    // Default View on first run
-    if (!frame.style.width || frame.style.width === "100%") {
-        setPreviewSize('100%');
-    }
+    doc.open(); doc.write(finalHTML); doc.close();
+    if (!frame.style.width || frame.style.width === "100%") setPreviewSize('100%');
 }
 
-// --- 2. REFRESH LOGIC (NO PROMPT) ---
-
-function refreshPreview() {
-    if (!currentActiveFile) {
-        runCode();
-    } else {
-        // थेट सध्याच्या फाईलला रिफ्रेश करा
-        runCode();
-        showToast("Output has been refreshed!");
-    }
-}
+function refreshPreview() { if (!currentActiveFile) runCode(); else { runCode(); showToast("Refreshed!"); } }
 
 function showToast(msg) {
     let toast = document.createElement('div');
     toast.innerText = msg;
-    toast.style.cssText = `
-        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-        background: #333; color: #fff; padding: 10px 25px; border-radius: 5px;
-        font-size: 14px; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    `;
+    toast.style.cssText = `position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 25px;border-radius:5px;z-index:99999;`;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2000);
 }
 
-// --- 3. MANUAL RESIZE LOGIC (DESKTOP & MOBILE) ---
-
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
-    const container = document.getElementById('preview-body');
-
-    if (!frame || !container) return;
-
-    // Manual Styling - No external CSS allowed for size
-    frame.style.transition = "all 0.4s ease";
-    container.style.display = "flex";
-    container.style.justifyContent = "center";
-    container.style.alignItems = "center";
-    container.style.overflow = "auto";
-    container.style.background = "#1a1a1a"; // Dark background for contrast
-
     if (device === '100%') {
-        // Desktop View
-        frame.style.width = "100%";
-        frame.style.height = "100%";
-        frame.style.border = "none";
-        frame.style.borderRadius = "0";
-        frame.style.marginTop = "0";
-        frame.style.boxShadow = "none";
-    } 
-    else {
-        // Mobile View (iPhone Simulation)
-        frame.style.width = "375px";
-        frame.style.height = "667px";
-        frame.style.background = "white";
-        frame.style.border = "14px solid #333"; // Frame Bezel
-        frame.style.borderTop = "40px solid #333";
-        frame.style.borderBottom = "40px solid #333";
-        frame.style.borderRadius = "35px";
-        frame.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
-        
-        // Ensure it fits small screens
-        frame.style.maxWidth = "95vw";
-        frame.style.maxHeight = "85vh";
+        frame.style.width = "100%"; frame.style.height = "100%"; frame.style.border = "none";
+    } else {
+        frame.style.width = "375px"; frame.style.height = "667px"; frame.style.border = "14px solid #333"; frame.style.borderRadius = "35px";
     }
 }
 
-// Close Preview - Reset Active File if needed
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-    currentActiveFile = null; // पुढच्या वेळी विचारण्यासाठी रिसेट करा
-}
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; currentActiveFile = null; }
 
-// --- 5. THEME, FONT & SETTINGS ---
+// --- 5. THEME & SETTINGS ---
 
 function updateThemeAndFont() {
     const tKey = document.getElementById('theme-sel')?.value || 'dark';
     const font = document.getElementById('font-family-sel')?.value || 'monospace';
     const theme = themes[tKey];
-
     document.documentElement.style.setProperty('--bg', theme.bg);
     document.documentElement.style.setProperty('--panel', theme.panel);
     document.documentElement.style.setProperty('--accent', theme.accent);
     document.documentElement.style.setProperty('--border', theme.border);
-    
-    document.querySelectorAll('textarea').forEach(tx => {
-        tx.style.fontFamily = font;
-        tx.style.color = theme.text;
-        tx.style.background = theme.bg;
-    });
-    document.querySelectorAll('.line-numbers').forEach(ln => ln.style.fontFamily = font);
+    document.querySelectorAll('textarea').forEach(tx => { tx.style.fontFamily = font; tx.style.color = theme.text; tx.style.background = theme.bg; });
 }
 
-function resetAllSettings() {
-    if(confirm("Reset everything?")) {
-        files = JSON.parse(JSON.stringify(defaultFiles));
-        document.getElementById('editor-grid').innerHTML = '';
-        updateTaskbar();
-        window.onload();
-        alert("Reset Done!");
-    }
-}
+function resetAllSettings() { if(confirm("Reset everything?")) { files = JSON.parse(JSON.stringify(defaultFiles)); document.getElementById('editor-grid').innerHTML = ''; updateTaskbar(); window.onload(); } }
 
-// --- 6. CORE UTILITIES ---
+// --- 6. CORE UTILITIES & DELETE ---
 
 function updateLineNumbers(safeId) {
     const tx = document.getElementById(`${safeId}-code`);
@@ -374,89 +258,34 @@ function syncScroll(id) {
 }
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
-// --- 6. CORE UTILITIES ---
 
-function updateLineNumbers(safeId) {
-    const tx = document.getElementById(`${safeId}-code`);
-    const lb = document.getElementById(`${safeId}-lines`);
-    if(!tx || !lb) return;
-    
-    // Using a single string join for better performance than repeated DOM updates
-    const lineCount = tx.value.split('\n').length;
-    let lineHTML = '';
-    for (let i = 1; i <= lineCount; i++) {
-        lineHTML += i + '.<br>';
-    }
-    lb.innerHTML = lineHTML;
-}
+// --- FINAL FIXED DELETE FUNCTION ---
+function deleteFile(fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
 
-function updateFileContent(name, val) { 
-    if(files[name]) files[name].content = val; 
-}
-
-function syncScroll(id) { 
-    const tx = document.getElementById(`${id}-code`);
-    const lb = document.getElementById(`${id}-lines`);
-    if(tx && lb) lb.scrollTop = tx.scrollTop; 
-}
-
-function minimizeBox(id) { 
-    document.getElementById(`box-${id}`).style.display = 'none'; 
-}
-
-function expandBox(id) { 
-    document.getElementById(`box-${id}`).classList.toggle('fullscreen'); 
-}
-
-// --- NEW: DELETE FILE UTILITY ---
-function deleteFile(safeId, fileName) {
-    if (!confirm(`Are you sure you want to delete ${fileName}?`)) return;
-
-    // 1. Remove from the global files object
+    // 1. Files data object madhun kadha
     if (files[fileName]) {
         delete files[fileName];
     }
 
-    // 2. Remove the UI element (the box/editor container)
-    const element = document.getElementById(`box-${safeId}`);
-    if (element) {
-        element.remove();
+    // 2. Safe ID generate kara (jo addFileToUI madhe vaprat aahat)
+    const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
+
+    // 3. Screen varun box kadha
+    const mainBox = document.getElementById(`box-${safeId}`);
+    if (mainBox) {
+        mainBox.remove();
     }
+
+    // 4. Taskbar refresh kara
+    updateTaskbar();
     
-    console.log(`File ${fileName} deleted successfully.`);
+    console.log(`${fileName} deleted from everywhere.`);
 }
 
 // --- 7. INITIALIZATION ---
 window.onload = () => {
     updateTaskbar();
-    addFileToUI("index.html", "html", files["index.html"].content);
-    addFileToUI("style.css", "css", files["style.css"].content);
-};function deleteFile(fileName) {
-    // 1. Confirmation confirm kara
-    if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
-
-    // 2. fileName pasun safeId banva (jas tumhi window create kartaana banavla asel)
-    // Samja tumhi space la underscore ne replace karat asal:
-    const safeId = fileName.replace(/[^a-zA-Z0-9]/g, '_');
-
-    // 3. Main 'files' data object madhun kadha
-    if (files[fileName]) {
-        delete files[fileName];
-    }
-
-    // 4. Main Screen (Editor Window) varun remove kara
-    // Tumcha editor box cha ID 'box-filename' asel tar to target kara
-    const mainBox = document.getElementById(`box-${safeId}`);
-    if (mainBox) {
-        mainBox.remove();
-        console.log("Main screen varun file kadhli.");
-    } else {
-        // Jar ID 'box-' ne suru hot nasel tar fakt element shodha
-        console.warn("Main screen var box sapdla nahi: box-" + safeId);
-    }
-
-    // 5. Taskbar refresh kara
-    updateTaskbar();
-    
-    alert(`${fileName} purna pane delete zali!`);
-}
+    if(files["index.html"]) addFileToUI("index.html", "html", files["index.html"].content);
+    if(files["style.css"]) addFileToUI("style.css", "css", files["style.css"].content);
+};
