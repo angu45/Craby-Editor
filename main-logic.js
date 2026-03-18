@@ -20,9 +20,6 @@ const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
 
-let showLineNumbers = false; 
-let lineNumberFontSize = 14; 
-let selectedIndex = 0; 
 
 // --- 2. RESET SETTINGS (NEW FEATURE) ---
 
@@ -215,14 +212,6 @@ function insertWord(word, id) {
 
 // --- 6. CORE UTILITIES ---
 
-function updateLineNumbers(safeId) {
-    const tx = document.getElementById(`${safeId}-code`);
-    const lineBox = document.getElementById(`${safeId}-lines`);
-    if(!tx || !lineBox) return;
-    const lines = tx.value.split('\n').length;
-    lineBox.innerHTML = Array.from({length: lines}, (_, i) => (i + 1) + '.').join('<br>');
-    lineBox.style.fontSize = lineNumberFontSize + "px";
-}
 
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
 function syncScroll(safeId) {
