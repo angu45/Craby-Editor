@@ -55,10 +55,14 @@ function updateTaskbar() {
         taskbar.appendChild(fileItem);
     });
 }
+
+// --- REPLACE ONLY THIS FUNCTION ---
+
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
     
+    // ID Match logic (Must be same as deleteFile)
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
     
     if(document.getElementById(`box-${safeId}`)) {
@@ -78,23 +82,29 @@ function addFileToUI(name, type, content = "") {
                 <i class="fas fa-trash" onclick="deleteFile('${name}')"></i>
             </div>
         </div>
-        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden; height: 300px;">
-            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'}; padding: 10px;">1.</div>
+        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
+            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'};">1.</div>
             
             <div id="${safeId}-code" 
-                 class="code-display"
-                 style="flex: 1; color: white; padding: 10px; font-family: monospace; white-space: pre-wrap; overflow-y: auto;">
-                 ${content}
-            </div>
+                 contenteditable="true" 
+                 spellcheck="false" 
+                 class="code-editor-surface"
+                 data-lang="${type}" 
+                 oninput="updateFileContent('${name}', this.innerText); updateLineNumbers('${safeId}')"
+                 onscroll="syncScroll('${safeId}')"
+                 style="flex: 1; color: white; padding: 10px; outline: none; white-space: pre; overflow: auto; font-family: monospace;">${content}</div>
         </div>
     `;
     
     wrapper.appendChild(newBox);
     
-    // Textarea naslyamule 'attachInputListeners' chi garaj bhasnar nahi jar tumhi fakt display karat asal.
-    // updateLineNumbers(safeId); 
-    updateThemeAndFont();
+    // Listeners attach karne (Suggestion system sathi)
+    const editorDiv = document.getElementById(`${safeId}-code`);
+    attachInputListeners(editorDiv);
+    updateLineNumbers(safeId);
+    updateThemeAndFont(); 
 }
+
 
 // --- 3. SUGGESTION SYSTEM ---
 
