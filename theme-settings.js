@@ -56,20 +56,14 @@ function updateTaskbar() {
     });
 }
 
-// --- REPLACE ONLY THIS FUNCTION ---
-
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
-    
-    // ID Match logic (Must be same as deleteFile)
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
-    
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
     }
-
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
     newBox.id = `box-${safeId}`;
@@ -84,25 +78,15 @@ function addFileToUI(name, type, content = "") {
         </div>
         <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
             <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'};">1.</div>
-            
-            <div id="${safeId}-code" 
-                 contenteditable="true" 
-                 spellcheck="false" 
-                 class="code-editor-surface"
-                 data-lang="${type}" 
-                 oninput="updateFileContent('${name}', this.innerText); updateLineNumbers('${safeId}')"
-                 onscroll="syncScroll('${safeId}')"
-                 style="flex: 1; color: white; padding: 10px; outline: none; white-space: pre; overflow: auto; font-family: monospace;">${content}</div>
+            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
+                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
+                onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
     `;
-    
     wrapper.appendChild(newBox);
-    
-    // Listeners attach karne (Suggestion system sathi)
-    const editorDiv = document.getElementById(`${safeId}-code`);
-    attachInputListeners(editorDiv);
+    attachInputListeners(document.getElementById(`${safeId}-code`));
     updateLineNumbers(safeId);
-    updateThemeAndFont(); 
+    updateThemeAndFont(); // नवीन विन्डोला थीम लागू करण्यासाठी
 }
 
 
