@@ -431,43 +431,32 @@ window.onload = () => {
     updateTaskbar();
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
-};// --- UPDATED DELETE FUNCTION ---
-function deleteFile(fileName, safeId) {
-    // 1. User kade confirmation ghene
+};function deleteFile(fileName) {
+    // 1. Confirmation confirm kara
     if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
 
-    // 2. Main 'files' object madhun delete kara
+    // 2. fileName pasun safeId banva (jas tumhi window create kartaana banavla asel)
+    // Samja tumhi space la underscore ne replace karat asal:
+    const safeId = fileName.replace(/[^a-zA-Z0-9]/g, '_');
+
+    // 3. Main 'files' data object madhun kadha
     if (files[fileName]) {
         delete files[fileName];
     }
 
-    // 3. Screen varun editor box kadhun taka
-    const box = document.getElementById(`box-${safeId}`);
-    if (box) {
-        box.remove();
+    // 4. Main Screen (Editor Window) varun remove kara
+    // Tumcha editor box cha ID 'box-filename' asel tar to target kara
+    const mainBox = document.getElementById(`box-${safeId}`);
+    if (mainBox) {
+        mainBox.remove();
+        console.log("Main screen varun file kadhli.");
+    } else {
+        // Jar ID 'box-' ne suru hot nasel tar fakt element shodha
+        console.warn("Main screen var box sapdla nahi: box-" + safeId);
     }
 
-    // 4. Taskbar refresh kara (He sarvat महत्वाचे aahe)
+    // 5. Taskbar refresh kara
     updateTaskbar();
     
-    console.log(`${fileName} completely removed.`);
+    alert(`${fileName} purna pane delete zali!`);
 }
-
-// --- YOUR TASKBAR FUNCTION (No changes needed, just ensure it's called) ---
-function updateTaskbar() {
-    const taskbar = document.getElementById('shutter-file-list'); 
-    if(!taskbar) return;
-    taskbar.innerHTML = ''; 
-    
-    Object.keys(files).forEach(fileName => {
-        const fileItem = document.createElement('div');
-        fileItem.className = 'shutter-item';
-        // Safe ID generate kara (jar garaj asel tar)
-        const safeId = fileName.replace(/[^a-zA-Z0-9]/g, '_');
-        
-        fileItem.innerHTML = `<i class="fas fa-file-code"></i> <span>${fileName}</span>`;
-        fileItem.onclick = () => addFileToUI(fileName, files[fileName].type, files[fileName].content);
-        taskbar.appendChild(fileItem);
-    });
-}
-
