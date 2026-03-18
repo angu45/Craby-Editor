@@ -45,21 +45,45 @@ document.body.appendChild(sBox);
 
 // --- 2. FILE & UI CORE ---
 
+// --- 2. UPDATED FILE MANAGEMENT (LEFT ALIGNED LOGO & NAME) ---
+
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
+    
+    // Taskbar purna clear karun navin items bharne
     taskbar.innerHTML = ''; 
+
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
-        fileItem.innerHTML = `<i class="fas fa-file-code"></i> <span>${fileName}</span>`;
+        
+        // CSS Style: Flex vaprun icon ani nav left la align kele aahe
+        fileItem.style.display = 'flex';
+        fileItem.style.alignItems = 'center';
+        fileItem.style.justifyContent = 'flex-start'; // Left alignment
+        fileItem.style.gap = '10px'; // Icon ani Nav madhale अंतर
+        fileItem.style.paddingLeft = '15px'; // Thodi davi kade jaga
+
+        // Icon ani Nav (File Name) ekatra
+        fileItem.innerHTML = `
+            <i class="fas fa-file-code" style="color: var(--accent);"></i> 
+            <span style="font-weight: 500;">${fileName}</span>
+        `;
+
+        // Click kelyavar file open honyasathi logic
         fileItem.onclick = () => {
             addFileToUI(fileName, files[fileName].type, files[fileName].content);
-            if(window.innerWidth < 768 && document.getElementById('shutter').classList.contains('open')) toggleShutter();
+            // Mobile var shutter automatic close honyasathi
+            if(window.innerWidth < 768 && document.getElementById('shutter').classList.contains('open')) {
+                toggleShutter();
+            }
         };
+
         taskbar.appendChild(fileItem);
     });
 }
+
 
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
