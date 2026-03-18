@@ -203,6 +203,137 @@ function insertWord(word, id) {
 // --- 4. RUN CODE LOGIC ---
 let currentActiveFile = null;
 
+function runCode() {
+    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
+    if (htmlFiles.length === 0) {
+        alert("No HTML files available!");
+        return;
+    }
+
+    let selectedFile;
+    if (currentActiveFile && files[currentActiveFile]) {
+        selectedFile = currentActiveFile;
+    } else {
+        let choice = prompt("Select file to run:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
+        selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
+    }
+
+    if (!selectedFile) return;
+    currentActiveFile = selectedFile;
+
+    const overlay = document.getElementById('preview-overlay');
+    const frame = document.getElementById('output-frame');
+    overlay.style.display = 'flex';
+
+    let content = files[selectedFile].content;
+    let themeCSS = "";
+    Object.keys(files).forEach(name => {
+        if(name.endsWith('.css')) themeCSS += files[name].content + "\n";
+    });
+
+    let finalHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: white; overflow-x: hidden; }
+                body { padding: 15px; box-sizing: border-box; font-family: sans-serif; }
+                ${themeCSS}
+            </style>
+        </head>
+        <body>
+            ${content}
+            <script>
+                ${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}
+            </script>
+        </body>
+        </html>
+    `;
+
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(finalHTML);
+    doc.close();
+
+    if (!frame.style.width || frame.style.width === "100%") {
+        setPreviewSize('100%');
+    }
+}
+
+function refreshPreview() {
+    if (!currentActiveFile) {
+        runCode();
+    } else {
+        runCode();
+        showToast("Output has been refreshed!");
+    }
+}
+
+function showToast(msg) {
+    let toast = document.createElement('div');
+    toast.innerText = msg;
+    toast.style.cssText = `
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        background: #333; color: #fff; padding: 10px 25px; border-radius: 5px;
+        font-size: 14px; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+function setPreviewSize(device) {
+    const frame = document.getElementById('output-frame');
+    const container = document.getElementById('preview-body');
+    if (!frame || !container) return;
+
+    frame.style.transition = "all 0.4s ease";
+    if (device === '100%') {
+        frame.style.width = "100%";
+        frame.style.height = "100%";
+        frame.style.border = "none";
+    } else {
+        frame.style.width = "375px";
+        frame.style.height = "667px";
+        frame.style.border = "14px solid #333";
+        frame.style.borderRadius = "35px";
+    }
+}
+
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
+    currentActiveFile = null;
+}
+
+// --- 5. THEME, FONT & SETTINGS ---
+
+function updateThemeAndFont() {
+    const tKey = document.getElementById('theme-sel')?.value || 'dark';
+    const font = document.getElementById('font-family-sel')?.value || 'monospace';
+    const theme = themes[tKey];
+
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--border', theme.border);
+    
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.color = theme.text;
+        tx.style.background = theme.bg;
+    });
+    document.querySelectorAll('.line-numbers').forEach(ln => ln.style.fontFamily = font);
+}
+
+function resetAllSettings() {
+    if(confirm("Reset everything?")) {
+        files = JSON.parse(JSON.stringify(defaultFiles));
+        document.getElementById('editor-grid').innerHTML = '';
+        updateTaskbar();
+        window.onload();
+        alert("Reset Done!");
+    }
+}
 
 // --- 6. CORE UTILITIES ---
 
@@ -227,5 +358,4 @@ function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('
 window.onload = () => {
     updateTaskbar();
     addFileToUI("index.html", "html", files["index.html"].content);
-    addFileToUI("style.css", "css", files["style.css"].content);
-};
+    addFileToUI("style.css", "css", f
