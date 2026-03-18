@@ -1,9 +1,9 @@
 /**
- * CRABY EDITOR - FINAL INTEGRATED JS
- * Features: No Line Numbers, Default HTML/CSS on Load, Full Sandboxing.
+ * CRABY EDITOR - FINAL COMPREHENSIVE LOGIC
+ * Includes: File System, Shutter, Settings, Preview, Suggestion, and Formatting.
  */
 
-// --- 1. CONFIGURATION & STATE ---
+// --- 1. GLOBAL CONFIGURATION ---
 const dictionary = {
     html: ['div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul','main','strong','em','hr'],
     css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items'],
@@ -12,13 +12,10 @@ const dictionary = {
 
 const defaultFiles = {
     "index.html": { 
-        content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n  <p>Start coding here...</p>\n</body>\n</html>`, 
+        content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
         type: "html" 
     },
-    "style.css": { 
-        content: "body { background: #f4f4f4; }\nh1 { color: #ffb400; text-align: center; font-family: sans-serif; margin-top: 50px; }", 
-        type: "css" 
-    }
+    "style.css": { content: "h1 { color: #ffb400; text-align: center; font-family: sans-serif; margin-top: 50px; }", type: "css" }
 };
 
 let files = JSON.parse(JSON.stringify(defaultFiles));
@@ -30,15 +27,23 @@ const themes = {
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
     light: { bg: '#eef1f4', panel: '#ffffff', accent: '#f59e0b', text: '#374151', border: '#e5e7eb' },  
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
-    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' }
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// Injection of Suggestion Box
+// Suggestion Box Setup
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
 
-// --- 2. UI & FILE MANAGEMENT ---
+// --- 2. FILE & UI CORE ---
 
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
@@ -50,7 +55,7 @@ function updateTaskbar() {
         fileItem.innerHTML = `<i class="fas fa-file-code"></i> <span>${fileName}</span>`;
         fileItem.onclick = () => {
             addFileToUI(fileName, files[fileName].type, files[fileName].content);
-            if(window.innerWidth < 768) toggleShutter(); 
+            if(window.innerWidth < 768 && document.getElementById('shutter').classList.contains('open')) toggleShutter();
         };
         taskbar.appendChild(fileItem);
     });
@@ -91,19 +96,21 @@ function addFileToUI(name, type, content = "") {
     updateThemeAndFont();
 }
 
-function deleteFile(fileName) {
-    if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
-    delete files[fileName];
-    const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
-    const mainBox = document.getElementById(`box-${safeId}`);
-    if (mainBox) mainBox.remove();
-    updateTaskbar();
+// --- 3. ALL BUTTON FUNCTIONS ---
+
+function toggleShutter() {
+    const shutter = document.getElementById('shutter');
+    const trigger = document.getElementById('shutter-trigger');
+    if(!shutter) return;
+    shutter.classList.toggle('open');
+    const icon = trigger.querySelector('i');
+    icon.className = shutter.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
 }
 
 function addNewFilePrompt() {
-    const fileName = prompt("File Name (e.g. script.js):");
+    const fileName = prompt("Enter File Name (e.g., script.js):");
     if (fileName) {
-        if (files[fileName]) { alert("File already exists!"); return; }
+        if (files[fileName]) { alert("File exists!"); return; }
         const type = fileName.split('.').pop().toLowerCase();
         files[fileName] = { content: "", type: type };
         addFileToUI(fileName, type, "");
@@ -111,99 +118,16 @@ function addNewFilePrompt() {
     }
 }
 
-// --- 3. SUGGESTION SYSTEM ---
-
-function attachInputListeners(txt) {
-    txt.addEventListener('keydown', (e) => {
-        const items = document.querySelectorAll('.suggestion-item');
-        if (sBox.style.display === 'block' && items.length > 0) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                items[selectedIndex].click();
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                selectedIndex = (selectedIndex + 1) % items.length;
-                updateHighlight(items);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
-                updateHighlight(items);
-            }
-        }
-    });
-
-    txt.addEventListener('input', (e) => {
-        const pos = txt.selectionStart;
-        const char = e.data;
-        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
-        if (pairs[char]) {
-            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
-            txt.selectionStart = txt.selectionEnd = pos;
-        } 
-        showSuggestions(txt);
-    });
-}
-
-function updateHighlight(items) {
-    items.forEach((item, index) => {
-        item.style.backgroundColor = (index === selectedIndex) ? '#3e4451' : '';
-    });
-}
-
-function showSuggestions(txt) {
-    const pos = txt.selectionStart;
-    const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
-    if (word.length < 1) { sBox.style.display = 'none'; return; }
-
-    const lang = txt.getAttribute('data-lang');
-    const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
-
-    if (matches.length > 0) {
-        const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 30}px`; 
-        sBox.style.left = `${rect.left + 20}px`;
-        sBox.style.display = 'block';
-        selectedIndex = 0; 
-        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item" ${i===0?'style="background:#3e4451"':''} onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
-    } else { sBox.style.display = 'none'; }
-}
-
-function insertWord(word, id) {
-    const txt = document.getElementById(id);
-    const pos = txt.selectionStart;
-    const lang = txt.getAttribute('data-lang');
-    const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
-    const after = txt.value.substring(pos);
-
-    let finalInsert = word;
-    let offset = word.length;
-
-    if (lang === 'html') {
-        if (word === 'h1') { finalInsert = `<h1></h1>`; offset = 4; }
-        else if (!word.includes('<')) { finalInsert = `<${word}></${word}>`; offset = word.length + 2; }
-    }
-
-    txt.value = before + finalInsert + after;
-    txt.selectionStart = txt.selectionEnd = before.length + offset;
-    sBox.style.display = 'none';
-    txt.focus();
-    updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
-}
-
-// --- 4. PREVIEW & RUN LOGIC (SANDBOXED) ---
-
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
     if (htmlFiles.length === 0) { alert("No HTML files!"); return; }
-
+    
     let selectedFile = currentActiveFile || htmlFiles[0];
     currentActiveFile = selectedFile;
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
-    overlay.style.backgroundColor = "rgba(0,0,0,0.8)"; 
-
     frame.setAttribute('sandbox', 'allow-scripts');
 
     let themeCSS = "";
@@ -219,36 +143,24 @@ function runCode() {
     doc.open(); doc.write(finalHTML); doc.close();
 }
 
-// --- 5. SETTINGS, THEME & UTILITIES ---
-
-function updateThemeAndFont() {
-    const tKey = document.getElementById('theme-sel')?.value || 'dark';
-    const font = document.getElementById('font-family-sel')?.value || 'monospace';
-    const theme = themes[tKey] || themes.dark;
-    
-    document.documentElement.style.setProperty('--bg', theme.bg);
-    document.documentElement.style.setProperty('--panel', theme.panel);
-    document.documentElement.style.setProperty('--accent', theme.accent);
-    document.documentElement.style.setProperty('--border', theme.border);
-    
-    document.querySelectorAll('textarea').forEach(tx => { 
-        tx.style.fontFamily = font; 
-        tx.style.color = theme.text; 
-        tx.style.background = theme.bg; 
+function beautifyCode() {
+    Object.keys(files).forEach(fileName => {
+        let content = files[fileName].content;
+        const type = files[fileName].type;
+        if (type === "html") content = content.replace(/>\s*</g, "><").replace(/</g, "\n<").trim();
+        else if (type === "css") content = content.replace(/\s*\{\s*/g, " {\n  ").replace(/;\s*/g, ";\n  ").replace(/\s*\}\s*/g, "\n}\n");
+        else if (type === "js") content = content.replace(/\{\s*/g, " {\n  ").replace(/\}\s*/g, "\n}\n").replace(/;\s*/g, ";\n");
+        
+        files[fileName].content = content;
+        const tx = document.querySelector(`textarea[data-filename="${fileName}"]`);
+        if(tx) tx.value = content;
     });
-}
-
-function toggleShutter() {
-    const shutter = document.getElementById('shutter');
-    const trigger = document.getElementById('shutter-trigger');
-    shutter.classList.toggle('open');
-    const icon = trigger.querySelector('i');
-    icon.className = shutter.classList.contains('open') ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
+    alert("Code Formatted!");
 }
 
 function exportCode() {
     const fileList = Object.keys(files);
-    let promptText = "File Number to download:\n" + fileList.map((n, i) => `${i+1}. ${n}`).join('\n');
+    let promptText = "Type file number to download:\n" + fileList.map((n, i) => `${i+1}. ${n}`).join('\n');
     const choice = parseInt(prompt(promptText)) - 1;
     if (fileList[choice]) {
         const blob = new Blob([files[fileList[choice]].content], { type: 'text/plain' });
@@ -259,23 +171,126 @@ function exportCode() {
     }
 }
 
-// --- 6. CORE UTILS ---
-function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
-function updateLineNumbers(id) { /* Line numbers disabled */ }
-function syncScroll(safeId) { }
+function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    if (panel.style.display === 'none' || !panel.classList.contains('open')) {
+        panel.style.display = 'block';
+        setTimeout(() => panel.classList.add('open'), 10);
+    } else {
+        panel.classList.remove('open');
+        setTimeout(() => { panel.style.display = 'none'; saveSettings(); }, 300);
+    }
+}
+
+// --- 4. SUGGESTION & UTILS ---
+
+function attachInputListeners(txt) {
+    txt.addEventListener('keydown', (e) => {
+        const items = document.querySelectorAll('.suggestion-item');
+        if (sBox.style.display === 'block' && items.length > 0) {
+            if (e.key === 'Enter') { e.preventDefault(); items[selectedIndex].click(); }
+            else if (e.key === 'ArrowDown') { e.preventDefault(); selectedIndex = (selectedIndex + 1) % items.length; updateHighlight(items); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIndex = (selectedIndex - 1 + items.length) % items.length; updateHighlight(items); }
+        }
+    });
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const char = e.data;
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        } 
+        showSuggestions(txt);
+    });
+}
+
+function showSuggestions(txt) {
+    const pos = txt.selectionStart;
+    const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
+    if (word.length < 1) { sBox.style.display = 'none'; return; }
+    const lang = txt.getAttribute('data-lang');
+    const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
+    if (matches.length > 0) {
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 30}px`; sBox.style.left = `${rect.left + 20}px`;
+        sBox.style.display = 'block'; selectedIndex = 0;
+        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item" ${i===0?'style="background:#3e4451"':''} onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
+    } else { sBox.style.display = 'none'; }
+}
+
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
+    const after = txt.value.substring(pos);
+    txt.value = before + word + after;
+    txt.selectionStart = txt.selectionEnd = before.length + word.length;
+    sBox.style.display = 'none'; txt.focus();
+    updateFileContent(txt.getAttribute('data-filename'), txt.value);
+}
+
+// --- 5. THEME & SYSTEM ---
+
+function updateThemeAndFont() {
+    const tKey = document.getElementById('theme-sel')?.value || 'dark';
+    const font = document.getElementById('font-family-sel')?.value || 'monospace';
+    const theme = themes[tKey] || themes.dark;
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--border', theme.border);
+    document.querySelectorAll('textarea').forEach(tx => { 
+        tx.style.fontFamily = font; tx.style.color = theme.text; tx.style.background = theme.bg; 
+    });
+}
+
+function updateFontSize(val) {
+    const display = document.getElementById('font-size-val');
+    if(display) display.innerText = val + "px";
+    document.querySelectorAll('textarea').forEach(tx => { tx.style.fontSize = val + "px"; });
+}
+
+function deleteFile(fileName) {
+    if (confirm(`Delete ${fileName}?`)) {
+        delete files[fileName];
+        const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
+        document.getElementById(`box-${safeId}`)?.remove();
+        updateTaskbar();
+    }
+}
+
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
-function resetAllSettings() { if(confirm("Reset everything?")) { localStorage.removeItem('craby_settings'); location.reload(); } }
+function syncScroll(id) { }
+function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+function updateLineNumbers(id) {} // Disabled
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+function setPreviewSize(w) { document.getElementById('output-frame').style.width = w; }
 
-// --- 7. INITIALIZATION (DEFAULT ON LOAD) ---
+function saveSettings() {
+    const s = { theme: document.getElementById('theme-sel').value, size: document.getElementById('font-size-range').value, font: document.getElementById('font-family-sel').value };
+    localStorage.setItem('craby_settings', JSON.stringify(s));
+}
+
+function resetAllSettings() { if(confirm("Reset all?")) { localStorage.removeItem('craby_settings'); location.reload(); } }
+
+// --- 6. INITIALIZATION ---
+
 window.onload = () => {
     updateTaskbar();
+    // DEFAULT 2 FILES ON HOME
+    addFileToUI("index.html", "html", files["index.html"].content);
+    addFileToUI("style.css", "css", files["style.css"].content);
     
-    // Default 2 files on homepage
-    if(files["index.html"]) addFileToUI("index.html", "html", files["index.html"].content);
-    if(files["style.css"]) addFileToUI("style.css", "css", files["style.css"].content);
-    
-    // UI Setup
+    // Load Saved Settings
+    const saved = localStorage.getItem('craby_settings');
+    if(saved) {
+        const s = JSON.parse(saved);
+        if(document.getElementById('theme-sel')) document.getElementById('theme-sel').value = s.theme;
+        if(document.getElementById('font-family-sel')) document.getElementById('font-family-sel').value = s.font;
+        updateFontSize(s.size);
+    }
     updateThemeAndFont();
     window.onbeforeunload = () => "Unsaved changes might be lost.";
 };
