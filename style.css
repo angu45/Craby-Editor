@@ -178,10 +178,65 @@ header {
 
 .window-body { flex: 1; display: flex; }
 
+/* --- SYNTAX GLOW COLORS --- */
+
+.tag { 
+    color: #ff7b72; 
+    text-shadow: 0 0 8px rgba(255, 123, 114, 0.5); 
+    font-weight: bold;
+}
+
+.attr { 
+    color: #79c0ff; 
+    text-shadow: 0 0 8px rgba(121, 192, 255, 0.5); 
+}
+
+.keyword { 
+    color: #d2a8ff; 
+    text-shadow: 0 0 10px rgba(210, 168, 255, 0.6); 
+    font-weight: bold;
+}
+
+.string { 
+    color: #a5d6ff; 
+    text-shadow: 0 0 5px rgba(165, 214, 255, 0.4); 
+}
+
+.number { 
+    color: #f0883e; 
+    text-shadow: 0 0 8px rgba(240, 136, 62, 0.5); 
+}
+
+/* --- TEXTAREA OVERLAY FOR GLOW --- */
+.highlight-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 12px; /* textarea च्या padding शी मॅच करा */
+    pointer-events: none; /* क्लिक textarea वर व्हावे म्हणून */
+    white-space: pre;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.input-layer {
+    position: relative;
+    z-index: 2;
+    color: transparent !important; /* ओरिजिनल टेक्स्ट लपवण्यासाठी */
+    caret-color: #ffb400; /* फक्त कर्सर दिसेल */
+    background: transparent !important;
+}
 textarea {
     flex: 1;
     width: 100%;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     border: none;
     color: #9cdcfe;
     padding: 12px;
@@ -192,6 +247,13 @@ textarea {
     resize: none;
     white-space: pre;
     overflow: auto;
+    text-shadow: 0 0 8px rgba(156, 221, 254, 0.4);
+    transition: all 0.3s ease;
+}
+
+textarea:focus {
+    background: rgba(255, 255, 255, 0.05);
+    text-shadow: 0 0 12px rgba(156, 221, 254, 0.6);
 }
 
 /* --- 5. SHUTTER (LEFT SLIDER) --- */
