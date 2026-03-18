@@ -374,6 +374,57 @@ function syncScroll(id) {
 }
 function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+// --- 6. CORE UTILITIES ---
+
+function updateLineNumbers(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lb = document.getElementById(`${safeId}-lines`);
+    if(!tx || !lb) return;
+    
+    // Using a single string join for better performance than repeated DOM updates
+    const lineCount = tx.value.split('\n').length;
+    let lineHTML = '';
+    for (let i = 1; i <= lineCount; i++) {
+        lineHTML += i + '.<br>';
+    }
+    lb.innerHTML = lineHTML;
+}
+
+function updateFileContent(name, val) { 
+    if(files[name]) files[name].content = val; 
+}
+
+function syncScroll(id) { 
+    const tx = document.getElementById(`${id}-code`);
+    const lb = document.getElementById(`${id}-lines`);
+    if(tx && lb) lb.scrollTop = tx.scrollTop; 
+}
+
+function minimizeBox(id) { 
+    document.getElementById(`box-${id}`).style.display = 'none'; 
+}
+
+function expandBox(id) { 
+    document.getElementById(`box-${id}`).classList.toggle('fullscreen'); 
+}
+
+// --- NEW: DELETE FILE UTILITY ---
+function deleteFile(safeId, fileName) {
+    if (!confirm(`Are you sure you want to delete ${fileName}?`)) return;
+
+    // 1. Remove from the global files object
+    if (files[fileName]) {
+        delete files[fileName];
+    }
+
+    // 2. Remove the UI element (the box/editor container)
+    const element = document.getElementById(`box-${safeId}`);
+    if (element) {
+        element.remove();
+    }
+    
+    console.log(`File ${fileName} deleted successfully.`);
+}
 
 // --- 7. INITIALIZATION ---
 window.onload = () => {
