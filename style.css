@@ -47,49 +47,58 @@ header {
     padding: 15px;
     justify-content: center;
 }
-
-/* Individual File Box (Smaller version) */
+/* --- UPDATED SHUTTER ITEM CSS --- */
 .shutter-item {
     background: rgba(255, 255, 255, 0.05);
     border: 1.2px solid rgba(255, 180, 0, 0.1);
     border-radius: 10px;
-    padding: 15px 25px; /* Reduced padding */
+    padding: 10px 15px; /* Padding adjust kela layout sathi */
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: row; /* Column kadhun Row kela */
+    align-items: center; /* Vertical center sathi */
+    justify-content: flex-start; /* Left side pasun suru honyasathi */
+    gap: 12px; /* Icon ani Nav madhale antar */
     cursor: pointer;
     transition: all 0.2s ease;
-    text-align: center;
-    height: 25px; /* Fixed height for consistency */
+    height: 45px; /* Height thodi vadhavli jyamule content dabla janar nahi */
+    margin-bottom: 8px; /* Items madhe antar */
+    width: 90%; /* Sidebar chya aat vyavasthit basnyasathi */
 }
 
-/* Smaller Icon */
+/* Icon Style */
 .shutter-item i {
-    font-size: 1.8rem; /* Reduced from 2.5rem */
+    font-size: 1.2rem; /* Size normal kela */
     color: #ffb400;
-    margin-bottom: 6px;
+    margin-bottom: 0; /* Column layout madhla margin kadhla */
 }
 
-/* Smaller Font for Filename */
+/* Filename Style */
 .shutter-item span {
     color: #e0e0e0;
-    font-size: 0.75rem; /* Reduced from 0.9rem */
+    font-size: 0.9rem; /* Vachayla soppa jail asa size */
     font-weight: 500;
     overflow: hidden;
-    text-overflow: ellipsis; /* Long names will end with ... */
+    text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100%;
+    text-align: left; /* Nav davi kade align */
+    flex: 1; /* Shilik jaga navane ghyavi */
 }
 
 /* Hover Effects */
 .shutter-item:hover {
     background: rgba(255, 180, 0, 0.1);
     border-color: #ffb400;
-    transform: translateY(-3px);
+    transform: translateX(5px); /* Side la slide hoil hover var */
 }
 
-.logo-container { display: flex; align-items: Left; gap: 10px; }
+/* Logo Header Alignment Fix */
+.logo-container { 
+    display: flex; 
+    align-items: center; /* Left kadhun Center kela */
+    gap: 10px; 
+    padding: 10px;
+}
+
 .logo-container img { height: 15px; width: auto; }
 .logo-text { color: var(--accent); font-weight: 80; font-size: 1.2rem; letter-spacing: 1px; }
 
