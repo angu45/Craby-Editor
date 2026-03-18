@@ -85,30 +85,23 @@ function formatCode(code) {
 
 // --- 4. FILE MANAGEMENT ---
 function updateTaskbar() {
-    const taskbar = document.getElementById('shutter-file-list'); 
+    const taskbar = document.getElementById('shutter-file-list');
     if(!taskbar) return;
-    taskbar.innerHTML = ''; 
-    
+    taskbar.innerHTML = '';
     Object.keys(files).forEach(fileName => {
-        const type = files[fileName].type;
-        let iconClass = "fa-file-code"; 
-        let iconColor = "#ffb400";
-
-        // फाईल टाईपनुसार आयकॉन आणि रंग बदलणे
-        if(type === 'html') { iconClass = "fa-html5"; iconColor = "#e34c26"; }
-        if(type === 'css') { iconClass = "fa-css3-alt"; iconColor = "#264de4"; }
-        if(type === 'js') { iconClass = "fa-js-square"; iconColor = "#f7df1e"; }
-
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
-        fileItem.innerHTML = `
-            <i class="fab ${iconClass}" style="color: ${iconColor}; font-size: 24px;"></i>
-            <span style="display: block; margin-top: 8px; font-size: 11px; font-weight: 600;">${fileName}</span>
-        `;
-        fileItem.onclick = () => addFileToUI(fileName, type, files[fileName].content);
+        fileItem.style.display = 'flex';
+        fileItem.style.alignItems = 'center';
+        fileItem.style.gap = '10px';
+        fileItem.style.padding = '8px 12px';
+        fileItem.style.justifyContent = 'flex-start';
+        fileItem.innerHTML = `<i class="fas fa-file-code" style="color: #ffb400; font-size: 1.2rem;"></i> <span style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left;">${fileName}</span>`;
+        fileItem.onclick = () => addFileToUI(fileName, files[fileName].type, files[fileName].content);
         taskbar.appendChild(fileItem);
     });
 }
+
 
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
