@@ -84,60 +84,50 @@ function formatCode(code) {
 }
 
 // --- 4. FILE MANAGEMENT ---
+
 function updateTaskbar() {
-    const taskbar = document.getElementById('shutter-file-list');
+    const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
-    taskbar.innerHTML = '';
+    taskbar.innerHTML = ''; 
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
-        fileItem.style.display = 'flex';
-        fileItem.style.alignItems = 'center';
-        fileItem.style.gap = '10px';
-        fileItem.style.padding = '8px 12px';
-        fileItem.style.justifyContent = 'flex-start';
-        fileItem.innerHTML = `<i class="fas fa-file-code" style="color: #ffb400; font-size: 1.2rem;"></i> <span style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left;">${fileName}</span>`;
+        fileItem.innerHTML = `<i class="fas fa-file-code"></i> <span>${fileName}</span>`;
         fileItem.onclick = () => addFileToUI(fileName, files[fileName].type, files[fileName].content);
         taskbar.appendChild(fileItem);
     });
 }
 
-
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
-    
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
     }
-
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
     newBox.id = `box-${safeId}`;
     newBox.innerHTML = `
         <div class="window-header">
-            <span class="window-title">${name.toUpperCase()}</span>
+            <span class="window-title">${name.toUpperCase()} <i class="fas fa-code"></i></span>
             <div class="window-controls">
                 <i class="fas fa-minus" onclick="minimizeBox('${safeId}')"></i>
                 <i class="fas fa-expand" onclick="expandBox('${safeId}')"></i>
                 <i class="fas fa-trash" onclick="deleteFile('${name}')"></i>
             </div>
         </div>
-        <div class="window-body editor-container" style="display: flex; position: relative; background: #0d1117; overflow: hidden;">
-            <div class="line-numbers" id="${safeId}-lines" style="display:block;">1.</div>
-            <div class="editor-wrapper" style="position: relative; flex: 1; overflow: hidden;">
-                <pre id="${safeId}-highlight" class="highlight-layer" aria-hidden="true"></pre>
-                <textarea id="${safeId}-code" class="input-layer" spellcheck="false" data-lang="${type}" 
-                    oninput="handleInput('${name}', '${safeId}', this.value)"
-                    onscroll="syncScroll('${safeId}')">${content}</textarea>
-            </div>
+        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
+            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'}; text-align: right; padding: 10px 5px; border-right: 1.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); background: transparent; overflow: hidden; white-space: nowrap;">1.</div>
+            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
+                style="flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: #e0e0e0; resize: none; white-space: pre; overflow: auto; line-height: 1.5;"
+                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
+                onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
     `;
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
-    applyHighlighting(safeId, content, type);
     updateLineNumbers(safeId);
 }
 
@@ -474,6 +464,28 @@ function insertWord(word, id) {
     handleInput(id.replace('file-','').replace('-code',''), id.replace('-code',''), txt.value);
 }
 
+// --- 5. RUN CODE LOGIC ---
+let currentActiveFile = null;
+
+function runCode() {
+    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
+    if (htmlFiles.length === 0) { alert("No HTML files!"); return; }
+
+    let selectedFile = currentActiveFile || htmlFiles[0];
+    const overlay = document.getElementById('preview-overlay');
+    const frame = document.getElementById('output-frame');
+    overlay.style.display = 'flex';
+
+    let themeCSS = Object.keys(files).filter(f => f.endsWith('.css')).map(f => files[f].content).join('\n');
+    let jsContent = Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n');
+
+    let finalHTML = `<!DOCTYPE html><html><head><style>${themeCSS}</style></head><body>${files[selectedFile].content}<script>${jsContent}</script></body></html>`;
+
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(finalHTML);
+    doc.close();
+}
 
 // --- 6. CORE UTILITIES ---
 
@@ -533,139 +545,3 @@ window.onload = () => {
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
 };
-
-
-/* --- PERFECT RUN CODE LOGIC --- */
-
-let currentActiveFile = null;
-
-function runCode() {
-    // १. सर्व HTML फाईल्स शोधणे
-    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    
-    if (htmlFiles.length === 0) {
-        showToast("Error: No HTML file found to run!");
-        return;
-    }
-
-    // २. कोणती फाईल रन करायची ते ठरवणे (index.html ला प्राधान्य)
-    let selectedFile = currentActiveFile || (files["index.html"] ? "index.html" : htmlFiles[0]);
-    currentActiveFile = selectedFile;
-
-    const overlay = document.getElementById('preview-overlay');
-    const frame = document.getElementById('output-frame');
-    
-    if(!overlay || !frame) return;
-    
-    overlay.style.display = 'flex';
-
-    // ३. सर्व CSS फाईल्स एकत्र करणे
-    let allCSS = "";
-    Object.keys(files).forEach(name => {
-        if(name.endsWith('.css')) {
-            allCSS += `/* --- ${name} --- */\n${files[name].content}\n`;
-        }
-    });
-
-    // ४. सर्व JS फाईल्स एकत्र करणे
-    let allJS = "";
-    Object.keys(files).forEach(name => {
-        if(name.endsWith('.js')) {
-            allJS += `// --- ${name} ---\n${files[name].content}\n`;
-        }
-    });
-
-    // ५. फायनल HTML स्ट्रक्चर तयार करणे
-    const finalHTML = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Craby Preview</title>
-            <style>
-                /* Default Styles */
-                html, body { margin: 0; padding: 0; min-height: 100vh; background: white; color: black; }
-                ${allCSS}
-            </style>
-        </head>
-        <body>
-            ${files[selectedFile].content}
-            <script>
-                (function() {
-                    try {
-                        ${allJS}
-                    } catch (err) {
-                        console.error("Craby JS Error: ", err);
-                        document.body.innerHTML += \`
-                            <div style="position:fixed; bottom:0; left:0; width:100%; background:rgba(255,0,0,0.1); color:red; padding:10px; font-family:monospace; border-top:1px solid red;">
-                                <strong>JS Error:</strong> \${err.message}
-                            </div>\`;
-                    }
-                })();
-            <\/script>
-        </body>
-        </html>
-    `;
-
-    // ६. Iframe मध्ये कोड इंजेक्ट करणे
-    const doc = frame.contentWindow.document;
-    doc.open();
-    doc.write(finalHTML);
-    doc.close();
-}
-
-/* --- PREVIEW CONTROLS --- */
-
-function refreshPreview() {
-    runCode();
-    showToast("Preview Updated!");
-}
-
-function setPreviewSize(mode) {
-    const frame = document.getElementById('output-frame');
-    const body = document.getElementById('preview-body');
-    if (!frame || !body) return;
-
-    frame.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
-
-    if (mode === '100%') {
-        frame.style.width = "100%";
-        frame.style.height = "100%";
-        frame.style.border = "none";
-        frame.style.borderRadius = "0";
-    } else if (mode === '375px') {
-        frame.style.width = "375px";
-        frame.style.height = "667px";
-        frame.style.border = "12px solid #333";
-        frame.style.borderRadius = "30px";
-        frame.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
-    }
-}
-
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-    // Preview बंद केल्यावर frame रिकामी करणे जेणेकरून जुना कोड चालू राहणार नाही
-    document.getElementById('output-frame').src = "about:blank";
-}
-
-function showToast(msg) {
-    const existing = document.querySelector('.craby-toast');
-    if(existing) existing.remove();
-
-    let toast = document.createElement('div');
-    toast.className = 'craby-toast';
-    toast.innerText = msg;
-    toast.style.cssText = `
-        position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-        background: #ffb400; color: #000; padding: 12px 24px; 
-        border-radius: 50px; font-weight: 800; font-size: 14px; 
-        z-index: 100000; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        pointer-events: none; animation: slideUp 0.3s ease;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 500);
-    }, 2000);
-}
