@@ -45,44 +45,46 @@ document.body.appendChild(sBox);
 
 // --- 2. FILE & UI CORE ---
 
-// --- 2. UPDATED FILE MANAGEMENT (LEFT ALIGNED LOGO & NAME) ---
+// --- UPDATED TASKBAR FUNCTION (FIXED ALIGNMENT) ---
 
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
     
-    // Taskbar purna clear karun navin items bharne
-    taskbar.innerHTML = ''; 
+    taskbar.innerHTML = ''; // Juna kachra clear kara
 
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
         
-        // CSS Style: Flex vaprun icon ani nav left la align kele aahe
+        // Inline CSS for Perfect Alignment
         fileItem.style.display = 'flex';
         fileItem.style.alignItems = 'center';
-        fileItem.style.justifyContent = 'flex-start'; // Left alignment
-        fileItem.style.gap = '10px'; // Icon ani Nav madhale अंतर
-        fileItem.style.paddingLeft = '15px'; // Thodi davi kade jaga
+        fileItem.style.justifyContent = 'flex-start';
+        fileItem.style.gap = '12px';
+        fileItem.style.padding = '10px 15px';
+        fileItem.style.margin = '5px 10px';
+        fileItem.style.borderRadius = '8px';
+        fileItem.style.background = 'rgba(255, 255, 255, 0.05)'; // Halka background dila aahe box sarkha distava mhanun
+        fileItem.style.cursor = 'pointer';
 
-        // Icon ani Nav (File Name) ekatra
+        // Logo (Left) ani Name (Right to Logo)
         fileItem.innerHTML = `
-            <i class="fas fa-file-code" style="color: var(--accent);"></i> 
-            <span style="font-weight: 500;">${fileName}</span>
+            <i class="fas fa-file-code" style="color: var(--accent); font-size: 1.2rem;"></i> 
+            <span style="color: white; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${fileName}
+            </span>
         `;
 
-        // Click kelyavar file open honyasathi logic
         fileItem.onclick = () => {
             addFileToUI(fileName, files[fileName].type, files[fileName].content);
-            // Mobile var shutter automatic close honyasathi
-            if(window.innerWidth < 768 && document.getElementById('shutter').classList.contains('open')) {
-                toggleShutter();
-            }
+            if(window.innerWidth < 768) toggleShutter(); 
         };
 
         taskbar.appendChild(fileItem);
     });
 }
+
 
 
 function addFileToUI(name, type, content = "") {
