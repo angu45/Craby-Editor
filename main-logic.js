@@ -473,68 +473,6 @@ function insertWord(word, id) {
     txt.focus();
     handleInput(id.replace('file-','').replace('-code',''), id.replace('-code',''), txt.value);
 }
-function runCode() {
-    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if (htmlFiles.length === 0) {
-        showToast("Please create an HTML file first!");
-        return;
-    }
-
-    const overlay = document.getElementById('preview-overlay');
-    const frame = document.getElementById('output-frame');
-    
-    overlay.style.display = 'flex';
-    setPreviewSize('100%'); // Default Desktop view
-
-    let allCSS = Object.keys(files)
-        .filter(f => f.endsWith('.css'))
-        .map(f => `<style>${files[f].content}</style>`)
-        .join('\n');
-        
-    let allJS = Object.keys(files)
-        .filter(f => f.endsWith('.js'))
-        .map(f => `<script>${files[f].content}<\/script>`)
-        .join('\n');
-    
-    let mainHTML = files["index.html"] ? files["index.html"].content : files[htmlFiles[0]].content;
-    let finalDoc = `<!DOCTYPE html><html><head>${allCSS}</head><body>${mainHTML}${allJS}</body></html>`;
-
-    const doc = frame.contentWindow.document;
-    doc.open();
-    doc.write(finalDoc);
-    doc.close();
-}
-
-function closePreview() {
-    document.getElementById('preview-overlay').style.display = 'none';
-}
-
-function refreshPreview() {
-    runCode();
-}
-
-function setPreviewSize(width) {
-    const frame = document.getElementById('output-frame');
-    frame.style.width = width;
-    
-    if(width === '375px') {
-        frame.style.border = "10px solid #333";
-        frame.style.borderRadius = "20px";
-        frame.style.boxShadow = "0 0 20px rgba(0,0,0,0.5)";
-    } else {
-        frame.style.border = "none";
-        frame.style.borderRadius = "0";
-        frame.style.boxShadow = "none";
-    }
-}
-
-function showToast(msg) {
-    let t = document.createElement('div');
-    t.innerText = msg;
-    t.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#ffb400;color:#000;padding:10px 20px;border-radius:8px;z-index:10000;font-weight:bold;";
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 2500);
-}
 
 
 // --- 6. CORE UTILITIES ---
