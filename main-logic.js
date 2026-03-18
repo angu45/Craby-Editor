@@ -1,320 +1,564 @@
-/* --- 1. CORE LAYOUT --- */
-:root {
-    --bg-main: #0d1117;
-    --bg-panel: #161b22;
-    --bg-header: #010409;
-    --accent: #ffb400;
-    --text-primary: #c9d1d9;
-    --border: rgba(255, 255, 255, 0.1);
-    --window-header-bg: #21262d;
-    /* Transparent Background Variable */
-    --glass-bg: rgba(22, 27, 34, 0.75); 
+/**
+ * Craby Editor - Full System Logic (Updated with Syntax Highlighting)
+ */
+
+// --- 1. CONFIGURATION & DICTIONARY ---
+const dictionary = {
+    html:// --- 1. CONFIGURATION & DICTIONARY ---
+const dictionary = {
+    html: ['div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul','main','strong','em','hr'],
+    css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items'],
+    js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
+};
+
+// Default Files Configuration
+const defaultFiles = {
+    "index.html": { 
+        content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
+        type: "html" 
+    },
+    "style.css": { content: "h1 { color: #ffb400; text-align: center; }", type: "css" }
+};
+
+let files = JSON.parse(JSON.stringify(defaultFiles)); // कॉपी तयार करणे
+
+const sBox = document.createElement('div');
+sBox.id = 'suggestion-box';
+document.body.appendChild(sBox);
+
+let showLineNumbers = false; 
+let lineNumberFontSize = 14; 
+let selectedIndex = 0; 
+
+// --- 2. RESET SETTINGS (NEW FEATURE) ---
+
+function resetAllSettings() {
+    if(confirm("सर्व सेटिंग्ज आणि फाइल्स रीसेट करायच्या आहेत का?")) {
+        // १. फाइल्स डिफॉल्ट करा
+        files = JSON.parse(JSON.stringify(defaultFiles));
+        
+        // २. सर्व एडिटर्स क्लोज करा
+        document.getElementById('editor-grid').innerHTML = '';
+        
+        // ३. डिफॉल्ट व्हॅल्यूज सेट करा
+        showLineNumbers = false;
+        lineNumberFontSize = 14;
+        
+        // ४. टॉस्कबार आणि UI रिफ्रेश करा
+        updateTaskbar();
+        addFileToUI("index.html", "html", files["index.html"].content);
+        addFileToUI("style.css", "css", files["style.css"].content);
+        
+        // ५. चेकबॉक्स किंवा इतर UI असल्यास ते अपडेट करा (उदा. Show Line Numbers)
+        const lnToggle = document.getElementById('line-number-toggle');
+        if(lnToggle) lnToggle.checked = false;
+
+        alert("सेटिंग्ज रिसेट झाल्या आहेत!");
+    }
 }
 
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
+// --- 3. BEAUTIFY & FORMATTING ---
+// (जसा होता तसाच - कोणताही बदल नाही)
+function beautifyCode() {
+    document.querySelectorAll('textarea').forEach(tx => {
+        let code = tx.value;
+        tx.value = formatCode(code);
+        const fileName = tx.id.replace('file-', '').replace('-code', '');
+        updateFileContent(fileName, tx.value);
+        updateLineNumbers(tx.id.replace('-code', ''));
+    });
 }
 
-body {
-    background: var(--bg-main);
-    color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; 
+function formatCode(code) {
+    let tab = "  ", indent = "", result = "";
+    code = code.replace(/>\s*</g, ">\n<").replace(/{/g, "{\n").replace(/}/g, "\n}\n").replace(/;/g, ";\n");
+    let lines = code.split("\n");
+    lines.forEach(line => {
+        line = line.trim();
+        if(line === "") return;
+        if(line.startsWith("}") || line.startsWith("</")) indent = indent.substring(tab.length);
+        result += indent + line + "\n";
+        if(line.endsWith("{") || line.match(/^<[^\/!][^>]*>$/)) indent += tab;
+    });
+    return result.trim();
 }
 
-/* --- 2. HEADER: FIXED --- */
-header {
-    height: 60px;
-    background: var(--bg-header);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-    border-bottom: 2px solid var(--accent);
-    position: sticky; 
-    top: 0;
-    z-index: 3000; 
-}
-/* Container styling */
-#shutter-file-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
-    gap: 12px;
-    padding: 15px;
-    justify-content: center;
-}
+// --- 4. FILE MANAGEMENT ---
+function updateTaskbar() {
+    const taskbar = document.getElementById('shutter-file-list'); 
+    if(!taskbar) return;
+    taskbar.innerHTML = ''; 
+    
+    Object.keys(files).forEach(fileName => {
+        const type = files[fileName].type;
+        let iconClass = "fa-file-code"; 
+        let iconColor = "#ffb400";
 
-/* Individual File Box (Smaller version) */
-.shutter-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1.2px solid rgba(255, 180, 0, 0.1);
-    border-radius: 10px;
-    padding: 10px 5px; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    height: 100px; 
+        // फाईल टाईपनुसार आयकॉन आणि रंग बदलणे
+        if(type === 'html') { iconClass = "fa-html5"; iconColor = "#e34c26"; }
+        if(type === 'css') { iconClass = "fa-css3-alt"; iconColor = "#264de4"; }
+        if(type === 'js') { iconClass = "fa-js-square"; iconColor = "#f7df1e"; }
+
+        const fileItem = document.createElement('div');
+        fileItem.className = 'shutter-item';
+        fileItem.innerHTML = `
+            <i class="fab ${iconClass}" style="color: ${iconColor}; font-size: 24px;"></i>
+            <span style="display: block; margin-top: 8px; font-size: 11px; font-weight: 600;">${fileName}</span>
+        `;
+        fileItem.onclick = () => addFileToUI(fileName, type, files[fileName].content);
+        taskbar.appendChild(fileItem);
+    });
 }
 
-/* Smaller Icon */
-.shutter-item i {
-    font-size: 1.8rem; 
-    color: #ffb400;
-    margin-bottom: 6px;
+function addFileToUI(name, type, content = "") {
+    const wrapper = document.getElementById('editor-grid');
+    if(!wrapper) return;
+    const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+    
+    if(document.getElementById(`box-${safeId}`)) {
+        document.getElementById(`box-${safeId}`).style.display = 'flex';
+        return;
+    }
+
+    const newBox = document.createElement('div');
+    newBox.className = 'window-frame';
+    newBox.id = `box-${safeId}`;
+    newBox.innerHTML = `
+        <div class="window-header">
+            <span class="window-title">${name.toUpperCase()}</span>
+            <div class="window-controls">
+                <i class="fas fa-minus" onclick="minimizeBox('${safeId}')"></i>
+                <i class="fas fa-expand" onclick="expandBox('${safeId}')"></i>
+                <i class="fas fa-trash" onclick="deleteFile('${name}')"></i>
+            </div>
+        </div>
+        <div class="window-body editor-container" style="display: flex; position: relative; background: #0d1117; overflow: hidden;">
+            <div class="line-numbers" id="${safeId}-lines" style="display:block;">1.</div>
+            <div class="editor-wrapper" style="position: relative; flex: 1; overflow: hidden;">
+                <pre id="${safeId}-highlight" class="highlight-layer" aria-hidden="true"></pre>
+                <textarea id="${safeId}-code" class="input-layer" spellcheck="false" data-lang="${type}" 
+                    oninput="handleInput('${name}', '${safeId}', this.value)"
+                    onscroll="syncScroll('${safeId}')">${content}</textarea>
+            </div>
+        </div>
+    `;
+    wrapper.appendChild(newBox);
+    attachInputListeners(document.getElementById(`${safeId}-code`));
+    applyHighlighting(safeId, content, type);
+    updateLineNumbers(safeId);
 }
 
-/* Smaller Font for Filename */
-.shutter-item span {
-    color: #e0e0e0;
-    font-size: 0.75rem; 
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis; 
-    white-space: nowrap;
-    width: 100%;
+// --- 5. SUGGESTION SYSTEM (Updated with Enter/Top Select) ---
+
+function attachInputListeners(txt) {
+    txt.addEventListener('keydown', (e) => {
+        const items = document.querySelectorAll('.suggestion-item');
+        if (sBox.style.display === 'block' && items.length > 0) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                items[selectedIndex].click();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateHighlight(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateHighlight(items);
+            }
+        }
+    });
+
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const char = e.data;
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        } 
+        showSuggestions(txt);
+    });
 }
 
-/* Hover Effects */
-.shutter-item:hover {
-    background: rgba(255, 180, 0, 0.1);
-    border-color: #ffb400;
-    transform: translateY(-3px);
+function updateHighlight(items) {
+    items.forEach((item, index) => {
+        if (index === selectedIndex) {
+            item.style.backgroundColor = '#3e4451';
+            item.classList.add('active-suggestion');
+        } else {
+            item.style.backgroundColor = '';
+            item.classList.remove('active-suggestion');
+        }
+    });
 }
 
-.logo-container { display: flex; align-items: center; gap: 10px; }
-.logo-container img { height: 35px; width: auto; }
-.logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
+function showSuggestions(txt) {
+    const pos = txt.selectionStart;
+    const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
+    if (word.length < 1) { sBox.style.display = 'none'; return; }
 
-.header-actions { display: flex; gap: 10px; align-items: center; }
+    const lang = txt.getAttribute('data-lang');
+    const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
 
-/* Header Buttons Size Fix */
-.icon-btn {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    color: white;
-    padding: 8px 14px; 
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    if (matches.length > 0) {
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 30}px`; 
+        sBox.style.left = `${rect.left + 20}px`;
+        sBox.style.display = 'block';
+        selectedIndex = 0; // नेहमी पहिला आयटम सिलेक्टेड
+
+        sBox.innerHTML = matches.map((m, index) => {
+            let label = (m === 'h1 class') ? 'h1 class=""' : m;
+            let activeStyle = (index === 0) ? 'style="background-color: #3e4451;"' : '';
+            return `<div class="suggestion-item" ${activeStyle} onclick="insertWord('${m}', '${txt.id}')">${label}</div>`;
+        }).join('');
+    } else { sBox.style.display = 'none'; }
 }
 
-.icon-btn:hover { background: #1c2128; border-color: var(--accent); }
-.icon-btn i { color: var(--accent); }
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const lang = txt.getAttribute('data-lang');
+    const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
+    const after = txt.value.substring(pos);
 
-.run-btn {
-    background: rgba(255, 180, 0, 0.1) !important;
-    border: 1px solid var(--accent) !important;
-    color: var(--accent) !important;
-    font-weight: 800;
+    let finalInsert = word;
+    let offset = word.length;
+
+    if (lang === 'html') {
+        if (word === 'h1') { finalInsert = `<h1></h1>`; offset = 4; }
+        else if (word === 'h1 class') { finalInsert = `<h1 class=""></h1>`; offset = 10; }
+        else if (!word.includes('<')) { finalInsert = `<${word}></${word}>`; offset = word.length + 2; }
+    }
+
+    txt.value = before + finalInsert + after;
+    txt.selectionStart = txt.selectionEnd = before.length + offset;
+    sBox.style.display = 'none';
+    txt.focus();
+    updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-.run-btn:hover { background: var(--accent) !important; color: #000 !important; }
+// --- 6. CORE UTILITIES ---
 
-/* --- 3. SMART EDITOR AREA --- */
-.main-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; 
-    padding: 10px;
+function updateLineNumbers(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lineBox = document.getElementById(`${safeId}-lines`);
+    if(!tx || !lineBox) return;
+    const lines = tx.value.split('\n').length;
+    lineBox.innerHTML = Array.from({length: lines}, (_, i) => (i + 1) + '.').join('<br>');
+    lineBox.style.fontSize = lineNumberFontSize + "px";
 }
 
-.editor-grid {
-    display: flex;
-    flex-direction: column;
-    height: 100%; 
-    gap: 10px;
+function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+function syncScroll(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lb = document.getElementById(`${safeId}-lines`);
+    if(tx && lb) lb.scrollTop = tx.scrollTop;
 }
 
-/* --- 4. WINDOW BOX & TEXTAREA --- */
-.window-frame {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    flex: 1; 
-    min-height: 40px; 
-    overflow: hidden;
-    transition: flex 0.3s ease;
+// --- 7. INITIALIZATION ---
+
+window.onload = () => {
+    updateTaskbar();
+    // Default Editors Open
+    addFileToUI("index.html", "html", files["index.html"].content);
+    addFileToUI("style.css", "css", files["style.css"].content);
+};
+
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
+function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); } ['div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul','main','strong','em','hr'],
+    css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items'],
+    js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
+};
+
+const defaultFiles = {
+    "index.html": { 
+        content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
+        type: "html" 
+    },
+    "style.css": { content: "h1 { color: #ffb400; text-align: center; font-family: sans-serif; margin-top: 50px; }", type: "css" }
+};
+
+let files = JSON.parse(JSON.stringify(defaultFiles));
+const sBox = document.createElement('div');
+sBox.id = 'suggestion-box';
+document.body.appendChild(sBox);
+
+let showLineNumbers = true; 
+let lineNumberFontSize = 14; 
+let selectedIndex = 0; 
+
+const themes = {
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
+    light: { bg: '#eef1f4', panel: '#ffffff', accent: '#f59e0b', text: '#374151', border: '#e5e7eb' },  
+    monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
+    dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
+    matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
+    nord: { bg: '#2e3440', panel: '#3b4252', accent: '#88c0d0', text: '#d8dee9', border: '#4c566a' },
+    midnight: { bg: '#020617', panel: '#1e293b', accent: '#38bdf8', text: '#f1f5f9', border: '#334155' },
+    solarized: { bg: '#002b36', panel: '#073642', accent: '#268bd2', text: '#859900', border: '#586e75' },
+    cyberpunk: { bg: '#0b0e14', panel: '#1a1f29', accent: '#00ff41', text: '#f3f3f3', border: '#00ff41' },
+    evergreen: { bg: '#0a1a12', panel: '#142b20', accent: '#4ade80', text: '#e2e8f0', border: '#2d4a3e' },
+    midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
+    oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
+};
+
+// --- 2. UI & FILE MANAGEMENT ---
+
+function updateTaskbar() {
+    const taskbar = document.getElementById('shutter-file-list'); 
+    if(!taskbar) return;
+    taskbar.innerHTML = ''; 
+    Object.keys(files).forEach(fileName => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'shutter-item';
+        fileItem.innerHTML = `<i class="fas fa-file-code"></i> <span>${fileName}</span>`;
+        fileItem.onclick = () => addFileToUI(fileName, files[fileName].type, files[fileName].content);
+        taskbar.appendChild(fileItem);
+    });
 }
 
-.window-frame.fullscreen {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 60px);
-    z-index: 500;
+function addFileToUI(name, type, content = "") {
+    const wrapper = document.getElementById('editor-grid');
+    if(!wrapper) return;
+    const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+    if(document.getElementById(`box-${safeId}`)) {
+        document.getElementById(`box-${safeId}`).style.display = 'flex';
+        return;
+    }
+    const newBox = document.createElement('div');
+    newBox.className = 'window-frame';
+    newBox.id = `box-${safeId}`;
+    newBox.innerHTML = `
+        <div class="window-header">
+            <span class="window-title">${name.toUpperCase()} <i class="fas fa-code"></i></span>
+            <div class="window-controls">
+                <i class="fas fa-minus" onclick="minimizeBox('${safeId}')"></i>
+                <i class="fas fa-expand" onclick="expandBox('${safeId}')"></i>
+                <i class="fas fa-trash" onclick="deleteFile('${name}')"></i>
+            </div>
+        </div>
+        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
+            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'};">1.</div>
+            <div class="editor-wrapper" style="position: relative; flex: 1; overflow: hidden;">
+                <pre id="${safeId}-highlight" class="highlight-layer" aria-hidden="true"></pre>
+                <textarea id="${safeId}-code" class="input-layer" spellcheck="false" data-lang="${type}" 
+                    oninput="handleInput('${name}', '${safeId}', this.value)"
+                    onscroll="syncScroll('${safeId}')">${content}</textarea>
+            </div>
+        </div>
+    `;
+    wrapper.appendChild(newBox);
+    attachInputListeners(document.getElementById(`${safeId}-code`));
+    applyHighlighting(safeId, content, type);
+    updateLineNumbers(safeId);
+    updateThemeAndFont(); 
 }
 
-.window-header {
-    background: var(--window-header-bg);
-    padding: 8px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+function handleInput(fileName, safeId, value) {
+    updateFileContent(fileName, value);
+    updateLineNumbers(safeId);
+    applyHighlighting(safeId, value, files[fileName].type);
+    showSuggestions(document.getElementById(`${safeId}-code`));
 }
 
-.window-title { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
-
-.window-controls { display: flex; gap: 12px; }
-.window-controls i { cursor: pointer; font-size: 12px; color: var(--accent); opacity: 0.7; transition: 0.2s; }
-.window-controls i:hover { opacity: 1; transform: scale(1.1); }
-
-.window-body { flex: 1; display: flex; }
-
-textarea {
-    flex: 1;
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: #9cdcfe;
-    padding: 12px;
-    font-family: 'Fira Code', monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    outline: none;
-    resize: none;
-    white-space: pre;
-    overflow: auto;
+function deleteFile(name) {
+    if (confirm(`Are you sure you want to delete "${name}"?`)) {
+        delete files[name];
+        const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+        const editorBox = document.getElementById(`box-${safeId}`);
+        if (editorBox) editorBox.remove();
+        updateTaskbar();
+        showToast(`${name} deleted!`);
+    }
 }
 
-/* --- 5. SHUTTER (LEFT SLIDER) - UPDATED TO TRANSPARENT --- */
-#shutter-trigger {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--accent);
-    color: #000;
-    padding: 15px 8px;
-    border-radius: 0 8px 8px 0;
-    z-index: 2500; 
-    cursor: pointer;
-    transition: left 0.3s ease;
+// --- 3. SYNTAX HIGHLIGHTING ENGINE ---
+
+function applyHighlighting(safeId, code, type) {
+    const hl = document.getElementById(`${safeId}-highlight`);
+    if (!hl) return;
+
+    let html = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    if (type === 'html') {
+        html = html.replace(/(&lt;[a-z1-6!/]+)/gi, '<span style="color: #ff7b72;">$1</span>')
+                   .replace(/([a-z-]+)(?==)/gi, '<span style="color: #79c0ff;"> $1</span>')
+                   .replace(/(".+?")/g, '<span style="color: #a5d6ff;">$1</span>');
+    } else if (type === 'css') {
+        html = html.replace(/([a-z-]+)(?=\s*:)/gi, '<span style="color: #7ee787;">$1</span>')
+                   .replace(/(\.[a-z0-9_-]+|#[a-z0-9_-]+)/gi, '<span style="color: #ffa657;">$1</span>')
+                   .replace(/(:.+?;)/g, '<span style="color: #a5d6ff;">$1</span>');
+    } else if (type === 'js') {
+        const keywords = /\b(const|let|var|function|if|else|for|while|return|class|new|this|console|document|window)\b/g;
+        html = html.replace(keywords, '<span style="color: #ff7b72;">$1</span>')
+                   .replace(/(".+?"|'.+?'|`.+?`)/g, '<span style="color: #a5d6ff;">$1</span>')
+                   .replace(/\b(\d+)\b/g, '<span style="color: #d2a8ff;">$1</span>');
+    }
+    hl.innerHTML = html + "\n";
 }
 
-.shutter {
-    position: fixed;
-    left: -320px;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    /* Glassmorphism Effect */
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px); 
-    border-right: 2px solid var(--accent);
-    transition: left 0.3s ease;
-    z-index: 4000; 
-    padding: 0;
+// --- 4. SUGGESTION SYSTEM ---
+
+function attachInputListeners(txt) {
+    txt.addEventListener('keydown', (e) => {
+        const items = document.querySelectorAll('.suggestion-item');
+        if (sBox.style.display === 'block' && items.length > 0) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                items[selectedIndex].click();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateHighlight(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateHighlight(items);
+            }
+        }
+    });
+
+    txt.addEventListener('input', (e) => {
+        const pos = txt.selectionStart;
+        const char = e.data;
+        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
+        if (pairs[char]) {
+            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
+            txt.selectionStart = txt.selectionEnd = pos;
+        } 
+    });
 }
 
-.shutter.open { left: 0; }
-
-.shutter-header {
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    padding: 15px; 
-    border-bottom: 1px solid var(--border);
+function updateHighlight(items) {
+    items.forEach((item, index) => {
+        item.style.backgroundColor = (index === selectedIndex) ? '#3e4451' : '';
+    });
 }
 
-.shutter-list { padding: 15px; }
+function showSuggestions(txt) {
+    const pos = txt.selectionStart;
+    const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
+    if (word.length < 1) { sBox.style.display = 'none'; return; }
 
-.add-btn {
-    width: 100%; 
-    padding: 12px; 
-    background: var(--accent); 
-    border: none; 
-    border-radius: 6px; 
-    font-weight: bold; 
-    cursor: pointer;
-    margin-bottom: 15px;
+    const lang = txt.getAttribute('data-lang');
+    const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
+
+    if (matches.length > 0) {
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 30}px`; 
+        sBox.style.left = `${rect.left + 20}px`;
+        sBox.style.display = 'block';
+        selectedIndex = 0; 
+
+        sBox.innerHTML = matches.map((m, index) => {
+            let style = (index === 0) ? 'style="background-color: #3e4451;"' : '';
+            return `<div class="suggestion-item" ${style} onclick="insertWord('${m}', '${txt.id}')">${m}</div>`;
+        }).join('');
+    } else { sBox.style.display = 'none'; }
 }
 
-/* --- 6. SETTINGS PANEL (RIGHT SLIDER) - UPDATED TO TRANSPARENT --- */
-.settings-panel {
-    position: fixed;
-    right: -320px;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    /* Glassmorphism Effect */
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border-left: 2px solid var(--accent);
-    transition: right 0.3s ease;
-    z-index: 4000; 
-    padding: 20px;
+function insertWord(word, id) {
+    const txt = document.getElementById(id);
+    const pos = txt.selectionStart;
+    const lang = txt.getAttribute('data-lang');
+    const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
+    const after = txt.value.substring(pos);
+
+    let finalInsert = word;
+    let offset = word.length;
+
+    if (lang === 'html') {
+        finalInsert = `<${word}></${word}>`;
+        offset = word.length + 2;
+    }
+
+    txt.value = before + finalInsert + after;
+    txt.selectionStart = txt.selectionEnd = before.length + offset;
+    sBox.style.display = 'none';
+    txt.focus();
+    handleInput(id.replace('file-','').replace('-code',''), id.replace('-code',''), txt.value);
 }
 
-.settings-panel.open { right: 0; }
+// --- 5. RUN CODE LOGIC ---
+let currentActiveFile = null;
 
-.s-group { margin-bottom: 20px; }
-.s-group label { display: block; font-size: 11px; color: #8b949e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
-.s-group select, .s-group input {
-    width: 100%;
-    background: rgba(13, 17, 23, 0.8); /* Slightly transparent input */
-    border: 1px solid var(--border);
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    outline: none;
-}
-.tag{color:#ff7b72}
-.attr{color:#79c0ff}
-.keyword{color:#d2a8ff}
-.string{color:#a5d6ff}
-.number{color:#79c0ff}
-.comment{color:#6a9955}
+function runCode() {
+    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
+    if (htmlFiles.length === 0) { alert("No HTML files!"); return; }
 
-.checkbox-group { display: flex; gap: 15px; }
-.checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+    let selectedFile = currentActiveFile || htmlFiles[0];
+    const overlay = document.getElementById('preview-overlay');
+    const frame = document.getElementById('output-frame');
+    overlay.style.display = 'flex';
 
-/* --- 7. PREVIEW OVERLAY --- */
-.preview-overlay {
-    position: fixed;
-    inset: 0;
-    background: #fff;
-    z-index: 9999;
-    display: none;
-    flex-direction: column;
+    let themeCSS = Object.keys(files).filter(f => f.endsWith('.css')).map(f => files[f].content).join('\n');
+    let jsContent = Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n');
+
+    let finalHTML = `<!DOCTYPE html><html><head><style>${themeCSS}</style></head><body>${files[selectedFile].content}<script>${jsContent}</script></body></html>`;
+
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(finalHTML);
+    doc.close();
 }
 
-.overlay-header {
-    height: 60px;
-    background: var(--bg-panel);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    border-bottom: 1px solid var(--border);
+// --- 6. CORE UTILITIES ---
+
+function syncScroll(id) { 
+    const tx = document.getElementById(`${id}-code`);
+    const hl = document.getElementById(`${id}-highlight`);
+    const lb = document.getElementById(`${id}-lines`);
+    if(tx && hl) {
+        hl.scrollTop = tx.scrollTop;
+        hl.scrollLeft = tx.scrollLeft;
+    }
+    if(tx && lb) lb.scrollTop = tx.scrollTop; 
 }
 
-#output-frame { flex: 1; border: none; width: 100%; background: white; }
-
-/* Suggestion Box Fix */
-#suggestion-box {
-    position: absolute;
-    z-index: 5000;
-    background: #1c2128;
-    border: 1px solid var(--accent);
-    border-radius: 4px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+function updateLineNumbers(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lb = document.getElementById(`${safeId}-lines`);
+    if(!tx || !lb) return;
+    const lines = tx.value.split('\n').length;
+    lb.innerHTML = Array.from({length: lines}, (_, i) => (i + 1) + '.').join('<br>');
 }
+
+function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
+function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+
+function updateThemeAndFont() {
+    const tKey = document.getElementById('theme-sel')?.value || 'dark';
+    const font = document.getElementById('font-family-sel')?.value || 'monospace';
+    const theme = themes[tKey];
+
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    
+    document.querySelectorAll('.input-layer').forEach(tx => {
+        tx.style.fontFamily = font;
+        tx.style.caretColor = theme.accent;
+    });
+    document.querySelectorAll('.highlight-layer').forEach(hl => {
+        hl.style.fontFamily = font;
+        hl.style.backgroundColor = theme.bg;
+    });
+}
+
+function showToast(msg) {
+    let t = document.createElement('div');
+    t.innerText = msg;
+    t.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 16px;border-radius:4px;z-index:10000;";
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 2000);
+}
+
+// --- 7. INITIALIZATION ---
+window.onload = () => {
+    updateTaskbar();
+    addFileToUI("index.html", "html", files["index.html"].content);
+    addFileToUI("style.css", "css", files["style.css"].content);
+};
