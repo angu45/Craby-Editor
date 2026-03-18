@@ -534,117 +534,138 @@ window.onload = () => {
     addFileToUI("style.css", "css", files["style.css"].content);
 };
 
+
+/* --- PERFECT RUN CODE LOGIC --- */
+
 let currentActiveFile = null;
 
 function runCode() {
+    // १. सर्व HTML फाईल्स शोधणे
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
+    
     if (htmlFiles.length === 0) {
-        showToast("No HTML files available!");
+        showToast("Error: No HTML file found to run!");
         return;
     }
 
-    let selectedFile;
-    if (currentActiveFile && files[currentActiveFile]) {
-        selectedFile = currentActiveFile;
-    } else {
-        selectedFile = htmlFiles[0];
-    }
-
+    // २. कोणती फाईल रन करायची ते ठरवणे (index.html ला प्राधान्य)
+    let selectedFile = currentActiveFile || (files["index.html"] ? "index.html" : htmlFiles[0]);
     currentActiveFile = selectedFile;
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     
+    if(!overlay || !frame) return;
+    
     overlay.style.display = 'flex';
 
-    let themeCSS = "";
+    // ३. सर्व CSS फाईल्स एकत्र करणे
+    let allCSS = "";
     Object.keys(files).forEach(name => {
-        if(name.endsWith('.css')) themeCSS += files[name].content + "\n";
+        if(name.endsWith('.css')) {
+            allCSS += `/* --- ${name} --- */\n${files[name].content}\n`;
+        }
     });
 
-    let jsContent = "";
+    // ४. सर्व JS फाईल्स एकत्र करणे
+    let allJS = "";
     Object.keys(files).forEach(name => {
-        if(name.endsWith('.js')) jsContent += files[name].content + "\n";
+        if(name.endsWith('.js')) {
+            allJS += `// --- ${name} ---\n${files[name].content}\n`;
+        }
     });
 
-    let finalHTML = `
+    // ५. फायनल HTML स्ट्रक्चर तयार करणे
+    const finalHTML = `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Craby Preview</title>
             <style>
-                html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; }
-                ${themeCSS}
+                /* Default Styles */
+                html, body { margin: 0; padding: 0; min-height: 100vh; background: white; color: black; }
+                ${allCSS}
             </style>
         </head>
         <body>
             ${files[selectedFile].content}
             <script>
-                try {
-                    ${jsContent}
-                } catch (err) {
-                    console.error("JS Error: ", err);
-                }
-            </script>
+                (function() {
+                    try {
+                        ${allJS}
+                    } catch (err) {
+                        console.error("Craby JS Error: ", err);
+                        document.body.innerHTML += \`
+                            <div style="position:fixed; bottom:0; left:0; width:100%; background:rgba(255,0,0,0.1); color:red; padding:10px; font-family:monospace; border-top:1px solid red;">
+                                <strong>JS Error:</strong> \${err.message}
+                            </div>\`;
+                    }
+                })();
+            <\/script>
         </body>
         </html>
     `;
 
+    // ६. Iframe मध्ये कोड इंजेक्ट करणे
     const doc = frame.contentWindow.document;
     doc.open();
     doc.write(finalHTML);
     doc.close();
 }
 
+/* --- PREVIEW CONTROLS --- */
+
 function refreshPreview() {
     runCode();
-    showToast("Preview Refreshed");
+    showToast("Preview Updated!");
 }
 
-function setPreviewSize(width) {
+function setPreviewSize(mode) {
     const frame = document.getElementById('output-frame');
-    if (!frame) return;
+    const body = document.getElementById('preview-body');
+    if (!frame || !body) return;
 
-    if (width === '100%') {
+    frame.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+
+    if (mode === '100%') {
         frame.style.width = "100%";
         frame.style.height = "100%";
         frame.style.border = "none";
         frame.style.borderRadius = "0";
-    } else {
+    } else if (mode === '375px') {
         frame.style.width = "375px";
         frame.style.height = "667px";
         frame.style.border = "12px solid #333";
         frame.style.borderRadius = "30px";
+        frame.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
     }
 }
 
 function closePreview() {
-    const overlay = document.getElementById('preview-overlay');
-    overlay.style.display = 'none';
+    document.getElementById('preview-overlay').style.display = 'none';
+    // Preview बंद केल्यावर frame रिकामी करणे जेणेकरून जुना कोड चालू राहणार नाही
+    document.getElementById('output-frame').src = "about:blank";
 }
 
 function showToast(msg) {
+    const existing = document.querySelector('.craby-toast');
+    if(existing) existing.remove();
+
     let toast = document.createElement('div');
+    toast.className = 'craby-toast';
     toast.innerText = msg;
     toast.style.cssText = `
-        position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
-        background: var(--accent); color: #000; padding: 10px 20px; 
-        border-radius: 8px; font-weight: bold; z-index: 100000;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+        background: #ffb400; color: #000; padding: 12px 24px; 
+        border-radius: 50px; font-weight: 800; font-size: 14px; 
+        z-index: 100000; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        pointer-events: none; animation: slideUp 0.3s ease;
     `;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 2000);
 }
-
-function resetAllSettings() {
-    if(confirm("Reset everything to default?")) {
-        files = JSON.parse(JSON.stringify(defaultFiles));
-        document.getElementById('editor-grid').innerHTML = '';
-        updateTaskbar();
-        addFileToUI("index.html", "html", files["index.html"].content);
-        addFileToUI("style.css", "css", files["style.css"].content);
-        showToast("System Reset Successful");
-    }
-}
-
