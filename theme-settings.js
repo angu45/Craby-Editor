@@ -322,5 +322,32 @@ function setPreviewSize(device) {
         frame.style.borderRadius = "35px";
     }
 }
+import javax.swing.*;
+import java.awt.*;
+
+public class HideLineNumbers {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("TextArea Example");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+
+        // 1. JTextArea create kara
+        JTextArea textArea = new JTextArea();
+        
+        // 2. JScrollPane madhe textarea taka
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        // --- LINE NUMBERS HIDE KARNYACHI LOGIC ---
+        // Jar tu konti library vaprat ashashil tar row header null kara
+        scrollPane.setRowHeaderView(null); 
+        
+        // Jar tula textarea madhla text 'invisible' karaycha asel (Display None sarkhe)
+        // tar tu he vapru shakto:
+        // textArea.setVisible(false); 
+
+        frame.add(scrollPane);
+        frame.setVisible(true);
+    }
+}
 
 // Baki functions (refreshPreview, showToast, closePreview) same rahtil.
