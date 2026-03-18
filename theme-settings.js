@@ -55,15 +55,17 @@ function updateTaskbar() {
         taskbar.appendChild(fileItem);
     });
 }
-
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
+    
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
+    
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
     }
+
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
     newBox.id = `box-${safeId}`;
@@ -76,16 +78,21 @@ function addFileToUI(name, type, content = "") {
                 <i class="fas fa-trash" onclick="deleteFile('${name}')"></i>
             </div>
         </div>
-        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
-            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'};">1.</div>
-            <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
-                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
-                onscroll="syncScroll('${safeId}')">${content}</textarea>
+        <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden; height: 300px;">
+            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'}; padding: 10px;">1.</div>
+            
+            <div id="${safeId}-code" 
+                 class="code-display"
+                 style="flex: 1; color: white; padding: 10px; font-family: monospace; white-space: pre-wrap; overflow-y: auto;">
+                 ${content}
+            </div>
         </div>
     `;
+    
     wrapper.appendChild(newBox);
-    attachInputListeners(document.getElementById(`${safeId}-code`));
-    updateLineNumbers(safeId);
+    
+    // Textarea naslyamule 'attachInputListeners' chi garaj bhasnar nahi jar tumhi fakt display karat asal.
+    // updateLineNumbers(safeId); 
     updateThemeAndFont();
 }
 
