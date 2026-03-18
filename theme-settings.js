@@ -12,7 +12,7 @@ const dictionary = {
 
 const defaultFiles = {
     "index.html": { 
-        content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
+        content: `<!DOCTYPE  html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
         type: "html" 
     },
     "style.css": { content: "h1 { color: #ffb400; text-align: center; font-family: sans-serif; margin-top: 50px; }", type: "css" }
@@ -87,35 +87,10 @@ function addFileToUI(name, type, content = "") {
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
     updateLineNumbers(safeId);
-    updateThemeAndFont(); 
+    updateThemeAndFont(); // नवीन विन्डोला थीम लागू करण्यासाठी
 }
 
-// --- NEW: FIXED DELETE FILE FUNCTION ---
-function deleteFile(name) {
-    if (confirm(`Are you sure you want to delete "${name}"?`)) {
-        // १. डेटा मधून फाईल काढून टाका
-        delete files[name];
-
-        // २. UI मधून तो एडिटर बॉक्स काढून टाका
-        const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
-        const editorBox = document.getElementById(`box-${safeId}`);
-        if (editorBox) {
-            editorBox.remove();
-        }
-
-        // ३. टास्कबार (File List) अपडेट करा
-        updateTaskbar();
-
-        // ४. जर ती फाईल सध्या रन असेल, तर रिसेट करा
-        if (currentActiveFile === name) {
-            currentActiveFile = null;
-        }
-
-        showToast(`${name} deleted successfully!`);
-    }
-}
-
-// --- 3. SUGGESTION SYSTEM ---
+// --- 3. SUGGESTION SYSTEM (ENTER & TOP SELECT FIX) ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
@@ -200,8 +175,11 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 4. RUN CODE LOGIC ---
-let currentActiveFile = null;
+// --- 1. RUN CODE LOGIC (WITH HTML SELECTION & VIEWPORT FIX) ---
+// --- Global State for Run Logic ---
+let currentActiveFile = null; // सध्या रन असलेली फाईल स्टोअर करण्यासाठी
+
+// --- 1. RUN CODE LOGIC (WITH PERSISTENCE) ---
 
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
@@ -210,6 +188,7 @@ function runCode() {
         return;
     }
 
+    // जर आधीच एखादी फाईल रन असेल, तर तीच वापरा. नसेल तर विचारा.
     let selectedFile;
     if (currentActiveFile && files[currentActiveFile]) {
         selectedFile = currentActiveFile;
@@ -218,27 +197,39 @@ function runCode() {
         selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
     }
 
-    if (!selectedFile) return;
-    currentActiveFile = selectedFile;
+    currentActiveFile = selectedFile; // फाईल सेव्ह करा जेणेकरून रिफ्रेशला सोपे जाईल
 
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
 
     let content = files[selectedFile].content;
+
+    // थीमची CSS मिळवा
     let themeCSS = "";
     Object.keys(files).forEach(name => {
         if(name.endsWith('.css')) themeCSS += files[name].content + "\n";
     });
 
+    // Final HTML Construction (External Layout CSS Blocked)
     let finalHTML = `
         <!DOCTYPE html>
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
-                html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: white; overflow-x: hidden; }
-                body { padding: 15px; box-sizing: border-box; font-family: sans-serif; }
+                /* Manual Reset to block external layout interference */
+                html, body { 
+                    margin: 0 !important; 
+                    padding: 0 !important; 
+                    width: 100% !important; 
+                    height: 100% !important; 
+                    background-color: white !important;
+                    overflow-x: hidden;
+                }
+                body { padding: 15px !important; box-sizing: border-box !important; font-family: sans-serif; }
+                
+                /* Inject User Theme CSS */
                 ${themeCSS}
             </style>
         </head>
@@ -256,15 +247,19 @@ function runCode() {
     doc.write(finalHTML);
     doc.close();
 
+    // Default View on first run
     if (!frame.style.width || frame.style.width === "100%") {
         setPreviewSize('100%');
     }
 }
 
+// --- 2. REFRESH LOGIC (NO PROMPT) ---
+
 function refreshPreview() {
     if (!currentActiveFile) {
         runCode();
     } else {
+        // थेट सध्याच्या फाईलला रिफ्रेश करा
         runCode();
         showToast("Output has been refreshed!");
     }
@@ -277,32 +272,58 @@ function showToast(msg) {
         position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
         background: #333; color: #fff; padding: 10px 25px; border-radius: 5px;
         font-size: 14px; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     `;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 2000);
 }
 
+// --- 3. MANUAL RESIZE LOGIC (DESKTOP & MOBILE) ---
+
 function setPreviewSize(device) {
     const frame = document.getElementById('output-frame');
     const container = document.getElementById('preview-body');
+
     if (!frame || !container) return;
 
+    // Manual Styling - No external CSS allowed for size
     frame.style.transition = "all 0.4s ease";
+    container.style.display = "flex";
+    container.style.justifyContent = "center";
+    container.style.alignItems = "center";
+    container.style.overflow = "auto";
+    container.style.background = "#1a1a1a"; // Dark background for contrast
+
     if (device === '100%') {
+        // Desktop View
         frame.style.width = "100%";
         frame.style.height = "100%";
         frame.style.border = "none";
-    } else {
+        frame.style.borderRadius = "0";
+        frame.style.marginTop = "0";
+        frame.style.boxShadow = "none";
+    } 
+    else {
+        // Mobile View (iPhone Simulation)
         frame.style.width = "375px";
         frame.style.height = "667px";
-        frame.style.border = "14px solid #333";
+        frame.style.background = "white";
+        frame.style.border = "14px solid #333"; // Frame Bezel
+        frame.style.borderTop = "40px solid #333";
+        frame.style.borderBottom = "40px solid #333";
         frame.style.borderRadius = "35px";
+        frame.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
+        
+        // Ensure it fits small screens
+        frame.style.maxWidth = "95vw";
+        frame.style.maxHeight = "85vh";
     }
 }
 
+// Close Preview - Reset Active File if needed
 function closePreview() {
     document.getElementById('preview-overlay').style.display = 'none';
-    currentActiveFile = null;
+    currentActiveFile = null; // पुढच्या वेळी विचारण्यासाठी रिसेट करा
 }
 
 // --- 5. THEME, FONT & SETTINGS ---
@@ -358,4 +379,5 @@ function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('
 window.onload = () => {
     updateTaskbar();
     addFileToUI("index.html", "html", files["index.html"].content);
-    addFileToUI("style.css", "css", f
+    addFileToUI("style.css", "css", files["style.css"].content);
+};
