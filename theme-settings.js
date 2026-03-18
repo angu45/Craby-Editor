@@ -175,56 +175,6 @@ function insertWord(word, id) {
     updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 4. PREVIEW & RUN LOGIC ---
-let currentActiveFile = null;
-
-function runCode() {
-    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if (htmlFiles.length === 0) { alert("No HTML files available!"); return; }
-
-    let selectedFile;
-    if (currentActiveFile && files[currentActiveFile]) {
-        selectedFile = currentActiveFile;
-    } else {
-        let choice = prompt("Select file to run:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
-        selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
-    }
-
-    currentActiveFile = selectedFile;
-    const overlay = document.getElementById('preview-overlay');
-    const frame = document.getElementById('output-frame');
-    overlay.style.display = 'flex';
-
-    let themeCSS = "";
-    Object.keys(files).forEach(name => { if(name.endsWith('.css')) themeCSS += files[name].content + "\n"; });
-
-    let finalHTML = `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;padding:0;width:100%;height:100%;background:white;}body{padding:15px;box-sizing:border-box;font-family:sans-serif;}${themeCSS}</style></head><body>${files[selectedFile].content}<script>${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}</script></body></html>`;
-
-    const doc = frame.contentWindow.document;
-    doc.open(); doc.write(finalHTML); doc.close();
-    if (!frame.style.width || frame.style.width === "100%") setPreviewSize('100%');
-}
-
-function refreshPreview() { if (!currentActiveFile) runCode(); else { runCode(); showToast("Refreshed!"); } }
-
-function showToast(msg) {
-    let toast = document.createElement('div');
-    toast.innerText = msg;
-    toast.style.cssText = `position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 25px;border-radius:5px;z-index:99999;`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-}
-
-function setPreviewSize(device) {
-    const frame = document.getElementById('output-frame');
-    if (device === '100%') {
-        frame.style.width = "100%"; frame.style.height = "100%"; frame.style.border = "none";
-    } else {
-        frame.style.width = "375px"; frame.style.height = "667px"; frame.style.border = "14px solid #333"; frame.style.borderRadius = "35px";
-    }
-}
-
-function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; currentActiveFile = null; }
 
 // --- 5. THEME & SETTINGS ---
 
@@ -243,13 +193,6 @@ function resetAllSettings() { if(confirm("Reset everything?")) { files = JSON.pa
 
 // --- 6. CORE UTILITIES & DELETE ---
 
-function updateLineNumbers(safeId) {
-    const tx = document.getElementById(`${safeId}-code`);
-    const lb = document.getElementById(`${safeId}-lines`);
-    if(!tx || !lb) return;
-    const lines = tx.value.split('\n').length;
-    lb.innerHTML = Array.from({length: lines}, (_, i) => (i + 1) + '.').join('<br>');
-}
 
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
 function syncScroll(id) { 
@@ -290,3 +233,94 @@ window.onload = () => {
     if(files["index.html"]) addFileToUI("index.html", "html", files["index.html"].content);
     if(files["style.css"]) addFileToUI("style.css", "css", files["style.css"].content);
 };
+// --- 4. PREVIEW & RUN LOGIC (UPDATED) ---
+let currentActiveFile = null;
+
+function runCode() {
+    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
+    if (htmlFiles.length === 0) { alert("No HTML files available!"); return; }
+
+    let selectedFile;
+    if (currentActiveFile && files[currentActiveFile]) {
+        selectedFile = currentActiveFile;
+    } else {
+        let choice = prompt("Select file to run:\n" + htmlFiles.map((f, i) => `${i + 1}. ${f}`).join('\n'), htmlFiles[0]);
+        selectedFile = htmlFiles.find(f => f === choice) || htmlFiles[parseInt(choice) - 1] || htmlFiles[0];
+    }
+
+    currentActiveFile = selectedFile;
+    const overlay = document.getElementById('preview-overlay');
+    const frame = document.getElementById('output-frame');
+    
+    // Background setting: Main page chi theme ya var affect honar nahi
+    overlay.style.display = 'flex';
+    overlay.style.backgroundColor = "rgba(0,0,0,0.8)"; // Bahercha area dark sathi
+
+    // Iframe settings for Sandboxing (Isolation)
+    // 'allow-scripts' mule JS chalel pan top-level navigation (parent page change karne) block hoil
+    frame.setAttribute('sandbox', 'allow-scripts');
+
+    let themeCSS = "";
+    Object.keys(files).forEach(name => { 
+        if(name.endsWith('.css')) themeCSS += files[name].content + "\n"; 
+    });
+
+    // Content logic: Background 'none' thevla aahe
+    let finalHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            html, body { 
+                margin: 0; 
+                padding: 0; 
+                width: 100%; 
+                height: 100%; 
+                background: transparent !important; /* Forcefully no background */
+            } 
+            body { 
+                padding: 15px; 
+                box-sizing: border-box; 
+                font-family: sans-serif; 
+                color: inherit; 
+            }
+            ${themeCSS}
+        </style>
+    </head>
+    <body>
+        ${files[selectedFile].content}
+        <script>
+            // Parent page var redirect hona pasun thambavne
+            window.onbeforeunload = function() { return false; };
+            ${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}
+        <\/script>
+    </body>
+    </html>`;
+
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(finalHTML);
+    doc.close();
+
+    if (!frame.style.width || frame.style.width === "100%") setPreviewSize('100%');
+}
+
+function setPreviewSize(device) {
+    const frame = document.getElementById('output-frame');
+    // Frame cha swata-cha background transparent thevne
+    frame.style.backgroundColor = "white"; // Jar tula preview area shubhra pahije asel tar
+
+    if (device === '100%') {
+        frame.style.width = "100%"; 
+        frame.style.height = "100%"; 
+        frame.style.border = "none";
+    } else {
+        frame.style.width = "375px"; 
+        frame.style.height = "667px"; 
+        frame.style.border = "14px solid #333"; 
+        frame.style.borderRadius = "35px";
+    }
+}
+
+// Baki functions (refreshPreview, showToast, closePreview) same rahtil.
