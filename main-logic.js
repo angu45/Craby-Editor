@@ -5,6 +5,7 @@ const dictionary = {
     js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
 };
 
+// Default Files Configuration
 const defaultFiles = {
     "index.html": { 
         content: `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <h1>Craby Editor Ready</h1>\n</body>\n</html>`, 
@@ -13,32 +14,47 @@ const defaultFiles = {
     "style.css": { content: "h1 { color: #ffb400; text-align: center; }", type: "css" }
 };
 
-let files = JSON.parse(JSON.stringify(defaultFiles));
+let files = JSON.parse(JSON.stringify(defaultFiles)); // कॉपी तयार करणे
+
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 document.body.appendChild(sBox);
 
-let showLineNumbers = false; // Always false to hide numbers
-let currentActiveFile = null;
-let selectedIndex = 0;
+let showLineNumbers = false; 
+let lineNumberFontSize = 14; 
+let selectedIndex = 0; 
 
-// --- 2. RESET SETTINGS ---
+// --- 2. RESET SETTINGS (NEW FEATURE) ---
+
 function resetAllSettings() {
     if(confirm("सर्व सेटिंग्ज आणि फाइल्स रीसेट करायच्या आहेत का?")) {
+        // १. फाइल्स डिफॉल्ट करा
         files = JSON.parse(JSON.stringify(defaultFiles));
+        
+        // २. सर्व एडिटर्स क्लोज करा
         document.getElementById('editor-grid').innerHTML = '';
-        showLineNumbers = false;
+        
+        // ३. डिफॉल्ट व्हॅल्यूज सेट करा
+        
+        // ४. टॉस्कबार आणि UI रिफ्रेश करा
         updateTaskbar();
         addFileToUI("index.html", "html", files["index.html"].content);
         addFileToUI("style.css", "css", files["style.css"].content);
-        alert("सेटिंग्ज रीसेट झाल्या आहेत!");
+        
+        // ५. चेकबॉक्स किंवा इतर UI असल्यास ते अपडेट करा (उदा. Show Line Numbers)
+        const lnToggle = document.getElementById('line-number-toggle');
+        if(lnToggle) lnToggle.checked = false;
+
+        alert("सेटिंग्ज रिसेट झाल्या आहेत!");
     }
 }
 
 // --- 3. BEAUTIFY & FORMATTING ---
+// (जसा होता तसाच - कोणताही बदल नाही)
 function beautifyCode() {
     document.querySelectorAll('textarea').forEach(tx => {
-        tx.value = formatCode(tx.value);
+        let code = tx.value;
+        tx.value = formatCode(code);
         const fileName = tx.id.replace('file-', '').replace('-code', '');
         updateFileContent(fileName, tx.value);
         updateLineNumbers(tx.id.replace('-code', ''));
@@ -59,7 +75,8 @@ function formatCode(code) {
     return result.trim();
 }
 
-// --- 4. FILE MANAGEMENT & UI ---
+// --- 4. FILE MANAGEMENT ---
+
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
@@ -94,60 +111,38 @@ function addFileToUI(name, type, content = "") {
             </div>
         </div>
         <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
-            <div class="line-numbers" id="${safeId}-lines" style="display: none;"></div>
+            <div class="line-numbers" id="${safeId}-lines" style="display:${showLineNumbers ? 'block' : 'none'}; text-align: right; padding: 10px 5px; border-right: 1.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); background: transparent; overflow: hidden; white-space: nowrap;">1.</div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" 
-                style="flex: 1; padding: 15px; border: none; outline: none; background: transparent; color: #e0e0e0; resize: none; white-space: pre; overflow: auto; line-height: 1.5; font-family: monospace;"
+                style="flex: 1; padding: 10px; border: none; outline: none; background: transparent; color: #e0e0e0; resize: none; white-space: pre; overflow: auto; line-height: 1.5;"
                 oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
                 onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
     `;
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
-}
+    }
 
-// --- 5. PREVIEW & RUN LOGIC (SANDBOXED) ---
-function runCode() {
-    const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
-    if (htmlFiles.length === 0) { alert("No HTML files!"); return; }
+// --- 5. SUGGESTION SYSTEM (Updated with Enter/Top Select) ---
 
-    let selectedFile = currentActiveFile || htmlFiles[0];
-    currentActiveFile = selectedFile;
-
-    const overlay = document.getElementById('preview-overlay');
-    const frame = document.getElementById('output-frame');
-    overlay.style.display = 'flex';
-
-    // Anti-interfere settings
-    frame.setAttribute('sandbox', 'allow-scripts');
-
-    let themeCSS = "";
-    Object.keys(files).forEach(name => { if(name.endsWith('.css')) themeCSS += files[name].content + "\n"; });
-
-    let finalHTML = `<!DOCTYPE html><html><head><style>
-        html,body{margin:0;padding:0;width:100%;height:100%;background:none !important;}
-        body{padding:15px;box-sizing:border-box;font-family:sans-serif;}
-        ${themeCSS}</style></head><body>${files[selectedFile].content}
-        <script>
-            window.onbeforeunload = function() { return false; };
-            ${Object.keys(files).filter(f => f.endsWith('.js')).map(f => files[f].content).join('\n')}
-        <\/script></body></html>`;
-
-    const doc = frame.contentWindow.document;
-    doc.open(); doc.write(finalHTML); doc.close();
-}
-
-function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; currentActiveFile = null; }
-
-// --- 6. SUGGESTION SYSTEM ---
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
         const items = document.querySelectorAll('.suggestion-item');
         if (sBox.style.display === 'block' && items.length > 0) {
-            if (e.key === 'Enter') { e.preventDefault(); items[selectedIndex].click(); }
-            else if (e.key === 'ArrowDown') { e.preventDefault(); selectedIndex = (selectedIndex + 1) % items.length; updateHighlight(items); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIndex = (selectedIndex - 1 + items.length) % items.length; updateHighlight(items); }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                items[selectedIndex].click();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateHighlight(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateHighlight(items);
+            }
         }
     });
+
     txt.addEventListener('input', (e) => {
         const pos = txt.selectionStart;
         const char = e.data;
@@ -157,6 +152,18 @@ function attachInputListeners(txt) {
             txt.selectionStart = txt.selectionEnd = pos;
         } 
         showSuggestions(txt);
+    });
+}
+
+function updateHighlight(items) {
+    items.forEach((item, index) => {
+        if (index === selectedIndex) {
+            item.style.backgroundColor = '#3e4451';
+            item.classList.add('active-suggestion');
+        } else {
+            item.style.backgroundColor = '';
+            item.classList.remove('active-suggestion');
+        }
     });
 }
 
@@ -170,31 +177,68 @@ function showSuggestions(txt) {
 
     if (matches.length > 0) {
         const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 30}px`; sBox.style.left = `${rect.left + 20}px`;
-        sBox.style.display = 'block'; selectedIndex = 0;
-        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item" ${i===0?'style="background:#3e4451"':''} onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
+        sBox.style.top = `${rect.top + 30}px`; 
+        sBox.style.left = `${rect.left + 20}px`;
+        sBox.style.display = 'block';
+        selectedIndex = 0; // नेहमी पहिला आयटम सिलेक्टेड
+
+        sBox.innerHTML = matches.map((m, index) => {
+            let label = (m === 'h1 class') ? 'h1 class=""' : m;
+            let activeStyle = (index === 0) ? 'style="background-color: #3e4451;"' : '';
+            return `<div class="suggestion-item" ${activeStyle} onclick="insertWord('${m}', '${txt.id}')">${label}</div>`;
+        }).join('');
     } else { sBox.style.display = 'none'; }
 }
 
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
+    const lang = txt.getAttribute('data-lang');
     const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
     const after = txt.value.substring(pos);
-    txt.value = before + word + after;
-    txt.selectionStart = txt.selectionEnd = before.length + word.length;
-    sBox.style.display = 'none'; txt.focus();
+
+    let finalInsert = word;
+    let offset = word.length;
+
+    if (lang === 'html') {
+        if (word === 'h1') { finalInsert = `<h1></h1>`; offset = 4; }
+        else if (word === 'h1 class') { finalInsert = `<h1 class=""></h1>`; offset = 10; }
+        else if (!word.includes('<')) { finalInsert = `<${word}></${word}>`; offset = word.length + 2; }
+    }
+
+    txt.value = before + finalInsert + after;
+    txt.selectionStart = txt.selectionEnd = before.length + offset;
+    sBox.style.display = 'none';
+    txt.focus();
+    updateFileContent(id.replace('file-','').replace('-code',''), txt.value);
 }
 
-// --- 7. UTILS & INIT ---
-function updateLineNumbers(id) { /* Disabled numbers */ }
+// --- 6. CORE UTILITIES ---
+
+function updateLineNumbers(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lineBox = document.getElementById(`${safeId}-lines`);
+    if(!tx || !lineBox) return;
+    const lines = tx.value.split('\n').length;
+    lineBox.innerHTML = Array.from({length: lines}, (_, i) => (i + 1) + '.').join('<br>');
+    lineBox.style.fontSize = lineNumberFontSize + "px";
+}
+
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
-function syncScroll(id) { }
-function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
-function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+function syncScroll(safeId) {
+    const tx = document.getElementById(`${safeId}-code`);
+    const lb = document.getElementById(`${safeId}-lines`);
+    if(tx && lb) lb.scrollTop = tx.scrollTop;
+}
+
+// --- 7. INITIALIZATION ---
 
 window.onload = () => {
     updateTaskbar();
+    // Default Editors Open
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
 };
+
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
+function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
