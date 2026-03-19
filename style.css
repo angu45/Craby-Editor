@@ -8,6 +8,8 @@
     --border: rgba(255, 255, 255, 0.1);
     --window-header-bg: #21262d;
 }
+
+
 body {
     background: var(--bg-main);
     color: var(--text-primary);
@@ -16,6 +18,20 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden; 
+}
+
+/* --- 2. HEADER: FIXED --- */
+header {
+    height: 60px;
+    background: var(--bg-header);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 2px solid var(--accent);
+    position: sticky; 
+    top: 0;
+    z-index: 3000; 
 }
 
 logo-container { display: flex; align-items: center; gap: 10px; }
