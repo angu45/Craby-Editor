@@ -48,49 +48,44 @@ header {
     justify-content: center;
 }
 /* --- UPDATED SHUTTER ITEM CSS --- */
+/* Shutter Item Layout Fix */
 .shutter-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1.2px solid rgba(255, 180, 0, 0.1);
-    border-radius: 10px;
-    padding: 10px 15px; /* Padding adjust kela layout sathi */
     display: flex;
-    flex-direction: row; /* Column kadhun Row kela */
-    align-items: center; /* Vertical center sathi */
-    justify-content: flex-start; /* Left side pasun suru honyasathi */
-    gap: 12px; /* Icon ani Nav madhale antar */
+    align-items: center;
+    justify-content: space-between;
+    height: 45px; /* Fixed height */
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    height: 45px; /* Height thodi vadhavli jyamule content dabla janar nahi */
-    margin-bottom: 8px; /* Items madhe antar */
-    width: 90%; /* Sidebar chya aat vyavasthit basnyasathi */
+    transition: 0.3s;
 }
 
-/* Icon Style */
-.shutter-item i {
-    font-size: 1.2rem; /* Size normal kela */
-    color: #ffb400;
-    margin-bottom: 0; /* Column layout madhla margin kadhla */
-}
-
-/* Filename Style */
+/* Filename (Left Side) */
 .shutter-item span {
     color: #e0e0e0;
-    font-size: 0.9rem; /* Vachayla soppa jail asa size */
+    font-size: 0.9rem;
     font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    text-align: left; /* Nav davi kade align */
-    flex: 1; /* Shilik jaga navane ghyavi */
+    text-align: left;
+    flex: 1;
 }
 
-/* Hover Effects */
+/* Icon (Right Side) */
+.shutter-item i {
+    font-size: 1.2rem;
+    color: #ffb400;
+    margin-left: 10px;
+}
+
+/* Hover Effects (Same as yours) */
 .shutter-item:hover {
     background: rgba(255, 180, 0, 0.1);
     border-color: #ffb400;
-    transform: translateX(5px); /* Side la slide hoil hover var */
+    transform: translateX(5px);
 }
-
 logo-container { display: flex; align-items: center; gap: 10px; }
 .logo-container img { height: 35px; width: auto; }
 .logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
