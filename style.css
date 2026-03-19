@@ -22,7 +22,6 @@ body {
 
 
 
-
 logo-container { display: flex; align-items: center; gap: 10px; }
 .logo-container img { height: 35px; width: auto; }
 .logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
