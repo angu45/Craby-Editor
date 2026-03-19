@@ -9,6 +9,11 @@
     --window-header-bg: #21262d;
 }
 
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
 body {
     background: var(--bg-main);
@@ -20,9 +25,71 @@ body {
     overflow: hidden; 
 }
 
+/* --- 2. HEADER: FIXED --- */
+header {
+    height: 60px;
+    background: var(--bg-header);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 2px solid var(--accent);
+    position: sticky; 
+    top: 0;
+    z-index: 3000; 
+}
+/* Container styling */
+#shutter-file-list {
+    display: grid;
+    /* Box size reduced from 120px to 90px */
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
+    gap: 12px;
+    padding: 15px;
+    justify-content: center;
+}
 
+/* Individual File Box (Smaller version) */
+.shutter-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.2px solid rgba(255, 180, 0, 0.1);
+    border-radius: 10px;
+    padding: 10px 5px; /* Reduced padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    height: 100px; /* Fixed height for consistency */
+}
 
-logo-container { display: flex; align-items: center; gap: 10px; }
+/* Smaller Icon */
+.shutter-item i {
+    font-size: 1.8rem; /* Reduced from 2.5rem */
+    color: #ffb400;
+    margin-bottom: 6px;
+}
+
+/* Smaller Font for Filename */
+.shutter-item span {
+    color: #e0e0e0;
+    font-size: 0.75rem; /* Reduced from 0.9rem */
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Long names will end with ... */
+    white-space: nowrap;
+    width: 100%;
+}
+
+/* Hover Effects */
+.shutter-item:hover {
+    background: rgba(255, 180, 0, 0.1);
+    border-color: #ffb400;
+    transform: translateY(-3px);
+}
+
+.logo-container { display: flex; align-items: center; gap: 10px; }
 .logo-container img { height: 35px; width: auto; }
 .logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 
@@ -111,65 +178,10 @@ logo-container { display: flex; align-items: center; gap: 10px; }
 
 .window-body { flex: 1; display: flex; }
 
-/* --- SYNTAX GLOW COLORS --- */
-
-.tag { 
-    color: #ff7b72; 
-    text-shadow: 0 0 8px rgba(255, 123, 114, 0.5); 
-    font-weight: bold;
-}
-
-.attr { 
-    color: #79c0ff; 
-    text-shadow: 0 0 8px rgba(121, 192, 255, 0.5); 
-}
-
-.keyword { 
-    color: #d2a8ff; 
-    text-shadow: 0 0 10px rgba(210, 168, 255, 0.6); 
-    font-weight: bold;
-}
-
-.string { 
-    color: #a5d6ff; 
-    text-shadow: 0 0 5px rgba(165, 214, 255, 0.4); 
-}
-
-.number { 
-    color: #f0883e; 
-    text-shadow: 0 0 8px rgba(240, 136, 62, 0.5); 
-}
-
-/* --- TEXTAREA OVERLAY FOR GLOW --- */
-.highlight-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 12px; /* textarea च्या padding शी मॅच करा */
-    pointer-events: none; /* क्लिक textarea वर व्हावे म्हणून */
-    white-space: pre;
-    font-family: 'Fira Code', monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.input-layer {
-    position: relative;
-    z-index: 2;
-    color: transparent !important; /* ओरिजिनल टेक्स्ट लपवण्यासाठी */
-    caret-color: #ffb400; /* फक्त कर्सर दिसेल */
-    background: transparent !important;
-}
 textarea {
     flex: 1;
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background: transparent;
     border: none;
     color: #9cdcfe;
     padding: 12px;
@@ -180,13 +192,6 @@ textarea {
     resize: none;
     white-space: pre;
     overflow: auto;
-    text-shadow: 0 0 8px rgba(156, 221, 254, 0.4);
-    transition: all 0.3s ease;
-}
-
-textarea:focus {
-    background: rgba(255, 255, 255, 0.05);
-    text-shadow: 0 0 12px rgba(156, 221, 254, 0.6);
 }
 
 /* --- 5. SHUTTER (LEFT SLIDER) --- */
@@ -202,6 +207,19 @@ textarea:focus {
     z-index: 2500; 
     cursor: pointer;
     transition: left 0.3s ease;
+}
+
+.shutter {
+    position: fixed;
+    left: -320px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--bg-panel);
+    border-right: 2px solid var(--accent);
+    transition: left 0.3s ease;
+    z-index: 4000; 
+    padding: 0;
 }
 
 .shutter.open { left: 0; }
@@ -228,6 +246,18 @@ textarea:focus {
 }
 
 /* --- 6. SETTINGS PANEL (RIGHT SLIDER) --- */
+.settings-panel {
+    position: fixed;
+    right: -320px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--bg-panel);
+    border-left: 2px solid var(--accent);
+    transition: right 0.3s ease;
+    z-index: 4000; 
+    padding: 20px;
+}
 
 .settings-panel.open { right: 0; }
 
@@ -242,101 +272,71 @@ textarea:focus {
     border-radius: 6px;
     outline: none;
 }
+
 .checkbox-group { display: flex; gap: 15px; }
 .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+// 1. Preview Overlay Open karne (RUN Button sathi)
+function runCode() {
+    const outputFrame = document.getElementById('output-frame');
+    const overlay = document.getElementById('preview-overlay');
 
-/* --- 7. PREVIEW OVERLAY --- */
-.preview-overlay {
-    position: fixed;
-    inset: 0;
-    background: #fff;
-    z-index: 9999;
-    display: none;
-    flex-direction: column;
+    // Samja tumche code editors 'htmlEditor', 'cssEditor' ya variables madhe ahet
+    // Tar te sarv ekatra karun iframe madhe takne:
+    const htmlCode = localStorage.getItem('html-code') || ""; // Tumchya editor logic nusar badla
+    const cssCode = localStorage.getItem('css-code') || "";
+    const jsCode = localStorage.getItem('js-code') || "";
+
+    const fullContent = `
+        <html>
+            <head>
+                <style>${cssCode}</style>
+            </head>
+            <body>
+                ${htmlCode}
+                <script>${jsCode}<\/script>
+            </body>
+        </html>
+    `;
+
+    outputFrame.srcdoc = fullContent;
+    overlay.style.display = 'block'; // Overlay dakhvne
 }
 
-.overlay-header {
-    height: 60px;
-    background: var(--bg-panel);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    border-bottom: 1px solid var(--border);
-}
-/* --- SHUTTER (LEFT SLIDER) - MODERN TRANSPARENT --- */
-.shutter {
-    position: fixed;
-    left: -320px;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    /* Glass Effect: Background with Blur */
-    background: rgba(22, 27, 34, 0.7); 
-    backdrop-filter: blur(2px); 
-    -webkit-backdrop-filter: blur(2px);
-    border-right: 1.5px solid var(--accent);
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 4000; 
-    padding: 0;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+// 2. Preview Overlay Close karne
+function closePreview() {
+    document.getElementById('preview-overlay').style.display = 'none';
 }
 
-.shutter.open { 
-    left: 0; 
-}
+// 3. Sizing Function (Mobile/Desktop View sathi)
+function setPreviewSize(width) {
+    const frame = document.getElementById('output-frame');
+    const previewBody = document.getElementById('preview-body');
 
-/* --- SETTINGS PANEL (RIGHT SLIDER) - MODERN TRANSPARENT --- */
-.settings-panel {
-    position: fixed;
-    right: -320px;
-    top: 0;
-    width: 300px;
-    height: 100%;
-    /* Glass Effect: Background with Blur */
-    background: rgba(22, 27, 34, 0.7); 
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    border-left: 1.5px solid var(--accent);
-    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 4000; 
-    padding: 20px;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-}
-
-.settings-panel.open { 
-    right: 0; 
-}
-
-/* --- SHUTTER TRIGGER BUTTON (UPGRADED) --- */
-#shutter-trigger {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--accent);
-    color: #000;
-    padding: 15px 10px;
-    border-radius: 0 10px 10px 0;
-    z-index: 2500; 
-    cursor: pointer;
-    box-shadow: 2px 0 10px rgba(255, 180, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-#shutter-trigger:hover {
-    padding-left: 15px;
-    background: #fff;
-}
-
-#output-frame { flex: 1; border: none; width: 100%; background: white; }
-
-/* Suggestion Box Fix */
-#suggestion-box {
-    position: absolute;
-    z-index: 5000;
-    background: #1c2128;
-    border: 1px solid var(--accent);
-    border-radius: 4px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    if (width === '375px') {
+        // Mobile View
+        frame.style.width = '375px';
+        frame.style.height = '667px';
+        frame.style.margin = '20px auto';
+        frame.style.border = '10px solid #333';
+        frame.style.borderRadius = '20px';
+    } else {
+        // Desktop View
+        frame.style.width = '100%';
+        frame.style.height = '100%';
+        frame.style.margin = '0';
+        frame.style.border = 'none';
+        frame.style.borderRadius = '0';
     }
+}
+
+// 4. Refresh Function
+function refreshPreview() {
+    const frame = document.getElementById('output-frame');
+    // Iframe reload karnya sathi srcdoc punha set karne
+    const currentContent = frame.srcdoc;
+    frame.srcdoc = '';
+    setTimeout(() => {
+        frame.srcdoc = currentContent;
+    }, 50);
+    console.log("Preview Refreshed!");
+}
