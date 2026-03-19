@@ -48,20 +48,20 @@ header {
     justify-content: center;
 }
 /* --- UPDATED SHUTTER ITEM CSS --- */
-/* Shutter Item Layout Fix */
 .shutter-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 45px; /* Fixed height */
-    padding: 0 10px;
+    height: 45px;
+    width: 100%;
+    padding: 0 12px;
     border: 1px solid transparent;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.3s;
+    box-sizing: border-box;
 }
 
-/* Filename (Left Side) */
 .shutter-item span {
     color: #e0e0e0;
     font-size: 0.9rem;
@@ -73,19 +73,18 @@ header {
     flex: 1;
 }
 
-/* Icon (Right Side) */
 .shutter-item i {
     font-size: 1.2rem;
     color: #ffb400;
-    margin-left: 10px;
+    margin-left: 12px;
 }
 
-/* Hover Effects (Same as yours) */
 .shutter-item:hover {
     background: rgba(255, 180, 0, 0.1);
     border-color: #ffb400;
     transform: translateX(5px);
 }
+
 logo-container { display: flex; align-items: center; gap: 10px; }
 .logo-container img { height: 35px; width: auto; }
 .logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
