@@ -11,21 +11,15 @@
 
 
 body {
-    background: 
-        linear-gradient(rgba(13,17,23,0.85), rgba(13,17,23,0.85)),
-        url('https://images.unsplash.com/photo-1518779578993-ec3579fee39f');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-
+    background: var(--bg-main);
     color: var(--text-primary);
     font-family: 'Plus Jakarta Sans', sans-serif;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: hidden; 
 }
+
 
 
 
