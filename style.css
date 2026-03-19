@@ -59,7 +59,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden; 
-}
+}   background-color:white;
 
 /* --- 2. HEADER: FIXED --- */
 header {
