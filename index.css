@@ -5,6 +5,7 @@
     --text:#c9d1d9;
 }
 
+
 body {
         background-color: var(--bg);
         color: var(--text);
@@ -26,6 +27,42 @@ body {
     background:#010409;
     border-bottom:2px solid var(--accent);
 }
+header {
+    height: 60px;
+    background: var(--bg-header);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 2px solid var(--accent);
+    position: sticky; 
+    top: 0;
+    z-index: 3000; 
+}
+
+logo-container { display: flex; align-items: center; gap: 10px; }
+.logo-container img { height: 35px; width: auto; }
+.logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
+
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+/* Header Buttons Size Fix */
+.icon-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 8px 14px; /* Balanced size */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-btn:hover { background: #1c2128; border-color: var(--accent); }
+.icon-btn i { color: var(--accent); }
 
 .logo{
     display:flex;
