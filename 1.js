@@ -284,17 +284,36 @@ function toggleSettings() {
 }
 
 // --- 4. SUGGESTION & UTILS ---
+// --- 4. ENHANCED SUGGESTION & RECOMMENDATION LOGIC ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
         const items = document.querySelectorAll('.suggestion-item');
+        
+        // If suggestion box is open, handle navigation
         if (sBox.style.display === 'block' && items.length > 0) {
-            if (e.key === 'Enter') { e.preventDefault(); items[selectedIndex].click(); }
-            else if (e.key === 'ArrowDown') { e.preventDefault(); selectedIndex = (selectedIndex + 1) % items.length; updateHighlight(items); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); selectedIndex = (selectedIndex - 1 + items.length) % items.length; updateHighlight(items); }
+            if (e.key === 'Enter' || e.key === 'Tab') {
+                e.preventDefault();
+                insertWord(items[selectedIndex].innerText, txt.id);
+            } 
+            else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateHighlight(items);
+            } 
+            else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateHighlight(items);
+            }
+            else if (e.key === 'Escape') {
+                sBox.style.display = 'none';
+            }
         }
     });
+
     txt.addEventListener('input', (e) => {
+        // Auto-pairing logic
         const pos = txt.selectionStart;
         const char = e.data;
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
@@ -302,34 +321,96 @@ function attachInputListeners(txt) {
             txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
         } 
+        
+        // Trigger Recommendations
         showSuggestions(txt);
     });
+
+    // Close suggestion box if user clicks away
+    txt.addEventListener('click', () => { sBox.style.display = 'none'; });
 }
 
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
-    const word = txt.value.substring(0, pos).split(/[\s<>{}:;()]/).pop().toLowerCase();
-    if (word.length < 1) { sBox.style.display = 'none'; return; }
+    const textBeforeCursor = txt.value.substring(0, pos);
+    
+    // Get the last word being typed (splits by common separators)
+    const words = textBeforeCursor.split(/[\s<>{}:;()\[\]"']/);
+    const currentWord = words[words.length - 1].toLowerCase();
+
+    // Don't show if typing is too short
+    if (currentWord.length < 1) { 
+        sBox.style.display = 'none'; 
+        return; 
+    }
+
     const lang = txt.getAttribute('data-lang');
-    const matches = (dictionary[lang] || []).filter(w => w.startsWith(word));
+    // Filter the ENTIRE dictionary for that specific language
+    const matches = (dictionary[lang] || []).filter(w => w.startsWith(currentWord));
+
     if (matches.length > 0) {
-        const rect = txt.getBoundingClientRect();
-        sBox.style.top = `${rect.top + 30}px`; sBox.style.left = `${rect.left + 20}px`;
-        sBox.style.display = 'block'; selectedIndex = 0;
-        sBox.innerHTML = matches.map((m, i) => `<div class="suggestion-item" ${i===0?'style="background:#3e4451"':''} onclick="insertWord('${m}', '${txt.id}')">${m}</div>`).join('');
-    } else { sBox.style.display = 'none'; }
+        renderSuggestionBox(txt, matches);
+    } else {
+        sBox.style.display = 'none';
+    }
+}
+
+function renderSuggestionBox(txt, matches) {
+    const rect = txt.getBoundingClientRect();
+    
+    // Position the box near the cursor (approximate)
+    sBox.style.top = `${rect.top + 40}px`; 
+    sBox.style.left = `${rect.left + 30}px`;
+    sBox.style.display = 'block';
+    sBox.style.position = 'fixed';
+    sBox.style.zIndex = '9999';
+    
+    selectedIndex = 0; // Reset focus to first item
+    
+    sBox.innerHTML = matches.map((match, i) => `
+        <div class="suggestion-item" 
+             onclick="insertWord('${match}', '${txt.id}')"
+             style="${i === 0 ? 'background: var(--accent); color: #000;' : ''}">
+            ${match}
+        </div>
+    `).join('');
+}
+
+function updateHighlight(items) {
+    items.forEach((item, i) => {
+        if (i === selectedIndex) {
+            item.style.background = 'var(--accent)';
+            item.style.color = '#000';
+            item.scrollIntoView({ block: 'nearest' });
+        } else {
+            item.style.background = 'transparent';
+            item.style.color = 'white';
+        }
+    });
 }
 
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const before = txt.value.substring(0, pos).replace(/[\w.-]+$/, "");
-    const after = txt.value.substring(pos);
-    txt.value = before + word + after;
-    txt.selectionStart = txt.selectionEnd = before.length + word.length;
-    sBox.style.display = 'none'; txt.focus();
+    const text = txt.value;
+    
+    // Find where the current word starts to replace it
+    const beforePart = text.substring(0, pos);
+    const afterPart = text.substring(pos);
+    const wordMatch = beforePart.match(/[\w.-]+$/);
+    const wordStart = wordMatch ? wordMatch.index : pos;
+
+    const newBefore = text.substring(0, wordStart) + word;
+    txt.value = newBefore + afterPart;
+    
+    // Move cursor to end of inserted word
+    txt.selectionStart = txt.selectionEnd = newBefore.length;
+    
+    sBox.style.display = 'none';
+    txt.focus();
     updateFileContent(txt.getAttribute('data-filename'), txt.value);
 }
+
 
 // --- 5. THEME & SYSTEM ---
 
@@ -395,47 +476,4 @@ window.onload = () => {
     updateThemeAndFont();
     window.onbeforeunload = () => "Unsaved changes might be lost.";
 };
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class CrabyRecommendationEngine {
-
-    // 1. The Dictionary (Similar to your JS object)
-    private static final Map<String, List<String>> DICTIONARY = new HashMap<>();
-
-    static {
-        DICTIONARY.put("html", Arrays.asList("div", "span", "h1", "h2", "p", "article", "section", "script", "style", "table", "canvas"));
-        DICTIONARY.put("css", Arrays.asList("color", "background", "margin", "padding", "display", "flex", "grid", "border-radius"));
-        DICTIONARY.put("js", Arrays.asList("console.log", "document", "window", "function", "fetch", "addEventListener", "setTimeout"));
-    }
-
-    /**
-     * Logic to get recommendations
-     * @param language The file type (html, css, js)
-     * @param input The current word being typed
-     * @return List of matching keywords
-     */
-    public List<String> getRecommendations(String language, String input) {
-        if (input == null || input.isEmpty()) return Collections.emptyList();
-        
-        String searchKey = input.toLowerCase();
-        List<String> words = DICTIONARY.getOrDefault(language.toLowerCase(), Collections.emptyList());
-
-        return words.stream()
-                .filter(word -> word.startsWith(searchKey))
-                .sorted() // Keep it alphabetical
-                .collect(Collectors.toList());
-    }
-
-    public static void main(String[] args) {
-        CrabyRecommendationEngine engine = new CrabyRecommendationEngine();
-        
-        // Example: User types 'co' in a CSS file
-        List<String> results = engine.getRecommendations("css", "co");
-        
-        System.out.println("Recommendations for 'co' in CSS:");
-        results.forEach(System.out::println); 
-        // Output: color
-    }
-}
 
