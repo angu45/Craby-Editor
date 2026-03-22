@@ -1,14 +1,10 @@
 /**
- * CRABY EDITOR - ADVANCED AUTO-COMPLETE VERSION
- * Features: HTML Tags & Attributes, CSS Properties, JS Objects, and Smart Tag Wrapping.
+ * CRABY EDITOR - MAIN CORE ENGINE
  */
 
-// --- 1. GLOBAL CONFIGURATION (Expanded Dictionary) ---
 const dictionary = {
     html: [
-        // Tags
         'div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','strong','em','hr',
-        // Attributes (Triggered after a space inside a tag)
         'class','id','style','src','href','type','value','placeholder','target','rel','alt','width','height','onclick','onload','name','method','action','required'
     ],
     css: [
@@ -31,31 +27,21 @@ let files = JSON.parse(JSON.stringify(defaultFiles));
 let currentActiveFile = null;
 let selectedIndex = 0;
 
-
+// --- Highlighting Engine ---
 function applyHighlighting(code, lang) {
-    // सुरक्षिततेसाठी HTML एस्केप करा
     let escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
     if (lang === 'html') {
-        // १. HTML Tags हायलाइट करा (dictionary नुसार)
         dictionary.html.forEach(tag => {
             const reg = new RegExp(`&lt;(\\/?${tag})\\b`, 'gi');
             escaped = escaped.replace(reg, `&lt;<span class="hl-html-tag">$1</span>`);
         });
-        // २. HTML Attributes हायलाइट करा
         escaped = escaped.replace(/\s([a-z-]+)=/gi, ` <span class="hl-html-attr">$1</span>=`);
-    } 
-    
-    else if (lang === 'css') {
-        // १. CSS Properties (dictionary नुसार)
+    } else if (lang === 'css') {
         dictionary.css.forEach(prop => {
             const reg = new RegExp(`\\b(${prop})\\s*:`, 'gi');
             escaped = escaped.replace(reg, `<span class="hl-css-prop">$1</span>:`);
         });
-    } 
-    
-    else if (lang === 'js') {
-        // १. JS Keywords & Methods (dictionary नुसार)
+    } else if (lang === 'js') {
         dictionary.js.forEach(word => {
             const reg = new RegExp(`\\b(${word.replace('.', '\\.')})\\b`, 'g');
             if (word.includes('.') || word.includes('log')) {
@@ -65,16 +51,12 @@ function applyHighlighting(code, lang) {
             }
         });
     }
-
-    // सामान्य हायलाइटिंग (सर्व भाषांसाठी: स्ट्रिंग्स आणि नंबर्स)
     escaped = escaped.replace(/"(.*?)"/g, `<span class="hl-str">"$1"</span>`);
     escaped = escaped.replace(/\b(\d+)\b/g, `<span class="hl-num">$1</span>`);
-
     return escaped;
 }
 
-
-// --- Create Suggestion Box UI ---
+// --- Suggestion UI ---
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
 Object.assign(sBox.style, {
@@ -84,13 +66,11 @@ Object.assign(sBox.style, {
 });
 document.body.appendChild(sBox);
 
-// --- 2. FILE & UI CORE ---
-
+// --- File & UI Core ---
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
     taskbar.innerHTML = ''; 
-
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
@@ -98,10 +78,8 @@ function updateTaskbar() {
             display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 15px',
             margin: '5px 10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', cursor: 'pointer'
         });
-
         fileItem.innerHTML = `<i class="fas fa-file-code" style="color: var(--accent); font-size: 1.2rem;"></i> 
                               <span style="color: white; font-size: 0.95rem;">${fileName}</span>`;
-
         fileItem.onclick = () => {
             addFileToUI(fileName, files[fileName].type, files[fileName].content);
             if(window.innerWidth < 768) toggleShutter(); 
@@ -114,12 +92,10 @@ function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
     if(!wrapper) return;
     const safeId = "file-" + name.replace(/[^a-z0-9]/gi, '-');
-    
     if(document.getElementById(`box-${safeId}`)) {
         document.getElementById(`box-${safeId}`).style.display = 'flex';
         return;
     }
-
     const newBox = document.createElement('div');
     newBox.className = 'window-frame';
     newBox.id = `box-${safeId}`;
@@ -141,10 +117,8 @@ function addFileToUI(name, type, content = "") {
     `;
     wrapper.appendChild(newBox);
     attachInputListeners(document.getElementById(`${safeId}-code`));
-    updateThemeAndFont();
+    updateThemeAndFont(); // Calling function from theme file
 }
-
-// --- 3. ALL BUTTON FUNCTIONS ---
 
 function toggleShutter() {
     const shutter = document.getElementById('shutter');
@@ -207,19 +181,7 @@ function exportCode() {
     }
 }
 
-function toggleSettings() {
-    const panel = document.getElementById('settingsPanel');
-    if (panel.style.display === 'none' || !panel.classList.contains('open')) {
-        panel.style.display = 'block';
-        setTimeout(() => panel.classList.add('open'), 10);
-    } else {
-        panel.classList.remove('open');
-        setTimeout(() => { panel.style.display = 'none'; saveSettings(); }, 300);
-    }
-}
-
-// --- 4. ADVANCED SUGGESTION ENGINE ---
-
+// --- Suggestion Engine ---
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
         const items = document.querySelectorAll('.suggestion-item');
@@ -246,36 +208,24 @@ function attachInputListeners(txt) {
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
-    
-    // Get current word
     const words = textBefore.split(/[\s<>{}:;()\[\]"']/);
     const currentWord = words[words.length - 1].toLowerCase();
-
     if (currentWord.length < 1) { sBox.style.display = 'none'; return; }
-
     const lang = txt.getAttribute('data-lang');
     let matches = [];
-
-    // --- Context Detection ---
     if (lang === 'html') {
-        const lastChar = textBefore.trim().slice(-1 - currentWord.length, -currentWord.length);
         const inTag = textBefore.lastIndexOf('<') > textBefore.lastIndexOf('>');
         const afterSpaceInTag = inTag && textBefore.slice(-currentWord.length - 1).startsWith(' ');
-
         if (afterSpaceInTag) {
-            // Suggest attributes (class, src, etc)
-            matches = dictionary.html.filter(w => !dictionary.html.includes(w) || ['class','id','src','href','style','type'].includes(w)).filter(w => w.startsWith(currentWord));
+            matches = dictionary.html.filter(w => ['class','id','src','href','style','type'].includes(w)).filter(w => w.startsWith(currentWord));
         } else {
-            // Suggest tags
             matches = dictionary.html.filter(w => w.startsWith(currentWord));
         }
     } else {
         matches = (dictionary[lang] || []).filter(w => w.startsWith(currentWord));
     }
-
     if (matches.length > 0) {
         const rect = txt.getBoundingClientRect();
-        // Simplified position logic
         sBox.style.top = `${rect.top + 35}px`;
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
@@ -301,47 +251,46 @@ function insertWord(word, id) {
     const pos = txt.selectionStart;
     const lang = txt.getAttribute('data-lang');
     const text = txt.value;
-
     const beforePart = text.substring(0, pos);
     const afterPart = text.substring(pos);
     const wordMatch = beforePart.match(/[\w.-]+$/);
     const wordStart = wordMatch ? wordMatch.index : pos;
-
     let wordToInsert = word;
     let cursorOffset = 0;
-
     if (lang === 'html') {
         const inTag = beforePart.lastIndexOf('<') > beforePart.lastIndexOf('>');
-        const afterSpaceInTag = inTag && beforePart.slice(wordStart - 1, wordStart) === ' ';
-
-        if (afterSpaceInTag) {
-            // Inserting attribute: class -> class=""
-            wordToInsert = `${word}=""`;
-            cursorOffset = 1;
+        if (inTag && beforePart.slice(wordStart - 1, wordStart) === ' ') {
+            wordToInsert = `${word}=""`; cursorOffset = 1;
         } else {
-            // Inserting tag: head -> <head></head>
-            wordToInsert = `<${word}></${word}>`;
-            cursorOffset = word.length + 3;
+            wordToInsert = `<${word}></${word}>`; cursorOffset = word.length + 3;
         }
     } else if (lang === 'css') {
-        // Inserting property: color -> color: ;
-        wordToInsert = `${word}: ;`;
-        cursorOffset = 1;
+        wordToInsert = `${word}: ;`; cursorOffset = 1;
     }
-
     const newBefore = text.substring(0, wordStart) + wordToInsert;
     txt.value = newBefore + afterPart;
     txt.selectionStart = txt.selectionEnd = newBefore.length - cursorOffset;
-
     sBox.style.display = 'none';
     txt.focus();
     updateFileContent(txt.getAttribute('data-filename'), txt.value);
 }
 
-// --- 5. THEME & SYSTEM ---
+// --- Utils ---
+function deleteFile(fileName) {
+    if (confirm(`Delete ${fileName}?`)) {
+        delete files[fileName];
+        const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
+        document.getElementById(`box-${safeId}`)?.remove();
+        updateTaskbar();
+    }
+}
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
+function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+function syncScroll(id) { }
+function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
 
-// --- 6. INITIALIZATION ---
-
+// --- Initialization ---
 window.onload = () => {
     updateTaskbar();
     addFileToUI("index.html", "html", files["index.html"].content);
