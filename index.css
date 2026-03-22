@@ -110,16 +110,21 @@ body {
     border-top:1px solid var(--accent);
     margin-top:40px;
 }
-  .settings-panel.open { right: 0; }
+  .settings-panel {
+    position: fixed;
+    right: -350px; /* सुरुवातीला उजव्या बाजूला स्क्रीनच्या बाहेर */
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    transition: right 0.3s ease-in-out; /* स्मूथ स्लाइडिंग */
+    display: none; /* सुरुवातीला बंद */
+    z-index: 9999;
+    padding: 20px;
+}
 
-.s-group { margin-bottom: 20px; }
-.s-group label { display: block; font-size: 11px; color: #8b949e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
-.s-group select, .s-group input {
-    width: 100%;
-    background: #0d1117;
-    border: 1px solid var(--border);
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    outline: none;
+.settings-panel.open {
+    right: 0; /* उघडल्यावर जागेवर येईल */
+    display: block !important;
 }
