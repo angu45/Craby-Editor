@@ -1,12 +1,22 @@
 /**
- * CRABY EDITOR - FULL SYSTEM WITH AUTO-TAG RECOMMENDATION
+ * CRABY EDITOR - ADVANCED AUTO-COMPLETE VERSION
+ * Features: HTML Tags & Attributes, CSS Properties, JS Objects, and Smart Tag Wrapping.
  */
 
-// --- 1. GLOBAL CONFIGURATION ---
+// --- 1. GLOBAL CONFIGURATION (Expanded Dictionary) ---
 const dictionary = {
-    html: ['div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','ul','main','strong','em','hr'],
-    css: ['color','background','margin','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items'],
-    js: ['console.log','document','window','function','const','let','var','if','else','for','forEach','map','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','querySelector','getElementById']
+    html: [
+        // Tags
+        'div','span','h1','h2','h3','p','a','button','input','img','ul','li','article','aside','body','br','canvas','code','footer','form','head','header','html','iframe','label','link','main','nav','ol','script','section','select','style','table','textarea','title','tr','td','strong','em','hr',
+        // Attributes (Triggered after a space inside a tag)
+        'class','id','style','src','href','type','value','placeholder','target','rel','alt','width','height','onclick','onload','name','method','action','required'
+    ],
+    css: [
+        'color','background','background-color','background-image','margin','margin-top','margin-right','margin-bottom','margin-left','padding','display','flex','grid','border','border-radius','box-shadow','cursor','font-family','font-size','font-weight','height','width','opacity','position','top','left','right','bottom','z-index','transition','overflow','justify-content','align-items','text-align','text-decoration','list-style','white-space'
+    ],
+    js: [
+        'console.log','document','window','function','const','let','var','if','else','for','forEach','map','filter','reduce','fetch','addEventListener','setTimeout','setInterval','JSON.stringify','JSON.parse','alert','Math.random','Math.floor','Math.ceil','querySelector','querySelectorAll','getElementById','innerHTML','innerText','style','value','length','push','pop','shift','unshift','split','join','replace','then','catch','async','await'
+    ]
 };
 
 const defaultFiles = {
@@ -18,7 +28,6 @@ const defaultFiles = {
 };
 
 let files = JSON.parse(JSON.stringify(defaultFiles));
-let showLineNumbers = false; 
 let currentActiveFile = null;
 let selectedIndex = 0;
 
@@ -37,21 +46,13 @@ const themes = {
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// Create Suggestion Box UI
+// --- Create Suggestion Box UI ---
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
-// Inline styling for the suggestion box
 Object.assign(sBox.style, {
-    position: 'fixed',
-    display: 'none',
-    zIndex: '10000',
-    background: '#1c1c1c',
-    border: '1px solid #444',
-    borderRadius: '4px',
-    boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
-    minWidth: '150px',
-    maxHeight: '200px',
-    overflowY: 'auto'
+    position: 'fixed', display: 'none', zIndex: '10000', background: '#1c1c1c',
+    border: '1px solid #444', borderRadius: '4px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+    minWidth: '180px', maxHeight: '200px', overflowY: 'auto'
 });
 document.body.appendChild(sBox);
 
@@ -65,19 +66,13 @@ function updateTaskbar() {
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
-        fileItem.style.display = 'flex';
-        fileItem.style.alignItems = 'center';
-        fileItem.style.gap = '12px';
-        fileItem.style.padding = '10px 15px';
-        fileItem.style.margin = '5px 10px';
-        fileItem.style.borderRadius = '8px';
-        fileItem.style.background = 'rgba(255, 255, 255, 0.05)';
-        fileItem.style.cursor = 'pointer';
+        Object.assign(fileItem.style, {
+            display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 15px',
+            margin: '5px 10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', cursor: 'pointer'
+        });
 
-        fileItem.innerHTML = `
-            <i class="fas fa-file-code" style="color: var(--accent); font-size: 1.2rem;"></i> 
-            <span style="color: white; font-size: 0.95rem;">${fileName}</span>
-        `;
+        fileItem.innerHTML = `<i class="fas fa-file-code" style="color: var(--accent); font-size: 1.2rem;"></i> 
+                              <span style="color: white; font-size: 0.95rem;">${fileName}</span>`;
 
         fileItem.onclick = () => {
             addFileToUI(fileName, files[fileName].type, files[fileName].content);
@@ -110,7 +105,6 @@ function addFileToUI(name, type, content = "") {
             </div>
         </div>
         <div class="window-body editor-container" style="display: flex; position: relative; background: #0b1619; overflow: hidden;">
-            <div class="line-numbers" id="${safeId}-lines" style="display: none;"></div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" data-filename="${name}"
                 style="flex: 1; padding: 15px; border: none; outline: none; background: transparent; color: #e0e0e0; resize: none; white-space: pre; overflow: auto; line-height: 1.5; font-family: monospace;"
                 oninput="updateFileContent('${name}', this.value); showSuggestions(this)"
@@ -164,13 +158,9 @@ function beautifyCode(){
         let content = files[fileName].content;
         const type = fileName.split('.').pop().toLowerCase();
         if(!content) return;
-        if(type==="html") {
-            content = content.replace(/>\s*</g,"><").replace(/</g,"\n<").trim();
-        } else if(type==="css") {
-            content = content.replace(/\s*\{\s*/g," {\n  ").replace(/;\s*/g,";\n  ").replace(/\s*\}\s*/g,"\n}\n").trim();
-        } else if(type==="js") {
-            content = content.replace(/\{\s*/g," {\n  ").replace(/\}\s*/g,"\n}\n").replace(/;\s*/g,";\n").trim();
-        }
+        if(type==="html") content = content.replace(/>\s*</g,"><").replace(/</g,"\n<").trim();
+        else if(type==="css") content = content.replace(/\s*\{\s*/g," {\n  ").replace(/;\s*/g,";\n  ").replace(/\s*\}\s*/g,"\n}\n").trim();
+        else if(type==="js") content = content.replace(/\{\s*/g," {\n  ").replace(/\}\s*/g,"\n}\n").replace(/;\s*/g,";\n").trim();
         files[fileName].content = content;
         textareas.forEach(tx => { if(tx.getAttribute("data-filename")===fileName) tx.value = content; });
     });
@@ -178,7 +168,7 @@ function beautifyCode(){
 
 function exportCode() {
     const fileList = Object.keys(files);
-    let promptText = "Type file number to download:\n" + fileList.map((n, i) => `${i+1}. ${n}`).join('\n');
+    let promptText = "Type file number:\n" + fileList.map((n, i) => `${i+1}. ${n}`).join('\n');
     const choice = parseInt(prompt(promptText)) - 1;
     if (fileList[choice]) {
         const blob = new Blob([files[fileList[choice]].content], { type: 'text/plain' });
@@ -200,7 +190,7 @@ function toggleSettings() {
     }
 }
 
-// --- 4. ADVANCED SUGGESTION SYSTEM ---
+// --- 4. ADVANCED SUGGESTION ENGINE ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
@@ -228,23 +218,43 @@ function attachInputListeners(txt) {
 function showSuggestions(txt) {
     const pos = txt.selectionStart;
     const textBefore = txt.value.substring(0, pos);
+    
+    // Get current word
     const words = textBefore.split(/[\s<>{}:;()\[\]"']/);
     const currentWord = words[words.length - 1].toLowerCase();
 
     if (currentWord.length < 1) { sBox.style.display = 'none'; return; }
 
     const lang = txt.getAttribute('data-lang');
-    const matches = (dictionary[lang] || []).filter(w => w.startsWith(currentWord));
+    let matches = [];
+
+    // --- Context Detection ---
+    if (lang === 'html') {
+        const lastChar = textBefore.trim().slice(-1 - currentWord.length, -currentWord.length);
+        const inTag = textBefore.lastIndexOf('<') > textBefore.lastIndexOf('>');
+        const afterSpaceInTag = inTag && textBefore.slice(-currentWord.length - 1).startsWith(' ');
+
+        if (afterSpaceInTag) {
+            // Suggest attributes (class, src, etc)
+            matches = dictionary.html.filter(w => !dictionary.html.includes(w) || ['class','id','src','href','style','type'].includes(w)).filter(w => w.startsWith(currentWord));
+        } else {
+            // Suggest tags
+            matches = dictionary.html.filter(w => w.startsWith(currentWord));
+        }
+    } else {
+        matches = (dictionary[lang] || []).filter(w => w.startsWith(currentWord));
+    }
 
     if (matches.length > 0) {
         const rect = txt.getBoundingClientRect();
+        // Simplified position logic
         sBox.style.top = `${rect.top + 35}px`;
         sBox.style.left = `${rect.left + 20}px`;
         sBox.style.display = 'block';
         selectedIndex = 0;
         sBox.innerHTML = matches.map((m, i) => `
             <div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}')"
-                 style="padding:8px; color:white; cursor:pointer; font-family:monospace; ${i===0?'background:var(--accent); color:black;':''}">
+                 style="padding:8px; color:white; cursor:pointer; font-family:monospace; border-bottom:1px solid #333; ${i===0?'background:var(--accent); color:black;':''}">
                 ${m}
             </div>
         `).join('');
@@ -269,23 +279,31 @@ function insertWord(word, id) {
     const wordMatch = beforePart.match(/[\w.-]+$/);
     const wordStart = wordMatch ? wordMatch.index : pos;
 
-    // --- AUTO TAG LOGIC ---
-    // If it's HTML, wrap the word in tags, otherwise just print the word
     let wordToInsert = word;
+    let cursorOffset = 0;
+
     if (lang === 'html') {
-        // Special logic: if user types 'head', print '<head></head>'
-        wordToInsert = `<${word}></${word}>`;
+        const inTag = beforePart.lastIndexOf('<') > beforePart.lastIndexOf('>');
+        const afterSpaceInTag = inTag && beforePart.slice(wordStart - 1, wordStart) === ' ';
+
+        if (afterSpaceInTag) {
+            // Inserting attribute: class -> class=""
+            wordToInsert = `${word}=""`;
+            cursorOffset = 1;
+        } else {
+            // Inserting tag: head -> <head></head>
+            wordToInsert = `<${word}></${word}>`;
+            cursorOffset = word.length + 3;
+        }
+    } else if (lang === 'css') {
+        // Inserting property: color -> color: ;
+        wordToInsert = `${word}: ;`;
+        cursorOffset = 1;
     }
 
     const newBefore = text.substring(0, wordStart) + wordToInsert;
     txt.value = newBefore + afterPart;
-    
-    // Position cursor inside the tag if HTML (e.g. <head>|</head>)
-    if (lang === 'html') {
-        txt.selectionStart = txt.selectionEnd = newBefore.length - (word.length + 3);
-    } else {
-        txt.selectionStart = txt.selectionEnd = newBefore.length;
-    }
+    txt.selectionStart = txt.selectionEnd = newBefore.length - cursorOffset;
 
     sBox.style.display = 'none';
     txt.focus();
@@ -308,8 +326,6 @@ function updateThemeAndFont() {
 }
 
 function updateFontSize(val) {
-    const display = document.getElementById('font-size-val');
-    if(display) display.innerText = val + "px";
     document.querySelectorAll('textarea').forEach(tx => { tx.style.fontSize = val + "px"; });
 }
 
@@ -326,9 +342,7 @@ function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='n
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
 function syncScroll(id) { }
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
-function updateLineNumbers(id) {} 
 function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
-function setPreviewSize(w) { document.getElementById('output-frame').style.width = w; }
 
 function saveSettings() {
     const s = { 
@@ -338,8 +352,6 @@ function saveSettings() {
     };
     localStorage.setItem('craby_settings', JSON.stringify(s));
 }
-
-function resetAllSettings() { if(confirm("Reset all?")) { localStorage.removeItem('craby_settings'); location.reload(); } }
 
 // --- 6. INITIALIZATION ---
 
@@ -352,7 +364,6 @@ window.onload = () => {
     if(saved) {
         const s = JSON.parse(saved);
         if(document.getElementById('theme-sel')) document.getElementById('theme-sel').value = s.theme;
-        if(document.getElementById('font-family-sel')) document.getElementById('font-family-sel').value = s.font;
         updateFontSize(s.size);
     }
     updateThemeAndFont();
