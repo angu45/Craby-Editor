@@ -8,7 +8,17 @@
     --border: rgba(255, 255, 255, 0.1);
     --window-header-bg: #21262d;
 }
-
+.syn-tag { color: #ff7b72; }
+.syn-attr { color: #79c0ff; }
+.syn-str { color: #a5d6ff; }
+.syn-kw { color: #ff7b72; }
+.syn-type { color: #ffa657; }
+.syn-fn { color: #d2a8ff; }
+.syn-num { color: #79c0ff; }
+.syn-def { color: #c9d1d9; }
+.syn-op { color: #6e7681; }
+.syn-cmt { color: #8b949e; font-style: italic; }
+.syn-pre { color: #7ee787; }
 
 body {
     background: var(--bg-main);
