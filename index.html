@@ -171,6 +171,19 @@ body{
     border-top:1px solid var(--accent);
     margin-top:40px;
 }
+  .settings-panel.open { right: 0; }
+
+.s-group { margin-bottom: 20px; }
+.s-group label { display: block; font-size: 11px; color: #8b949e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+.s-group select, .s-group input {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    outline: none;
+}
 </style>
 <script src="tag.js"></script>
 </head>
@@ -181,6 +194,7 @@ body{
 <div class="topbar">
  <a href="index.html" class="logo">
     <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+           <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-sliders-h"></i></button>
     </a></div>
 
 <!-- HERO -->
@@ -223,6 +237,58 @@ body{
         </div>
     </div>
 </div>
+  <div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <i class="fas fa-times" onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d;"></i>
+    </div>
+
+    <div class="s-group">
+        <label>Show/Hide Editors</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="chk-html" checked onchange="updateVisibility()"> HTML</label>
+            <label><input type="checkbox" id="chk-css" checked onchange="updateVisibility()"> CSS</label>
+            <label><input type="checkbox" id="chk-js" checked onchange="updateVisibility()"> JS</label>
+        </div>
+    </div>
+
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+            <option value="'Roboto Mono', monospace">Roboto Mono</option>
+            <option value="'Ubuntu Mono', monospace">Ubuntu Mono</option>
+            <option value="'Courier New', monospace">Courier New</option>
+        </select>
+    </div>
+
+    <div class="s-group">
+        <label>Font Size: <span id="font-size-val">14px</span></label>
+        <input type="range" id="font-size-range" min="5" max="50" value="14" oninput="updateFontSize(this.value)">
+    </div>
+
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="cyberpunk">Cyberpunk Neon</option>
+            <option value="matrix">Matrix Green</option>
+            <option value="nord">Nordic Blue</option>
+            <option value="midnight">Midnight Deep</option>
+            <option value="solarized">Solarized Dark</option>
+            <option value="oceanic">Oceanic Blue</option>
+            <option value="evergreen">Evergreen Forest</option>
+            <option value="midnight_purple">Midnight Purple</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+  </div>
 
 <!-- FOOTER -->
 <div class="footer">
@@ -235,6 +301,6 @@ function openEditor(){
     window.location.href = "https://craby-editor.vercel.app/html-editor.html";
 }
 </script>
-
+<script src="script1.js"></script>
 </body>
 </html>
