@@ -15,13 +15,77 @@ const themes = {
 function openEditor(){
     window.location.href = "https://craby-editor.vercel.app/html-editor.html";
 }
+
+function saveSettings() {
+    const settings = {
+        theme: document.getElementById('theme-sel').value,
+        fontSize: document.getElementById('font-size-range').value,
+        fontFamily: document.getElementById('font-family-sel').value,
+        visibility: {
+            html: document.getElementById('chk-html').checked,
+            css: document.getElementById('chk-css').checked,
+            js: document.getElementById('chk-js').checked
+        }
+    };
+    localStorage.setItem('craby_settings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+    const saved = localStorage.getItem('craby_settings');
+    if (!saved) return;
+    const settings = JSON.parse(saved);
+
+    if(settings.theme) document.getElementById('theme-sel').value = settings.theme;
+    if(settings.fontSize) {
+        document.getElementById('font-size-range').value = settings.fontSize;
+        document.getElementById('font-size-val').innerText = settings.fontSize + "px";
+        updateFontSize(settings.fontSize);
+    }
+    if(settings.fontFamily) document.getElementById('font-family-sel').value = settings.fontFamily;
+    if(settings.visibility) {
+        document.getElementById('chk-html').checked = settings.visibility.html;
+        document.getElementById('chk-css').checked = settings.visibility.css;
+        document.getElementById('chk-js').checked = settings.visibility.js;
+        updateVisibility();
+    }
+    if(typeof updateThemeAndFont === "function") updateThemeAndFont();
+}
+
 function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
+    if (!panel) return;
     if (panel.style.display === 'none' || !panel.classList.contains('open')) {
         panel.style.display = 'block';
         setTimeout(() => panel.classList.add('open'), 10);
     } else {
         panel.classList.remove('open');
-        setTimeout(() => { panel.style.display = 'none'; saveSettings(); }, 300);
+        setTimeout(() => {
+            panel.style.display = 'none';
+            saveSettings();
+        }, 300);
+    }
+}
+
+function updateVisibility() {
+    const htmlBox = document.querySelector('[id*="index-html"]')?.closest('.window-frame');
+    const cssBox = document.querySelector('[id*="style-css"]')?.closest('.window-frame');
+    const jsBox = document.querySelector('[id*="script-js"]')?.closest('.window-frame');
+
+    if(htmlBox) htmlBox.style.display = document.getElementById('chk-html').checked ? 'flex' : 'none';
+    if(cssBox) cssBox.style.display = document.getElementById('chk-css').checked ? 'flex' : 'none';
+    if(jsBox) jsBox.style.display = document.getElementById('chk-js').checked ? 'flex' : 'none';
+}
+
+function updateFontSize(val) {
+    document.getElementById('font-size-val').innerText = val + "px";
+    document.querySelectorAll('textarea').forEach(tx => {
+        tx.style.fontSize = val + "px";
+    });
+}
+
+function resetAllSettings() {
+    if(confirm("Reset all settings to default?")) {
+        localStorage.removeItem('craby_settings');
+        location.reload();
     }
 }
