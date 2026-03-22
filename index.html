@@ -1,30 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z0BGJ1913H', {
+            'page_path': window.location.pathname,
+            'cookie_flags': 'SameSite=None;Secure'
+        });
+    </script>
 
-  gtag('config', 'G-Z0BGJ1913H');
-</script>
-
-
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Craby Editor - Free Online HTML, CSS, JS Editor with Live Preview</title>
     <meta name="title" content="Craby Editor - Free Online HTML, CSS, JS Editor with Live Preview">
-    <meta name="description" content="Craby Editor is a fast, free, and powerful online HTML, CSS, and JavaScript editor. Write code, preview instantly, and download your web projects. The best lightweight IDE for developers.">
+    <meta name="description" content="Craby Editor is a fast, free, and powerful online HTML, CSS, and JavaScript editor. Write code, preview instantly, and download your web projects.">
     <meta name="keywords" content="online html editor, live html preview, free code editor, web development tool, online compiler, craby editor, html css js compiler, mobile friendly code editor, best online ide, craby html editor, anguworkshop,html editor for android,best html editor for android">
     <meta name="author" content="Anguworkshop">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://craby-editor.vercel.app/">
-
-    <meta name="google-site-verification" content="YOUR_CODE_HERE" />
 
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://craby-editor.vercel.app/">
@@ -39,19 +37,12 @@
     <meta property="twitter:description" content="Fastest way to write and test web code online with Craby Editor.">
     <meta property="twitter:image" content="https://i.ibb.co/4RTqDGvH/apple-touch-icon-180x180-1.png">
 
-   <!-- Basic Favicon -->
-<link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
-
-<!-- Apple Devices -->
-<link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
-
-<!-- Android / Chrome -->
-<link rel="icon" type="image/png" sizes="192x192" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
-<link rel="icon" type="image/png" sizes="512x512" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="tag.js"></script>
 
     <script type="application/ld+json">
     {
@@ -68,221 +59,230 @@
     }
     </script>
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z0BGJ1913H', {
-          'page_path': window.location.pathname,
-          'cookie_flags': 'SameSite=None;Secure'
-      });
-    </script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --accent: #ffb400;
+            --text: #c9d1d9;
+        }
 
-    <script src="tag.js"></script>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
 
-<style>
-:root{
-    --bg:#0d1117;
-    --panel:#161b22;
-    --accent:#ffb400;
-    --text:#c9d1d9;
-}
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #010409;
+            border-bottom: 2px solid var(--accent);
+        }
 
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
 
-/* TOPBAR */
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 20px;
-    background:#010409;
-    border-bottom:2px solid var(--accent);
-}
+        .logo img {
+            height: 35px;
+        }
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
+        .logo span {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
 
-.logo img{
-    height:35px;
-}
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
 
-.logo span{
-    color:var(--accent);
-    font-weight:bold;
-}
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
 
-.nav{
-    display:flex;
-    gap:20px;
-}
+        .nav a:hover {
+            color: var(--accent);
+        }
 
-.nav a{
-    color:white;
-    text-decoration:none;
-    font-size:14px;
-}
+        /* HERO */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
 
-/* HERO */
-.hero{
-    text-align:center;
-    padding:60px 20px;
-}
+        .hero h1 {
+            font-size: 40px;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
 
-.hero h1{
-    font-size:40px;
-    color:var(--accent);
-}
+        .hero p {
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+        }
 
-.hero p{
-    max-width:600px;
-    margin:auto;
-    margin-top:10px;
-}
+        .btn {
+            padding: 12px 30px;
+            background: var(--accent);
+            color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: transform 0.2s, opacity 0.8s;
+        }
 
-.btn{
-    margin-top:25px;
-    padding:12px 25px;
-    background:var(--accent);
-    color:black;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
-}
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
 
-/* INFO SECTION */
-.section{
-    padding:40px 20px;
-}
+        /* SECTIONS */
+        .section {
+            padding: 60px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-}
+        .section h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--accent);
+        }
 
-.card{
-    background:var(--panel);
-    padding:20px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.1);
-}
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
 
-/* TAG BOX */
-.code-box{
-    background:black;
-    padding:15px;
-    border-radius:8px;
-    color:#00ffcc;
-    font-family:monospace;
-    margin-top:10px;
-}
+        .card {
+            background: var(--panel);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-/* FOOTER */
-.footer{
-    text-align:center;
-    padding:20px;
-    background:#010409;
-    border-top:1px solid var(--accent);
-    margin-top:40px;
-}
-</style>
+        .card h3 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        /* CODE BOX */
+        .code-box {
+            background: black;
+            padding: 20px;
+            border-radius: 8px;
+            color: #00ffcc;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: #010409;
+            border-top: 1px solid var(--accent);
+            margin-top: 60px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 
-<body><noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TTVQBL6S"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+<body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TTVQBL6S" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
+    <header class="topbar">
+        <a href="index.html" class="logo">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+            <span>Craby Editor</span>
+        </a>
 
-<!-- TOPBAR -->
-<div class="topbar">
-    <div class="logo">
-        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png">
-        <span>Craby Editor</span>
-    </div>
+        <nav class="nav">
+            <a href="index.html">Home</a>
+            <a href="#features">Features</a>
+            <a href="#tags">HTML Tags</a>
+        </nav>
+    </header>
 
-    <div class="nav">
-        <a href="#">Home</a>
-        <a href="#features">Features</a>
-        <a href="#tags">HTML Tags</a>
-    </div>
-</div>
+    <section class="hero">
+        <h1>Build Code Faster 🚀</h1>
+        <p>Craby Editor is a powerful online HTML, CSS, and JavaScript editor with instant live preview.</p>
+        <button class="btn" onclick="openEditor()">Open Editor</button>
+    </section>
 
-<!-- HERO -->
-<div class="hero">
-    <h1>Build Code Faster 🚀</h1>
-    <p>Craby Editor is a powerful online HTML, CSS, and JavaScript editor with instant live preview.</p>
+    <section class="section" id="features">
+        <h2>✨ Features</h2>
+        <div class="cards">
+            <article class="card">
+                <h3>Live Preview</h3>
+                <p>See your code output instantly as you type.</p>
+            </article>
 
-    <button class="btn" onclick="openEditor()">Open Editor</button>
-</div>
+            <article class="card">
+                <h3>Multi File Support</h3>
+                <p>Seamlessly work with HTML, CSS, and JS files in one environment.</p>
+            </article>
 
-<!-- FEATURES -->
-<div class="section" id="features">
-    <h2>✨ Features</h2>
-    <div class="cards">
+            <article class="card">
+                <h3>Fast & Lightweight</h3>
+                <p>Runs directly in your browser without any installation needed.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="section" id="tags">
+        <h2>📘 Basic HTML Tags</h2>
         <div class="card">
-            <h3>Live Preview</h3>
-            <p>See your code output instantly.</p>
+            <p>Example of a simple HTML structure:</p>
+            <div class="code-box">
+                &lt;html&gt;<br>
+                &nbsp;&nbsp;&lt;body&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Hello World&lt;/h1&gt;<br>
+                &nbsp;&nbsp;&lt;/body&gt;<br>
+                &lt;/html&gt;
+            </div>
+
+            <p><strong>Common Tags:</strong></p>
+            <ul>
+                <li><code>&lt;h1&gt;</code> &mdash; Main Heading</li>
+                <li><code>&lt;p&gt;</code> &mdash; Paragraph text</li>
+                <li><code>&lt;a&gt;</code> &mdash; Hyperlink</li>
+                <li><code>&lt;img&gt;</code> &mdash; Image element</li>
+            </ul>
         </div>
+    </section>
 
-        <div class="card">
-            <h3>Multi File Support</h3>
-            <p>Work with HTML, CSS & JS files.</p>
-        </div>
+    <footer class="footer">
+        <p>Craby Editor - Free Online Code Editor</p>
+        <p>&copy; 2026 Craby Editor</p>
+    </footer>
 
-        <div class="card">
-            <h3>Fast & Lightweight</h3>
-            <p>Runs directly in your browser.</p>
-        </div>
-    </div>
-</div>
-
-<!-- HTML TAGS INFO -->
-<div class="section" id="tags">
-    <h2>📘 Basic HTML Tags</h2>
-
-    <div class="card">
-        <p>Example of a simple HTML structure:</p>
-
-        <div class="code-box">
-&lt;html&gt;<br>
-&nbsp;&nbsp;&lt;body&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Hello World&lt;/h1&gt;<br>
-&nbsp;&nbsp;&lt;/body&gt;<br>
-&lt;/html&gt;
-        </div>
-
-        <p><b>Common Tags:</b></p>
-        <ul>
-            <li>&lt;h1&gt; → Heading</li>
-            <li>&lt;p&gt; → Paragraph</li>
-            <li>&lt;a&gt; → Link</li>
-            <li>&lt;img&gt; → Image</li>
-        </ul>
-    </div>
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-    <p>Craby Editor - Free Online Code Editor</p>
-    <p>© 2026 Craby Editor</p>
-</div>
-
-<script>
-function openEditor(){
-    window.location.href = "https://craby-editor.vercel.app/html-editor.html";
-}
-</script>
-
+    <script>
+        function openEditor() {
+            window.location.href = "https://craby-editor.vercel.app/html-editor.html";
+        }
+    </script>
 </body>
 </html>
