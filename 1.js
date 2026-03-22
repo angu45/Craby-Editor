@@ -284,17 +284,19 @@ function toggleSettings() {
 }
 
 // --- 4. SUGGESTION & UTILS ---
-// --- 4. ENHANCED SUGGESTION & RECOMMENDATION LOGIC ---
+// --- 4. SMART AUTO-COMPLETE & TAG WRAPPING ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
         const items = document.querySelectorAll('.suggestion-item');
+        const lang = txt.getAttribute('data-lang');
         
-        // If suggestion box is open, handle navigation
+        // IF SUGGESTION BOX IS OPEN
         if (sBox.style.display === 'block' && items.length > 0) {
             if (e.key === 'Enter' || e.key === 'Tab') {
                 e.preventDefault();
-                insertWord(items[selectedIndex].innerText, txt.id);
+                const selectedWord = items[selectedIndex].innerText;
+                insertWord(selectedWord, txt.id, lang);
             } 
             else if (e.key === 'ArrowDown') {
                 e.preventDefault();
@@ -306,14 +308,20 @@ function attachInputListeners(txt) {
                 selectedIndex = (selectedIndex - 1 + items.length) % items.length;
                 updateHighlight(items);
             }
-            else if (e.key === 'Escape') {
-                sBox.style.display = 'none';
+        } 
+        // IF BOX IS CLOSED BUT USER PRESSES ENTER (Emmet Style)
+        else if (e.key === 'Enter' && lang === 'html') {
+            const pos = txt.selectionStart;
+            const line = txt.value.substring(0, pos).split(/\s/).pop();
+            if (dictionary.html.includes(line)) {
+                e.preventDefault();
+                insertWord(line, txt.id, 'html');
             }
         }
     });
 
     txt.addEventListener('input', (e) => {
-        // Auto-pairing logic
+        // Auto-pairing for brackets/quotes
         const pos = txt.selectionStart;
         const char = e.data;
         const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
@@ -321,39 +329,48 @@ function attachInputListeners(txt) {
             txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
             txt.selectionStart = txt.selectionEnd = pos;
         } 
-        
-        // Trigger Recommendations
         showSuggestions(txt);
     });
-
-    // Close suggestion box if user clicks away
-    txt.addEventListener('click', () => { sBox.style.display = 'none'; });
 }
 
-function showSuggestions(txt) {
+function insertWord(word, id, lang) {
+    const txt = document.getElementById(id);
     const pos = txt.selectionStart;
-    const textBeforeCursor = txt.value.substring(0, pos);
+    const text = txt.value;
     
-    // Get the last word being typed (splits by common separators)
-    const words = textBeforeCursor.split(/[\s<>{}:;()\[\]"']/);
-    const currentWord = words[words.length - 1].toLowerCase();
+    // Find the start of the word being typed
+    const beforePart = text.substring(0, pos);
+    const afterPart = text.substring(pos);
+    const wordMatch = beforePart.match(/[\w.-]+$/);
+    const wordStart = wordMatch ? wordMatch.index : pos;
 
-    // Don't show if typing is too short
-    if (currentWord.length < 1) { 
-        sBox.style.display = 'none'; 
-        return; 
+    // Logic: If it's HTML, wrap it in tags. Otherwise, just print the word.
+    let injection = word;
+    let cursorOffset = word.length;
+
+    if (lang === 'html') {
+        // Check if it's a "void" tag (tags that don't need closing like <img>)
+        const voidTags = ['img', 'br', 'hr', 'input', 'link', 'meta'];
+        if (voidTags.includes(word)) {
+            injection = `<${word}>`;
+            cursorOffset = injection.length;
+        } else {
+            injection = `<${word}></${word}>`;
+            cursorOffset = word.length + 2; // Places cursor inside the tags: <head>here</head>
+        }
     }
 
-    const lang = txt.getAttribute('data-lang');
-    // Filter the ENTIRE dictionary for that specific language
-    const matches = (dictionary[lang] || []).filter(w => w.startsWith(currentWord));
-
-    if (matches.length > 0) {
-        renderSuggestionBox(txt, matches);
-    } else {
-        sBox.style.display = 'none';
-    }
+    const newBefore = text.substring(0, wordStart) + injection;
+    txt.value = newBefore + afterPart;
+    
+    // Set cursor position
+    txt.selectionStart = txt.selectionEnd = wordStart + cursorOffset;
+    
+    sBox.style.display = 'none';
+    txt.focus();
+    updateFileContent(txt.getAttribute('data-filename'), txt.value);
 }
+
 
 function renderSuggestionBox(txt, matches) {
     const rect = txt.getBoundingClientRect();
