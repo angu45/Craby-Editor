@@ -1,10 +1,10 @@
 /**
- * CRABY EDITOR - UNIVERSAL THEME & SETTINGS
- * हा कोड सर्व पेजेसवर (Index, Editor, इ.) सारखाच काम करेल.
+ * CRABY EDITOR - UNIVERSAL THEME & SETTINGS (Final Optimized Version)
+ * हा कोड Index Page आणि Editor Page दोन्हीवर सारखाच काम करतो.
  */
 
 const themes = {
-    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#9cdcfe', border: '#30363d' }, 
+    dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#c9d1d9', border: '#30363d' }, 
     light: { bg: '#eef1f4', panel: '#ffffff', accent: '#f59e0b', text: '#374151', border: '#e5e7eb' },  
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
@@ -21,13 +21,33 @@ const themes = {
 // --- १. थीम लागू करणारे मुख्य फंक्शन ---
 function applyGlobalSettings() {
     const saved = localStorage.getItem('craby_settings');
-    if (!saved) return;
+    if (!saved) {
+        // जर काहीच सेव्ह नसेल तर डीफॉल्ट डार्क थीम लावा
+        updateCSSVariables(themes.dark, 'monospace', 14);
+        return;
+    }
 
     const s = JSON.parse(saved);
     const theme = themes[s.theme] || themes.dark;
     const font = s.font || 'monospace';
+    const size = s.size || 14;
 
-    // संपूर्ण वेबसाइटचे CSS Variables सेट करणे (:root ला लागू होतात)
+    updateCSSVariables(theme, font, size);
+
+    // सेटिंग पॅनेल मधील इनपुट अपडेट करणे (जर अस्तित्वात असतील तर)
+    const themeSel = document.getElementById('theme-sel');
+    const fontSel = document.getElementById('font-family-sel');
+    const sizeRange = document.getElementById('font-size-range');
+    const sizeValDisplay = document.getElementById('font-size-val');
+
+    if(themeSel) themeSel.value = s.theme;
+    if(fontSel) fontSel.value = s.font;
+    if(sizeRange) sizeRange.value = s.size;
+    if(sizeValDisplay) sizeValDisplay.innerText = s.size + "px";
+}
+
+// --- २. CSS व्हेरिएबल्स अपडेट करणे ---
+function updateCSSVariables(theme, font, size) {
     const root = document.documentElement;
     root.style.setProperty('--bg', theme.bg);
     root.style.setProperty('--panel', theme.panel);
@@ -35,54 +55,36 @@ function applyGlobalSettings() {
     root.style.setProperty('--text', theme.text);
     root.style.setProperty('--border', theme.border);
 
-    // Body चा बॅकग्राउंड आणि फॉन्ट बदलणे (Index page साठी महत्त्वाचे)
-    document.body.style.backgroundColor = theme.bg;
-    document.body.style.color = theme.text;
+    // Body आणि संपूर्ण पेजचा फॉन्ट
     document.body.style.fontFamily = font;
 
-    // सर्व Textareas अपडेट करणे (जर Editor पेजवर असाल तर)
+    // सर्व Textareas अपडेट करणे (Editor साठी)
     document.querySelectorAll('textarea').forEach(tx => { 
         tx.style.fontFamily = font; 
-        tx.style.fontSize = s.size + "px";
-        tx.style.color = theme.text; 
-        tx.style.background = theme.bg; 
+        tx.style.fontSize = size + "px";
+        tx.style.color = theme.text;
     });
-
-    // ड्रॉपडाऊन आणि रेंज इनपुटची व्हॅल्यू सेट करणे (जर सेटिंग पॅनेल उघडे असेल तर)
-    if(document.getElementById('theme-sel')) document.getElementById('theme-sel').value = s.theme;
-    if(document.getElementById('font-family-sel')) document.getElementById('font-family-sel').value = s.font;
-    if(document.getElementById('font-size-range')) document.getElementById('font-size-range').value = s.size;
 }
 
-// --- २. सेटिंग सेव्ह करणे ---
+// --- ३. सेटिंग सेव्ह करणे ---
 function saveSettings() {
     const themeVal = document.getElementById('theme-sel')?.value || 'dark';
-    const sizeVal = document.getElementById('font-size-range')?.value || '16';
+    const sizeVal = document.getElementById('font-size-range')?.value || '14';
     const fontVal = document.getElementById('font-family-sel')?.value || 'monospace';
 
     const s = { theme: themeVal, size: sizeVal, font: fontVal };
     localStorage.setItem('craby_settings', JSON.stringify(s));
     
-    // सेव्ह केल्या केल्या लगेच लागू करा
+    // लगेच बदल लागू करा
     applyGlobalSettings();
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    const panel = document.getElementById('settingsPanel');
-    if(panel) {
-        panel.style.display = 'none'; // रिलोड झाल्यावर सक्तीने बंद करा
-        panel.classList.remove('open');
-    }
-    applyGlobalSettings(); // ही तुमची आधीची फंक्शन आहे जी थीम लोड करते
-});
-
-function updateThemeAndFont() { saveSettings(); }
-function updateFontSize(val) { saveSettings(); }
-
+// --- ४. सेटिंग पॅनेल चालू/बंद करणे ---
 function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
     if (!panel) return;
-    if (panel.style.display === 'none' || !panel.classList.contains('open')) {
+
+    if (panel.style.display === 'none' || panel.style.display === '' || !panel.classList.contains('open')) {
         panel.style.display = 'block';
         setTimeout(() => panel.classList.add('open'), 10);
     } else {
@@ -90,6 +92,24 @@ function toggleSettings() {
         setTimeout(() => { 
             panel.style.display = 'none'; 
             saveSettings(); 
-        }, 300);
+        }, 400); // CSS transition शी मॅच करा
     }
 }
+
+// --- ५. रॅपिड अपडेट फंक्शन्स (On Input/Change) ---
+function updateThemeAndFont() { saveSettings(); }
+function updateFontSize(val) { 
+    const display = document.getElementById('font-size-val');
+    if(display) display.innerText = val + "px";
+    saveSettings(); 
+}
+
+// --- ६. इनीशियलायझेशन (DOM लोड झाल्यावर) ---
+window.addEventListener('DOMContentLoaded', () => {
+    const panel = document.getElementById('settingsPanel');
+    if(panel) {
+        panel.style.display = 'none'; // सुरुवातीला लपवा
+        panel.classList.remove('open');
+    }
+    applyGlobalSettings(); // सेव्ह केलेली थीम लोड करा
+});
