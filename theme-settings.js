@@ -1,5 +1,6 @@
 /**
- * CRABY EDITOR - THEME & SETTINGS MODULE
+ * CRABY EDITOR - UNIVERSAL THEME & SETTINGS
+ * हा कोड सर्व पेजेसवर (Index, Editor, इ.) सारखाच काम करेल.
  */
 
 const themes = {
@@ -17,40 +18,65 @@ const themes = {
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-function updateThemeAndFont() {
-    const tKey = document.getElementById('theme-sel')?.value || 'dark';
-    const font = document.getElementById('font-family-sel')?.value || 'monospace';
-    const theme = themes[tKey] || themes.dark;
-    
-    document.documentElement.style.setProperty('--bg', theme.bg);
-    document.documentElement.style.setProperty('--panel', theme.panel);
-    document.documentElement.style.setProperty('--accent', theme.accent);
-    document.documentElement.style.setProperty('--border', theme.border);
-    
+// --- १. थीम लागू करणारे मुख्य फंक्शन ---
+function applyGlobalSettings() {
+    const saved = localStorage.getItem('craby_settings');
+    if (!saved) return;
+
+    const s = JSON.parse(saved);
+    const theme = themes[s.theme] || themes.dark;
+    const font = s.font || 'monospace';
+
+    // संपूर्ण वेबसाइटचे CSS Variables सेट करणे (:root ला लागू होतात)
+    const root = document.documentElement;
+    root.style.setProperty('--bg', theme.bg);
+    root.style.setProperty('--panel', theme.panel);
+    root.style.setProperty('--accent', theme.accent);
+    root.style.setProperty('--text', theme.text);
+    root.style.setProperty('--border', theme.border);
+
+    // Body चा बॅकग्राउंड आणि फॉन्ट बदलणे (Index page साठी महत्त्वाचे)
+    document.body.style.backgroundColor = theme.bg;
+    document.body.style.color = theme.text;
+    document.body.style.fontFamily = font;
+
+    // सर्व Textareas अपडेट करणे (जर Editor पेजवर असाल तर)
     document.querySelectorAll('textarea').forEach(tx => { 
         tx.style.fontFamily = font; 
+        tx.style.fontSize = s.size + "px";
         tx.style.color = theme.text; 
         tx.style.background = theme.bg; 
     });
+
+    // ड्रॉपडाऊन आणि रेंज इनपुटची व्हॅल्यू सेट करणे (जर सेटिंग पॅनेल उघडे असेल तर)
+    if(document.getElementById('theme-sel')) document.getElementById('theme-sel').value = s.theme;
+    if(document.getElementById('font-family-sel')) document.getElementById('font-family-sel').value = s.font;
+    if(document.getElementById('font-size-range')) document.getElementById('font-size-range').value = s.size;
 }
 
-function updateFontSize(val) {
-    document.querySelectorAll('textarea').forEach(tx => { 
-        tx.style.fontSize = val + "px"; 
-    });
-}
-
+// --- २. सेटिंग सेव्ह करणे ---
 function saveSettings() {
-    const s = { 
-        theme: document.getElementById('theme-sel').value, 
-        size: document.getElementById('font-size-range').value, 
-        font: document.getElementById('font-family-sel').value 
-    };
+    const themeVal = document.getElementById('theme-sel')?.value || 'dark';
+    const sizeVal = document.getElementById('font-size-range')?.value || '16';
+    const fontVal = document.getElementById('font-family-sel')?.value || 'monospace';
+
+    const s = { theme: themeVal, size: sizeVal, font: fontVal };
     localStorage.setItem('craby_settings', JSON.stringify(s));
+    
+    // सेव्ह केल्या केल्या लगेच लागू करा
+    applyGlobalSettings();
 }
+
+// --- ३. इनीशियलायझेशन (पेज लोड झाल्यावर) ---
+window.addEventListener('DOMContentLoaded', applyGlobalSettings);
+
+// एक्सपोर्ट केलेले जुने फंक्शन्स (सुसंगततेसाठी)
+function updateThemeAndFont() { saveSettings(); }
+function updateFontSize(val) { saveSettings(); }
 
 function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
+    if (!panel) return;
     if (panel.style.display === 'none' || !panel.classList.contains('open')) {
         panel.style.display = 'block';
         setTimeout(() => panel.classList.add('open'), 10);
