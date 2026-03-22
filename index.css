@@ -5,13 +5,18 @@
     --text:#c9d1d9;
 }
 
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:var(--bg);
-    color:var(--text);
-}
-
+body {
+        background-color: var(--bg);
+        color: var(--text);
+        transition: background 0.3s ease; /* स्मूथ बदलण्यासाठी */
+    }
+    .header, .navbar, .sidebar {
+        background-color: var(--panel);
+        border-color: var(--border);
+    }
+    button, .active {
+        background-color: var(--accent);
+    }
 /* TOPBAR */
 .topbar{
     display:flex;
