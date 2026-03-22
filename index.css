@@ -146,42 +146,131 @@ logo-container { display: flex; align-items: center; gap: 10px; }
     background:#010409;
     border-top:1px solid var(--accent);
     margin-top:40px;
-}
-  .settings-panel {
-    position: fixed;
-    right: -350px; /* सुरुवातीला उजव्या बाजूला स्क्रीनच्या बाहेर */
-    top: 0;
-    width: 300px;
-    height: 100%;
-    background: var(--panel);
-    border-left: 1px solid var(--border);
-    transition: right 0.3s ease-in-out; /* स्मूथ स्लाइडिंग */
-    display: none; /* सुरुवातीला बंद */
-    z-index: 9999;
-    padding: 20px;
-}
-
-.settings-panel.open {
-    right: 0; /* उघडल्यावर जागेवर येईल */
-    display: block !important;
-}
+}/* --- SETTINGS PANEL (RIGHT SLIDER) --- */
 .settings-panel {
     position: fixed;
-    right: -320px;
+    right: -320px; /* सुरुवातीला स्क्रीनच्या बाहेर */
     top: 0;
     width: 300px;
     height: 100%;
-    /* Glass Effect: Background with Blur */
-    background: rgba(22, 27, 34, 0.7); 
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    background: rgba(22, 27, 34, 0.95); /* थोडा पारदर्शक बॅकग्राउंड */
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
     border-left: 1.5px solid var(--accent);
     transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 4000; 
     padding: 20px;
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    display: block; /* JS display:block करेल, तरीही इथे खबरदारी म्हणून */
+    overflow-y: auto;
 }
 
+/* जेव्हा पॅनल उघडलेले असेल */
 .settings-panel.open { 
-    right: 0; 
+    right: 0 !important; 
 }
+
+/* Settings Group & Elements */
+.s-group { margin-bottom: 20px; }
+
+.s-group label { 
+    display: block; 
+    font-size: 11px; 
+    color: #8b949e; 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+}
+
+.s-group select, .s-group input[type="range"] {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    outline: none;
+}
+
+.checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; }
+.checkbox-group label { 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    font-size: 13px; 
+    cursor: pointer; 
+    color: white;
+    text-transform: none; /* Checkbox labels साठी uppercase नको */
+}
+
+/* Save/Action Button inside Panel */
+.add-btn {
+    width: 100%; 
+    padding: 12px; 
+    background: var(--accent); 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer;
+    transition: 0.3s;
+}
+.add-btn:hover {
+    background: #fff;
+    color: #000;
+}
+/* --- HEADER: FIXED & STICKY --- */
+header, .topbar {
+    height: 60px;
+    background: var(--bg-header);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 2px solid var(--accent);
+    position: sticky; 
+    top: 0;
+    z-index: 3000; 
+}
+
+/* Logo Styling */
+.logo-container, .logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    text-decoration: none;
+}
+.logo img { height: 35px; width: auto; }
+.logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
+
+/* Header Actions & Buttons */
+.header-actions { display: flex; gap: 10px; align-items: center; }
+
+.icon-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-btn:hover { 
+    background: #1c2128; 
+    border-color: var(--accent); 
+}
+
+.icon-btn i { color: var(--accent); }
+
+/* Run Button Special Styling */
+.run-btn {
+    background: rgba(255, 180, 0, 0.1) !important;
+    border: 1px solid var(--accent) !important;
+    color: var(--accent) !important;
+    font-weight: 800;
+}
+.run-btn:hover { background: var(--accent) !important; color: #000 !important; }
