@@ -352,3 +352,20 @@ textarea:focus {
     border-radius: 4px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
+/* Editor Display Layer */
+.highlight-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    padding: 15px; box-sizing: border-box;
+    pointer-events: none; white-space: pre-wrap; word-wrap: break-word;
+    font-family: monospace; font-size: 14px; line-height: 1.5;
+    overflow: hidden; z-index: 1;
+}
+
+/* Syntax Colors */
+.hl-html-tag { color: #ff5572; font-weight: bold; } /* Tags */
+.hl-html-attr { color: #ffcb6b; }                  /* Attributes */
+.hl-css-prop { color: #80cbc4; }                   /* CSS Property */
+.hl-js-kw { color: #c792ea; }                      /* JS Keywords */
+.hl-js-func { color: #caff33; }                    /* JS Functions/Methods */
+.hl-str { color: #c3e88d; }                        /* Strings "" */
+.hl-num { color: #f78c6c; }                        /* Numbers */
