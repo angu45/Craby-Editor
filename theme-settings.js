@@ -113,3 +113,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     applyGlobalSettings(); // सेव्ह केलेली थीम लोड करा
 });
+function openEditor(){
+    window.location.href = "https://craby-editor.vercel.app/html-editor.html";
+}
