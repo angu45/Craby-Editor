@@ -71,13 +71,17 @@
 
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
- <a href="index.html" class="logo">
-    <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
-           <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-sliders-h"></i></button>
-    </a></div>
-
+    <header>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="beautifyCode()" title="Format Code"><i class="fas fa-magic"></i></button>
+        <button class="icon-btn" onclick="exportCode()" title="Download Project"><i class="fas fa-download"></i></button>
+        <button id="run-btn" class="icon-btn run-btn" onclick="runCode()"><i class="fas fa-play"></i> RUN</button>
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings"><i class="fas fa-sliders-h"></i></button>
+    </div>
+</header>
 <!-- HERO -->
 <div class="hero">
     <h1>Build & Test Code Instantly 🚀</h1>
