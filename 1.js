@@ -45,6 +45,47 @@ const themes = {
     midnight_purple: { bg: '#0f0c29', panel: '#1c184a', accent: '#a855f7', text: '#f3e8ff', border: '#3b2d7d' },
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
+function applyHighlighting(code, lang) {
+    // सुरक्षिततेसाठी HTML एस्केप करा
+    let escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    if (lang === 'html') {
+        // १. HTML Tags हायलाइट करा (dictionary नुसार)
+        dictionary.html.forEach(tag => {
+            const reg = new RegExp(`&lt;(\\/?${tag})\\b`, 'gi');
+            escaped = escaped.replace(reg, `&lt;<span class="hl-html-tag">$1</span>`);
+        });
+        // २. HTML Attributes हायलाइट करा
+        escaped = escaped.replace(/\s([a-z-]+)=/gi, ` <span class="hl-html-attr">$1</span>=`);
+    } 
+    
+    else if (lang === 'css') {
+        // १. CSS Properties (dictionary नुसार)
+        dictionary.css.forEach(prop => {
+            const reg = new RegExp(`\\b(${prop})\\s*:`, 'gi');
+            escaped = escaped.replace(reg, `<span class="hl-css-prop">$1</span>:`);
+        });
+    } 
+    
+    else if (lang === 'js') {
+        // १. JS Keywords & Methods (dictionary नुसार)
+        dictionary.js.forEach(word => {
+            const reg = new RegExp(`\\b(${word.replace('.', '\\.')})\\b`, 'g');
+            if (word.includes('.') || word.includes('log')) {
+                escaped = escaped.replace(reg, `<span class="hl-js-func">$1</span>`);
+            } else {
+                escaped = escaped.replace(reg, `<span class="hl-js-kw">$1</span>`);
+            }
+        });
+    }
+
+    // सामान्य हायलाइटिंग (सर्व भाषांसाठी: स्ट्रिंग्स आणि नंबर्स)
+    escaped = escaped.replace(/"(.*?)"/g, `<span class="hl-str">"$1"</span>`);
+    escaped = escaped.replace(/\b(\d+)\b/g, `<span class="hl-num">$1</span>`);
+
+    return escaped;
+}
+
 
 // --- Create Suggestion Box UI ---
 const sBox = document.createElement('div');
