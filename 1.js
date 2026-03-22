@@ -395,3 +395,47 @@ window.onload = () => {
     updateThemeAndFont();
     window.onbeforeunload = () => "Unsaved changes might be lost.";
 };
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class CrabyRecommendationEngine {
+
+    // 1. The Dictionary (Similar to your JS object)
+    private static final Map<String, List<String>> DICTIONARY = new HashMap<>();
+
+    static {
+        DICTIONARY.put("html", Arrays.asList("div", "span", "h1", "h2", "p", "article", "section", "script", "style", "table", "canvas"));
+        DICTIONARY.put("css", Arrays.asList("color", "background", "margin", "padding", "display", "flex", "grid", "border-radius"));
+        DICTIONARY.put("js", Arrays.asList("console.log", "document", "window", "function", "fetch", "addEventListener", "setTimeout"));
+    }
+
+    /**
+     * Logic to get recommendations
+     * @param language The file type (html, css, js)
+     * @param input The current word being typed
+     * @return List of matching keywords
+     */
+    public List<String> getRecommendations(String language, String input) {
+        if (input == null || input.isEmpty()) return Collections.emptyList();
+        
+        String searchKey = input.toLowerCase();
+        List<String> words = DICTIONARY.getOrDefault(language.toLowerCase(), Collections.emptyList());
+
+        return words.stream()
+                .filter(word -> word.startsWith(searchKey))
+                .sorted() // Keep it alphabetical
+                .collect(Collectors.toList());
+    }
+
+    public static void main(String[] args) {
+        CrabyRecommendationEngine engine = new CrabyRecommendationEngine();
+        
+        // Example: User types 'co' in a CSS file
+        List<String> results = engine.getRecommendations("css", "co");
+        
+        System.out.println("Recommendations for 'co' in CSS:");
+        results.forEach(System.out::println); 
+        // Output: color
+    }
+}
+
