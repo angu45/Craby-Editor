@@ -146,28 +146,26 @@ logo-container { display: flex; align-items: center; gap: 10px; }
     background:#010409;
     border-top:1px solid var(--accent);
     margin-top:40px;
-}/* --- SETTINGS PANEL (RIGHT SLIDER) --- */
 .settings-panel {
     position: fixed;
-    right: -320px; /* सुरुवातीला स्क्रीनच्या बाहेर */
+    right: -350px; /* पॅनलला स्क्रीनच्या बाहेर ढकला */
     top: 0;
     width: 300px;
     height: 100%;
-    background: rgba(22, 27, 34, 0.95); /* थोडा पारदर्शक बॅकग्राउंड */
-    backdrop-filter: blur(10px); 
-    -webkit-backdrop-filter: blur(10px);
-    border-left: 1.5px solid var(--accent);
-    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 4000; 
+    background: rgba(22, 27, 34, 0.98); 
+    backdrop-filter: blur(10px);
+    border-left: 2px solid var(--accent);
+    z-index: 5000;
+    display: none; /* सर्वात महत्त्वाचे: रिलोड झाल्यावर हे दिसणार नाही */
+    transition: right 0.4s ease;
     padding: 20px;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-    display: block; /* JS display:block करेल, तरीही इथे खबरदारी म्हणून */
-    overflow-y: auto;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
 }
 
-/* जेव्हा पॅनल उघडलेले असेल */
-.settings-panel.open { 
-    right: 0 !important; 
+/* जेव्हा 'open' क्लास असेल तेव्हाच पॅनल दिसेल */
+.settings-panel.open {
+    display: block !important;
+    right: 0 !important;
 }
 
 /* Settings Group & Elements */
