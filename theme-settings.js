@@ -16,6 +16,50 @@ function openEditor(){
     window.location.href = "https://craby-editor.vercel.app/html-editor.html";
 }
 
+function updateThemeAndFont() {
+    const tKey = document.getElementById('theme-sel')?.value || 'dark';
+    const font = document.getElementById('font-family-sel')?.value || 'monospace';
+    const theme = themes[tKey] || themes.dark;
+    document.documentElement.style.setProperty('--bg', theme.bg);
+    document.documentElement.style.setProperty('--panel', theme.panel);
+    document.documentElement.style.setProperty('--accent', theme.accent);
+    document.documentElement.style.setProperty('--border', theme.border);
+    document.querySelectorAll('textarea').forEach(tx => { 
+        tx.style.fontFamily = font; tx.style.color = theme.text; tx.style.background = theme.bg; 
+    });
+}
+
+function updateFontSize(val) {
+    document.querySelectorAll('textarea').forEach(tx => { tx.style.fontSize = val + "px"; });
+}
+
+function deleteFile(fileName) {
+    if (confirm(`Delete ${fileName}?`)) {
+        delete files[fileName];
+        const safeId = "file-" + fileName.replace(/[^a-z0-9]/gi, '-');
+        document.getElementById(`box-${safeId}`)?.remove();
+        updateTaskbar();
+    }
+}
+
+function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='none'; }
+function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
+function syncScroll(id) { }
+function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
+function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
+
+function saveSettings() {
+    const s = { 
+        theme: document.getElementById('theme-sel').value, 
+        size: document.getElementById('font-size-range').value, 
+        font: document.getElementById('font-family-sel').value 
+    };
+    localStorage.setItem('craby_settings', JSON.stringify(s));
+}
+
+
+
+
 function saveSettings() {
     const settings = {
         theme: document.getElementById('theme-sel').value,
