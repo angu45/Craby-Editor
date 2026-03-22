@@ -67,10 +67,15 @@ function saveSettings() {
     applyGlobalSettings();
 }
 
-// --- ३. इनीशियलायझेशन (पेज लोड झाल्यावर) ---
-window.addEventListener('DOMContentLoaded', applyGlobalSettings);
+window.addEventListener('DOMContentLoaded', () => {
+    const panel = document.getElementById('settingsPanel');
+    if(panel) {
+        panel.style.display = 'none'; // रिलोड झाल्यावर सक्तीने बंद करा
+        panel.classList.remove('open');
+    }
+    applyGlobalSettings(); // ही तुमची आधीची फंक्शन आहे जी थीम लोड करते
+});
 
-// एक्सपोर्ट केलेले जुने फंक्शन्स (सुसंगततेसाठी)
 function updateThemeAndFont() { saveSettings(); }
 function updateFontSize(val) { saveSettings(); }
 
