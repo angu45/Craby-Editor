@@ -1,6 +1,5 @@
 /**
- * CRABY EDITOR - FINAL COMPREHENSIVE LOGIC
- * Includes: File System, Shutter, Settings, Preview, Suggestion, and Formatting.
+ * CRABY EDITOR - FULL SYSTEM WITH AUTO-TAG RECOMMENDATION
  */
 
 // --- 1. GLOBAL CONFIGURATION ---
@@ -19,7 +18,7 @@ const defaultFiles = {
 };
 
 let files = JSON.parse(JSON.stringify(defaultFiles));
-let showLineNumbers = false; // DEFAULT DISABLED
+let showLineNumbers = false; 
 let currentActiveFile = null;
 let selectedIndex = 0;
 
@@ -38,54 +37,55 @@ const themes = {
     oceanic: { bg: '#1b2b34', panel: '#23333b', accent: '#6699cc', text: '#d8dee9', border: '#343d46' }
 };
 
-// Suggestion Box Setup
+// Create Suggestion Box UI
 const sBox = document.createElement('div');
 sBox.id = 'suggestion-box';
+// Inline styling for the suggestion box
+Object.assign(sBox.style, {
+    position: 'fixed',
+    display: 'none',
+    zIndex: '10000',
+    background: '#1c1c1c',
+    border: '1px solid #444',
+    borderRadius: '4px',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+    minWidth: '150px',
+    maxHeight: '200px',
+    overflowY: 'auto'
+});
 document.body.appendChild(sBox);
 
 // --- 2. FILE & UI CORE ---
 
-// --- UPDATED TASKBAR FUNCTION (FIXED ALIGNMENT) ---
-
 function updateTaskbar() {
     const taskbar = document.getElementById('shutter-file-list'); 
     if(!taskbar) return;
-    
-    taskbar.innerHTML = ''; // Juna kachra clear kara
+    taskbar.innerHTML = ''; 
 
     Object.keys(files).forEach(fileName => {
         const fileItem = document.createElement('div');
         fileItem.className = 'shutter-item';
-        
-        // Inline CSS for Perfect Alignment
         fileItem.style.display = 'flex';
         fileItem.style.alignItems = 'center';
-        fileItem.style.justifyContent = 'flex-start';
         fileItem.style.gap = '12px';
         fileItem.style.padding = '10px 15px';
         fileItem.style.margin = '5px 10px';
         fileItem.style.borderRadius = '8px';
-        fileItem.style.background = 'rgba(255, 255, 255, 0.05)'; // Halka background dila aahe box sarkha distava mhanun
+        fileItem.style.background = 'rgba(255, 255, 255, 0.05)';
         fileItem.style.cursor = 'pointer';
 
-        // Logo (Left) ani Name (Right to Logo)
         fileItem.innerHTML = `
             <i class="fas fa-file-code" style="color: var(--accent); font-size: 1.2rem;"></i> 
-            <span style="color: white; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                ${fileName}
-            </span>
+            <span style="color: white; font-size: 0.95rem;">${fileName}</span>
         `;
 
         fileItem.onclick = () => {
             addFileToUI(fileName, files[fileName].type, files[fileName].content);
             if(window.innerWidth < 768) toggleShutter(); 
         };
-
         taskbar.appendChild(fileItem);
     });
 }
-
-
 
 function addFileToUI(name, type, content = "") {
     const wrapper = document.getElementById('editor-grid');
@@ -113,7 +113,7 @@ function addFileToUI(name, type, content = "") {
             <div class="line-numbers" id="${safeId}-lines" style="display: none;"></div>
             <textarea id="${safeId}-code" spellcheck="false" data-lang="${type}" data-filename="${name}"
                 style="flex: 1; padding: 15px; border: none; outline: none; background: transparent; color: #e0e0e0; resize: none; white-space: pre; overflow: auto; line-height: 1.5; font-family: monospace;"
-                oninput="updateFileContent('${name}', this.value); updateLineNumbers('${safeId}')"
+                oninput="updateFileContent('${name}', this.value); showSuggestions(this)"
                 onscroll="syncScroll('${safeId}')">${content}</textarea>
         </div>
     `;
@@ -147,116 +147,33 @@ function addNewFilePrompt() {
 function runCode() {
     const htmlFiles = Object.keys(files).filter(f => f.endsWith('.html'));
     if (htmlFiles.length === 0) { alert("No HTML files!"); return; }
-    
     let selectedFile = currentActiveFile || htmlFiles[0];
-    currentActiveFile = selectedFile;
-
     const overlay = document.getElementById('preview-overlay');
     const frame = document.getElementById('output-frame');
     overlay.style.display = 'flex';
-    frame.setAttribute('sandbox', 'allow-scripts');
-
     let themeCSS = "";
     Object.keys(files).forEach(name => { if(name.endsWith('.css')) themeCSS += files[name].content + "\n"; });
-
-    let finalHTML = `<!DOCTYPE html><html><head><style>
-        html,body{margin:0;padding:0;width:100%;height:100%;background:white !important;}
-        body{padding:15px;box-sizing:border-box;font-family:sans-serif;}
-        ${themeCSS}</style></head><body>${files[selectedFile].content}
-        <script>window.onbeforeunload=()=>false;${Object.keys(files).filter(f=>f.endsWith('.js')).map(f=>files[f].content).join('\n')}<\/script></body></html>`;
-
+    let finalHTML = `<!DOCTYPE html><html><head><style>body{padding:15px;font-family:sans-serif;}${themeCSS}</style></head><body>${files[selectedFile].content}<script>${Object.keys(files).filter(f=>f.endsWith('.js')).map(f=>files[f].content).join('\n')}<\/script></body></html>`;
     const doc = frame.contentWindow.document;
     doc.open(); doc.write(finalHTML); doc.close();
 }
 
 function beautifyCode(){
-
-const textareas=document.querySelectorAll('.editor-grid textarea');
-
-if(typeof files==="undefined") return;
-
-Object.keys(files).forEach(fileName=>{
-
-let content=files[fileName].content;
-const type=fileName.split('.').pop().toLowerCase();
-
-if(!content) return;
-
-
-/* ---------- HTML FORMAT ---------- */
-if(type==="html"){
-
-let indent=0;
-
-content=content
-.replace(/>\s*</g,"><")
-.replace(/</g,"\n<")
-.trim()
-.split("\n")
-.map(line=>{
-
-line=line.trim();
-
-if(line.match(/^<\/.+/)) indent--;
-
-let formatted=" ".repeat(indent*2)+line;
-
-if(line.match(/^<[^!\/].*[^\/]>$/)) indent++;
-
-return formatted;
-
-}).join("\n");
-
-}
-
-
-/* ---------- CSS FORMAT ---------- */
-else if(type==="css"){
-
-content=content
-.replace(/\s*\{\s*/g," {\n  ")
-.replace(/;\s*/g,";\n  ")
-.replace(/\s*\}\s*/g,"\n}\n")
-.replace(/\s*:\s*/g,": ")
-.replace(/,\s*/g,", ")
-.replace(/\n\s*\n/g,"\n")
-.trim();
-
-}
-
-
-/* ---------- JS FORMAT ---------- */
-else if(type==="js"){
-
-content=content
-.replace(/\{\s*/g," {\n  ")
-.replace(/\}\s*/g,"\n}\n")
-.replace(/;\s*/g,";\n")
-.replace(/,\s*/g,", ")
-.replace(/if\s*\(/g,"if (")
-.replace(/for\s*\(/g,"for (")
-.replace(/while\s*\(/g,"while (")
-.replace(/\n\s*\n/g,"\n")
-.trim();
-
-}
-
-
-/* Save formatted code */
-files[fileName].content=content;
-
-
-/* Update UI */
-textareas.forEach(tx=>{
-
-if(tx.getAttribute("data-filename")===fileName || tx.id.includes(type)){
-tx.value=content;
-}
-
-});
-
-});
-
+    const textareas = document.querySelectorAll('.editor-grid textarea');
+    Object.keys(files).forEach(fileName=>{
+        let content = files[fileName].content;
+        const type = fileName.split('.').pop().toLowerCase();
+        if(!content) return;
+        if(type==="html") {
+            content = content.replace(/>\s*</g,"><").replace(/</g,"\n<").trim();
+        } else if(type==="css") {
+            content = content.replace(/\s*\{\s*/g," {\n  ").replace(/;\s*/g,";\n  ").replace(/\s*\}\s*/g,"\n}\n").trim();
+        } else if(type==="js") {
+            content = content.replace(/\{\s*/g," {\n  ").replace(/\}\s*/g,"\n}\n").replace(/;\s*/g,";\n").trim();
+        }
+        files[fileName].content = content;
+        textareas.forEach(tx => { if(tx.getAttribute("data-filename")===fileName) tx.value = content; });
+    });
 }
 
 function exportCode() {
@@ -283,20 +200,15 @@ function toggleSettings() {
     }
 }
 
-// --- 4. SUGGESTION & UTILS ---
-// --- 4. SMART AUTO-COMPLETE & TAG WRAPPING ---
+// --- 4. ADVANCED SUGGESTION SYSTEM ---
 
 function attachInputListeners(txt) {
     txt.addEventListener('keydown', (e) => {
         const items = document.querySelectorAll('.suggestion-item');
-        const lang = txt.getAttribute('data-lang');
-        
-        // IF SUGGESTION BOX IS OPEN
         if (sBox.style.display === 'block' && items.length > 0) {
             if (e.key === 'Enter' || e.key === 'Tab') {
                 e.preventDefault();
-                const selectedWord = items[selectedIndex].innerText;
-                insertWord(selectedWord, txt.id, lang);
+                insertWord(items[selectedIndex].innerText, txt.id);
             } 
             else if (e.key === 'ArrowDown') {
                 e.preventDefault();
@@ -308,126 +220,77 @@ function attachInputListeners(txt) {
                 selectedIndex = (selectedIndex - 1 + items.length) % items.length;
                 updateHighlight(items);
             }
-        } 
-        // IF BOX IS CLOSED BUT USER PRESSES ENTER (Emmet Style)
-        else if (e.key === 'Enter' && lang === 'html') {
-            const pos = txt.selectionStart;
-            const line = txt.value.substring(0, pos).split(/\s/).pop();
-            if (dictionary.html.includes(line)) {
-                e.preventDefault();
-                insertWord(line, txt.id, 'html');
-            }
+            else if (e.key === 'Escape') { sBox.style.display = 'none'; }
         }
-    });
-
-    txt.addEventListener('input', (e) => {
-        // Auto-pairing for brackets/quotes
-        const pos = txt.selectionStart;
-        const char = e.data;
-        const pairs = { '{': '}', '(': ')', '[': ']', '"': '"', "'": "'" };
-        if (pairs[char]) {
-            txt.value = txt.value.substring(0, pos) + pairs[char] + txt.value.substring(pos);
-            txt.selectionStart = txt.selectionEnd = pos;
-        } 
-        showSuggestions(txt);
     });
 }
 
-function insertWord(word, id, lang) {
-    const txt = document.getElementById(id);
+function showSuggestions(txt) {
     const pos = txt.selectionStart;
-    const text = txt.value;
-    
-    // Find the start of the word being typed
-    const beforePart = text.substring(0, pos);
-    const afterPart = text.substring(pos);
-    const wordMatch = beforePart.match(/[\w.-]+$/);
-    const wordStart = wordMatch ? wordMatch.index : pos;
+    const textBefore = txt.value.substring(0, pos);
+    const words = textBefore.split(/[\s<>{}:;()\[\]"']/);
+    const currentWord = words[words.length - 1].toLowerCase();
 
-    // Logic: If it's HTML, wrap it in tags. Otherwise, just print the word.
-    let injection = word;
-    let cursorOffset = word.length;
+    if (currentWord.length < 1) { sBox.style.display = 'none'; return; }
 
-    if (lang === 'html') {
-        // Check if it's a "void" tag (tags that don't need closing like <img>)
-        const voidTags = ['img', 'br', 'hr', 'input', 'link', 'meta'];
-        if (voidTags.includes(word)) {
-            injection = `<${word}>`;
-            cursorOffset = injection.length;
-        } else {
-            injection = `<${word}></${word}>`;
-            cursorOffset = word.length + 2; // Places cursor inside the tags: <head>here</head>
-        }
-    }
+    const lang = txt.getAttribute('data-lang');
+    const matches = (dictionary[lang] || []).filter(w => w.startsWith(currentWord));
 
-    const newBefore = text.substring(0, wordStart) + injection;
-    txt.value = newBefore + afterPart;
-    
-    // Set cursor position
-    txt.selectionStart = txt.selectionEnd = wordStart + cursorOffset;
-    
-    sBox.style.display = 'none';
-    txt.focus();
-    updateFileContent(txt.getAttribute('data-filename'), txt.value);
-}
-
-
-function renderSuggestionBox(txt, matches) {
-    const rect = txt.getBoundingClientRect();
-    
-    // Position the box near the cursor (approximate)
-    sBox.style.top = `${rect.top + 40}px`; 
-    sBox.style.left = `${rect.left + 30}px`;
-    sBox.style.display = 'block';
-    sBox.style.position = 'fixed';
-    sBox.style.zIndex = '9999';
-    
-    selectedIndex = 0; // Reset focus to first item
-    
-    sBox.innerHTML = matches.map((match, i) => `
-        <div class="suggestion-item" 
-             onclick="insertWord('${match}', '${txt.id}')"
-             style="${i === 0 ? 'background: var(--accent); color: #000;' : ''}">
-            ${match}
-        </div>
-    `).join('');
+    if (matches.length > 0) {
+        const rect = txt.getBoundingClientRect();
+        sBox.style.top = `${rect.top + 35}px`;
+        sBox.style.left = `${rect.left + 20}px`;
+        sBox.style.display = 'block';
+        selectedIndex = 0;
+        sBox.innerHTML = matches.map((m, i) => `
+            <div class="suggestion-item" onclick="insertWord('${m}', '${txt.id}')"
+                 style="padding:8px; color:white; cursor:pointer; font-family:monospace; ${i===0?'background:var(--accent); color:black;':''}">
+                ${m}
+            </div>
+        `).join('');
+    } else { sBox.style.display = 'none'; }
 }
 
 function updateHighlight(items) {
     items.forEach((item, i) => {
-        if (i === selectedIndex) {
-            item.style.background = 'var(--accent)';
-            item.style.color = '#000';
-            item.scrollIntoView({ block: 'nearest' });
-        } else {
-            item.style.background = 'transparent';
-            item.style.color = 'white';
-        }
+        item.style.background = (i === selectedIndex) ? 'var(--accent)' : 'transparent';
+        item.style.color = (i === selectedIndex) ? 'black' : 'white';
     });
 }
 
 function insertWord(word, id) {
     const txt = document.getElementById(id);
     const pos = txt.selectionStart;
+    const lang = txt.getAttribute('data-lang');
     const text = txt.value;
-    
-    // Find where the current word starts to replace it
+
     const beforePart = text.substring(0, pos);
     const afterPart = text.substring(pos);
     const wordMatch = beforePart.match(/[\w.-]+$/);
     const wordStart = wordMatch ? wordMatch.index : pos;
 
-    const newBefore = text.substring(0, wordStart) + word;
+    // --- AUTO TAG LOGIC ---
+    // If it's HTML, wrap the word in tags, otherwise just print the word
+    let wordToInsert = word;
+    if (lang === 'html') {
+        // Special logic: if user types 'head', print '<head></head>'
+        wordToInsert = `<${word}></${word}>`;
+    }
+
+    const newBefore = text.substring(0, wordStart) + wordToInsert;
     txt.value = newBefore + afterPart;
     
-    // Move cursor to end of inserted word
-    txt.selectionStart = txt.selectionEnd = newBefore.length;
-    
+    // Position cursor inside the tag if HTML (e.g. <head>|</head>)
+    if (lang === 'html') {
+        txt.selectionStart = txt.selectionEnd = newBefore.length - (word.length + 3);
+    } else {
+        txt.selectionStart = txt.selectionEnd = newBefore.length;
+    }
+
     sBox.style.display = 'none';
     txt.focus();
     updateFileContent(txt.getAttribute('data-filename'), txt.value);
 }
-
 
 // --- 5. THEME & SYSTEM ---
 
@@ -463,12 +326,16 @@ function minimizeBox(id) { document.getElementById(`box-${id}`).style.display='n
 function expandBox(id) { document.getElementById(`box-${id}`).classList.toggle('fullscreen'); }
 function syncScroll(id) { }
 function updateFileContent(name, val) { if(files[name]) files[name].content = val; }
-function updateLineNumbers(id) {} // Disabled
+function updateLineNumbers(id) {} 
 function closePreview() { document.getElementById('preview-overlay').style.display = 'none'; }
 function setPreviewSize(w) { document.getElementById('output-frame').style.width = w; }
 
 function saveSettings() {
-    const s = { theme: document.getElementById('theme-sel').value, size: document.getElementById('font-size-range').value, font: document.getElementById('font-family-sel').value };
+    const s = { 
+        theme: document.getElementById('theme-sel').value, 
+        size: document.getElementById('font-size-range').value, 
+        font: document.getElementById('font-family-sel').value 
+    };
     localStorage.setItem('craby_settings', JSON.stringify(s));
 }
 
@@ -478,11 +345,9 @@ function resetAllSettings() { if(confirm("Reset all?")) { localStorage.removeIte
 
 window.onload = () => {
     updateTaskbar();
-    // DEFAULT 2 FILES ON HOME
     addFileToUI("index.html", "html", files["index.html"].content);
     addFileToUI("style.css", "css", files["style.css"].content);
     
-    // Load Saved Settings
     const saved = localStorage.getItem('craby_settings');
     if(saved) {
         const s = JSON.parse(saved);
@@ -491,6 +356,4 @@ window.onload = () => {
         updateFontSize(s.size);
     }
     updateThemeAndFont();
-    window.onbeforeunload = () => "Unsaved changes might be lost.";
 };
-
