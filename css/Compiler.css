@@ -5,7 +5,7 @@
     text-decoration: none;
 }
 
-.logo img { height: 35px; width: auto; }
+.logo img { height: 25px; width: auto; }
 .logo span { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
 
     html, body { height: 100%; margin: 0; overflow: hidden; }
