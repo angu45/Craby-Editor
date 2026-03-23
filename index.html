@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 
-<!-- Google Analytics (ONLY ONCE) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -19,35 +18,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>Craby Editor - Free Online HTML, CSS, JS Editor with Live Preview</title>
+<title>Craby Editor - Free Online HTML & C Compiler IDE</title>
 
-<meta name="title" content="Craby Editor - Free Online HTML, CSS, JS Editor with Live Preview">
-<meta name="description" content="Craby Editor is a fast, free, and powerful online HTML, CSS, and JavaScript editor. Write code, preview instantly, and download your web projects.">
-<meta name="keywords" content="online html editor, live html preview, free code editor, html css js compiler, mobile code editor">
+<meta name="title" content="Craby Editor - Free Online HTML, CSS, JS Editor & C Compiler">
+<meta name="description" content="Craby Editor is a fast, free, and powerful online IDE for HTML/CSS/JS and C Programming. Write code, preview instantly, and compile C programs online.">
+<meta name="keywords" content="online html editor, c compiler online, free c compiler, live html preview, free code editor, html css js compiler, mobile code editor">
 <meta name="author" content="Anguworkshop">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
 <link rel="canonical" href="https://craby-editor.vercel.app/">
 
-<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://craby-editor.vercel.app/">
-<meta property="og:title" content="Craby Editor - Professional Web IDE">
-<meta property="og:description" content="Experience the fastest way to write and test your web code online with Craby Editor.">
+<meta property="og:title" content="Craby Editor - Professional Multi-Language IDE">
+<meta property="og:description" content="Experience the fastest way to write and test your web code and C programs online with Craby Editor.">
 <meta property="og:image" content="https://i.ibb.co/kgRnJLtW/1000176146-removebg-preview.png">
 
-<!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:title" content="Craby Editor - Professional Web IDE">
-<meta property="twitter:description" content="Fastest way to write and test web code online.">
+<meta property="twitter:title" content="Craby Editor - Professional Web & C IDE">
+<meta property="twitter:description" content="Fastest way to write and test web code and C programming online.">
 <meta property="twitter:image" content="https://i.ibb.co/4RTqDGvH/apple-touch-icon-180x180-1.png">
 
-<!-- Favicon -->
 <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
 
-<!-- Schema -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -62,36 +57,77 @@
   }
 }
 </script>
-    <link rel="stylesheet" href="./css/index.css">
-    <script src="./js/theme-settings.js"></script>
 
+<link rel="stylesheet" href="./css/index.css">
+<script src="./js/theme-settings.js"></script>
 <script src="./js/tag.js"></script>
+
+<style>
+    /* जास्तीची स्टाईल टूल्स अधिक चांगली दिसण्यासाठी */
+    .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .tool-card {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .tool-card:hover {
+        transform: translateY(-5px);
+    }
+    .btn-c {
+        background: #007bff !important;
+    }
+</style>
+
 </head>
 
 <body>
 
-    <header>
+<header>
     <div class="logo-container">
-        <a href="https://craby-editor.vercel.app/" target="_blank">
-    <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
-</a>
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo">
+        </a>
     </div>
     <div class="header-actions">
-        
         <button class="icon-btn" onclick="toggleSettings()" title="Settings">⚙️
-    <i class="fas fa-cog"></i>
-</button>
+            <i class="fas fa-cog"></i>
+        </button>
     </div>
 </header>
-<!-- HERO -->
+
 <div class="hero">
     <h1>Build & Test Code Instantly 🚀</h1>
-    <p>Craby Editor is a fast and powerful online HTML, CSS & JavaScript editor with real-time preview.</p>
-
-    <button class="btn" onclick="openEditor()">Open Editor</button>
+    <p>Craby Editor is a fast and powerful online tool for Web Development and C Programming.</p>
+    
+    <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <button class="btn" onclick="window.location.href='index.html'">HTML Editor</button>
+        <button class="btn btn-c" onclick="window.location.href='c-compiler.html'">C Compiler</button>
+    </div>
 </div>
 
-<!-- FEATURES -->
+<div class="section">
+    <h2>🛠️ Our Online Compilers</h2>
+    <div class="tool-grid">
+        <div class="card tool-card" onclick="window.location.href='index.html'">
+            <div style="font-size: 40px; margin-bottom: 10px;">🌐</div>
+            <h3>HTML Editor</h3>
+            <p>Write HTML, CSS, and JS with real-time live preview features.</p>
+            <span style="color: var(--accent); font-weight: bold;">Open Editor →</span>
+        </div>
+
+        <div class="card tool-card" onclick="window.location.href='c-compiler.html'">
+            <div style="font-size: 40px; margin-bottom: 10px;">💻</div>
+            <h3>C Compiler</h3>
+            <p>High-speed C code compilation and execution in your browser.</p>
+            <span style="color: #007bff; font-weight: bold;">Run C Code →</span>
+        </div>
+    </div>
+</div>
+
 <div class="section">
     <h2>✨ Features</h2>
     <div class="cards">
@@ -99,37 +135,37 @@
             <h3>Live Preview</h3>
             <p>Instant output while coding.</p>
         </div>
-
         <div class="card">
-            <h3>Multi File</h3>
-            <p>HTML, CSS & JS support.</p>
+            <h3>Multi-Language</h3>
+            <p>Supports HTML, CSS, JS & C.</p>
         </div>
-
         <div class="card">
-            <h3>Fast Editor</h3>
-            <p>Lightweight & smooth UI.</p>
+            <h3>Fast IDE</h3>
+            <p>Lightweight & smooth UI for mobile.</p>
         </div>
     </div>
 </div>
 
-<!-- HTML INFO -->
 <div class="section">
-    <h2>📘 HTML Basics</h2>
-
+    <h2>📘 Quick Start</h2>
     <div class="card">
         <div class="code-box">
-&lt;h1&gt;Hello World&lt;/h1&gt;<br>
-&lt;p&gt;This is Craby Editor&lt;/p&gt;
+            /* Sample C Code */<br>
+            #include &lt;stdio.h&gt;<br>
+            int main() {<br>
+            &nbsp;&nbsp;printf("Hello Craby!");<br>
+            &nbsp;&nbsp;return 0;<br>
+            }
         </div>
     </div>
 </div>
+
 <div id="settingsPanel" class="settings-panel">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h3 style="color: var(--accent);">IDE Settings</h3>
-        <i class="fas fa-times" onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d;"></i>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
     </div>
 
-    
     <div class="s-group">
         <label>Font Family</label>
         <select id="font-family-sel" onchange="updateThemeAndFont()">
@@ -141,7 +177,6 @@
             <option value="'Courier New', monospace">Courier New</option>
         </select>
     </div>
-
 
     <div class="s-group">
         <label>Editor Theme</label>
@@ -164,13 +199,10 @@
     <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
 </div>
 
-
-<!-- FOOTER -->
 <div class="footer">
-    <p>Craby Editor - Free Online Code Editor</p>
+    <p>Craby Editor - Free Online Code IDE</p>
     <p>© 2026 Anguworkshop</p>
 </div>
-
 
 <script src="./js/script1.js"></script>
 <script src="./js/theme-setting.js"></script>
