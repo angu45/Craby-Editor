@@ -122,44 +122,35 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full font-sans" id="appBody">
-  <div id="app" class="h-full flex flex-col overflow-hidden" style="background:#0d0d14;">
-   <!-- HEADER -->
+  <div id="app" class="h-full flex flex-col overflow-hidden" style="background:#0d0d14;"><!-- HEADER -->
    <header id="headerBar" class="flex items-center justify-between px-4 py-2 border-b border-white/5 flex-shrink-0" style="background:rgba(13,13,20,0.98);">
-    <div class="flex items-center gap-3">
-     <button id="sidebarToggle" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors lg:hidden" aria-label="Toggle sidebar"> <i data-lucide="panel-left" class="w-5 h-5 text-gray-400"></i> </button>
+    <div class="flex items-center gap-3"><button id="sidebarToggle" class="p-1.5 rounded-lg hover:bg-white/5 transition-colors lg:hidden" aria-label="Toggle sidebar"> <i data-lucide="panel-left" class="w-5 h-5 text-gray-400"></i> </button>
      <div class="flex items-center gap-2">
       <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style="background:linear-gradient(135deg,#c8ff00,#00d4ff);color:#0d0d14;">
        C
       </div><span id="appTitleEl" class="font-semibold text-white text-sm hidden sm:inline">Craby C Compiler</span>
      </div>
     </div>
-    <div class="flex items-center gap-1.5 sm:gap-2">
-     <button id="btnRun" class="btn-glow flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all" style="background:#c8ff00;color:#0d0d14;"> <i data-lucide="play" class="w-3.5 h-3.5"></i> <span id="runBtnText">Run Code</span> </button> <button id="btnFormat" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 text-xs sm:text-sm transition-colors" title="Format Code"> <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Format</span> </button> <button id="btnDownload" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 text-xs sm:text-sm transition-colors" title="Download File"> <i data-lucide="download" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Download</span> </button> <button id="btnSettings" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" title="Settings"> <i data-lucide="settings" class="w-4 h-4"></i> </button>
+    <div class="flex items-center gap-1.5 sm:gap-2"><button id="btnRun" class="btn-glow flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all" style="background:#c8ff00;color:#0d0d14;"> <i data-lucide="play" class="w-3.5 h-3.5"></i> <span id="runBtnText">Run Code</span> </button> <button id="btnStop" class="hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-xs sm:text-sm transition-all" style="background:#ff5555;color:#ffffff;" title="Stop Execution"> <i data-lucide="square" class="w-3.5 h-3.5"></i> <span id="stopBtnText">Stop</span> </button> <button id="btnFormat" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 text-xs sm:text-sm transition-colors" title="Format Code"> <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Format</span> </button> <button id="btnDownload" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 text-xs sm:text-sm transition-colors" title="Download File"> <i data-lucide="download" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Download</span> </button> <button id="btnSettings" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors" title="Settings"> <i data-lucide="settings" class="w-4 h-4"></i> </button>
     </div>
    </header><!-- MAIN CONTENT -->
-   <div class="flex flex-1 overflow-hidden relative">
-    <!-- LEFT SIDEBAR -->
+   <div class="flex flex-1 overflow-hidden relative"><!-- LEFT SIDEBAR -->
     <aside id="sidebar" class="hidden lg:flex flex-col flex-shrink-0 border-r border-white/5 panel-glass slide-left" style="width:220px;">
-     <div class="flex items-center justify-between p-3 border-b border-white/5">
-      <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Explorer</span> <button id="btnNewFile" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors" title="New File"> <i data-lucide="file-plus" class="w-4 h-4"></i> </button>
+     <div class="flex items-center justify-between p-3 border-b border-white/5"><span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Explorer</span> <button id="btnNewFile" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors" title="New File"> <i data-lucide="file-plus" class="w-4 h-4"></i> </button>
      </div>
      <div id="fileList" class="flex-1 overflow-y-auto p-1.5"></div>
     </aside><!-- MOBILE SIDEBAR OVERLAY -->
     <div id="sidebarOverlay" class="hidden fixed inset-0 bg-black/50 z-40 lg:hidden" style="backdrop-filter:blur(4px);"></div>
     <aside id="sidebarMobile" class="hidden fixed left-0 top-0 bottom-0 z-50 flex-col panel-glass slide-left lg:hidden" style="width:260px;">
-     <div class="flex items-center justify-between p-3 border-b border-white/5">
-      <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Explorer</span>
-      <div class="flex items-center gap-1">
-       <button id="btnNewFileMobile" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors" title="New File"> <i data-lucide="file-plus" class="w-4 h-4"></i> </button> <button id="closeSidebar" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors"> <i data-lucide="x" class="w-4 h-4"></i> </button>
+     <div class="flex items-center justify-between p-3 border-b border-white/5"><span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Explorer</span>
+      <div class="flex items-center gap-1"><button id="btnNewFileMobile" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors" title="New File"> <i data-lucide="file-plus" class="w-4 h-4"></i> </button> <button id="closeSidebar" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors"> <i data-lucide="x" class="w-4 h-4"></i> </button>
       </div>
      </div>
      <div id="fileListMobile" class="flex-1 overflow-y-auto p-1.5"></div>
     </aside><!-- EDITOR + OUTPUT -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-     <!-- TABS -->
+    <div class="flex-1 flex flex-col overflow-hidden"><!-- TABS -->
      <div id="tabBar" class="flex items-center border-b border-white/5 overflow-x-auto flex-shrink-0" style="background:rgba(13,13,20,0.7);"></div><!-- EDITOR -->
-     <div class="flex-1 flex overflow-hidden relative" id="editorWrapper">
-      <!-- Line numbers -->
+     <div class="flex-1 flex overflow-hidden relative" id="editorWrapper"><!-- Line numbers -->
       <div id="lineNumbers" class="flex-shrink-0 text-right select-none pr-3 pl-3 pt-0 overflow-hidden font-mono text-xs" style="color:#3a3a4a;min-width:48px;line-height:1.65em;"></div><!-- Code area -->
       <div class="flex-1 relative overflow-hidden">
        <div id="highlightOverlay" class="highlight-overlay"></div><textarea id="codeInput" class="code-input" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Code editor"></textarea>
@@ -170,48 +161,39 @@
      </div><!-- OUTPUT CONSOLE -->
      <div id="outputPanel" class="flex-shrink-0 flex flex-col overflow-hidden" style="height:180px;background:#0a0a10;">
       <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/5 flex-shrink-0">
-       <div class="flex items-center gap-2">
-        <i data-lucide="terminal" class="w-3.5 h-3.5 text-gray-500"></i> <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Output</span> <span id="outputStatus" class="text-xs text-gray-600"></span>
+       <div class="flex items-center gap-2"><i data-lucide="terminal" class="w-3.5 h-3.5 text-gray-500"></i> <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Output</span> <span id="outputStatus" class="text-xs text-gray-600"></span>
        </div><button id="btnClearOutput" class="p-1 rounded hover:bg-white/10 text-gray-500 hover:text-white transition-colors" title="Clear"> <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> </button>
       </div>
-      <div id="outputContent" class="flex-1 overflow-y-auto overflow-x-hidden p-3 font-mono text-xs" style="color:#50fa7b;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;display:flex;flex-direction:column;"></div>
+      <div id="outputContent" class="flex-1 overflow-y-auto overflow-x-hidden p-3 font-mono text-xs" style="color:#ffffff;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;display:flex;flex-direction:column;background:#000000;"></div>
      </div>
     </div><!-- SETTINGS PANEL -->
     <div id="settingsOverlay" class="hidden fixed inset-0 bg-black/40 z-40" style="backdrop-filter:blur(4px);"></div>
     <aside id="settingsPanel" class="hidden fixed right-0 top-0 bottom-0 z-50 flex-col panel-glass slide-right overflow-y-auto" style="width:300px;max-width:85%;">
-     <div class="flex items-center justify-between p-4 border-b border-white/5">
-      <span class="font-semibold text-white text-sm">Settings</span> <button id="closeSettings" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors"> <i data-lucide="x" class="w-4 h-4"></i> </button>
+     <div class="flex items-center justify-between p-4 border-b border-white/5"><span class="font-semibold text-white text-sm">Settings</span> <button id="closeSettings" class="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors"> <i data-lucide="x" class="w-4 h-4"></i> </button>
      </div>
-     <div class="p-4 space-y-5">
-      <!-- Font Size -->
-      <div>
-       <label class="block text-xs font-medium text-gray-400 mb-1.5">Font Size</label> <input type="range" id="settingFontSize" min="10" max="24" value="14" class="w-full accent-[#c8ff00]">
-       <div class="text-xs text-gray-500 mt-1"><span id="fontSizeVal">14</span>px
+     <div class="p-4 space-y-5"><!-- Font Size -->
+      <div><label class="block text-xs font-medium text-gray-400 mb-1.5">Font Size</label> <input type="range" id="settingFontSize" min="10" max="24" value="14" class="w-full accent-[#c8ff00]">
+       <div class="text-xs text-gray-500 mt-1">
+        <span id="fontSizeVal">14</span>px
        </div>
       </div><!-- Font Family -->
-      <div>
-       <label class="block text-xs font-medium text-gray-400 mb-1.5">Font Family</label> <select id="settingFontFamily" class="setting-input text-sm"> <option value="JetBrains Mono">JetBrains Mono</option> <option value="Fira Code">Fira Code</option> <option value="Source Code Pro">Source Code Pro</option> <option value="Cascadia Code">Cascadia Code</option> <option value="monospace">System Monospace</option> </select>
+      <div><label class="block text-xs font-medium text-gray-400 mb-1.5">Font Family</label> <select id="settingFontFamily" class="setting-input text-sm"> <option value="JetBrains Mono">JetBrains Mono</option> <option value="Fira Code">Fira Code</option> <option value="Source Code Pro">Source Code Pro</option> <option value="Cascadia Code">Cascadia Code</option> <option value="monospace">System Monospace</option> </select>
       </div><!-- Theme -->
-      <div>
-       <label class="block text-xs font-medium text-gray-400 mb-1.5">Theme</label>
-       <div class="flex gap-2">
-        <button id="themeDark" class="flex-1 py-2 rounded-lg text-xs font-medium transition-all" style="background:#c8ff00;color:#0d0d14;">Dark</button> <button id="themeLight" class="flex-1 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white border border-white/10 transition-all">Light</button>
+      <div><label class="block text-xs font-medium text-gray-400 mb-1.5">Theme</label>
+       <div class="flex gap-2"><button id="themeDark" class="flex-1 py-2 rounded-lg text-xs font-medium transition-all" style="background:#c8ff00;color:#0d0d14;">Dark</button> <button id="themeLight" class="flex-1 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-white border border-white/10 transition-all">Light</button>
        </div>
       </div><!-- Line Numbers Toggle -->
-      <div class="flex items-center justify-between">
-       <span class="text-xs font-medium text-gray-400">Line Numbers</span>
+      <div class="flex items-center justify-between"><span class="text-xs font-medium text-gray-400">Line Numbers</span>
        <div id="toggleLineNums" class="toggle-track on">
         <div class="toggle-knob"></div>
        </div>
       </div><!-- Word Wrap -->
-      <div class="flex items-center justify-between">
-       <span class="text-xs font-medium text-gray-400">Word Wrap</span>
+      <div class="flex items-center justify-between"><span class="text-xs font-medium text-gray-400">Word Wrap</span>
        <div id="toggleWordWrap" class="toggle-track">
         <div class="toggle-knob"></div>
        </div>
       </div><!-- Auto Save -->
-      <div class="flex items-center justify-between">
-       <span class="text-xs font-medium text-gray-400">Auto Save</span>
+      <div class="flex items-center justify-between"><span class="text-xs font-medium text-gray-400">Auto Save</span>
        <div id="toggleAutoSave" class="toggle-track on">
         <div class="toggle-knob"></div>
        </div>
@@ -223,8 +205,7 @@
   <div id="renameDialog" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);">
    <div class="panel-glass rounded-xl p-5 w-80 fade-up">
     <h3 class="text-sm font-semibold text-white mb-3">New File Name</h3><input id="renameInput" class="setting-input text-sm mb-3" placeholder="filename.c">
-    <div class="flex gap-2 justify-end">
-     <button id="renameCancel" class="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Cancel</button> <button id="renameConfirm" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" style="background:#c8ff00;color:#0d0d14;">Rename</button>
+    <div class="flex gap-2 justify-end"><button id="renameCancel" class="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Cancel</button> <button id="renameConfirm" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all" style="background:#c8ff00;color:#0d0d14;">Rename</button>
     </div>
    </div>
   </div>
@@ -256,6 +237,7 @@ let settings = {
   autoSave: true
 };
 let isCompiling = false;
+let executionController = null; // For stopping execution
 
 // ==================== DOM REFS ====================
 const $ = id => document.getElementById(id);
@@ -649,6 +631,33 @@ function getWordBeforeCursor() {
   return text.substring(start + 1, pos);
 }
 
+async function tryOnlineCompile(code, stdin = '') {
+  try {
+    const response = await fetch('https://api.jdoodle.com/v1/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clientId: 'd6cc1d9a0d3de088f7781ce44a0b2e84',
+        clientSecret: '3c7dff3c8fda037c7c4f17daf5de7ffa2e5bac36',
+        script: code,
+        language: 'c',
+        versionIndex: '0',
+        stdin: stdin
+      })
+    });
+    const data = await response.json();
+    return {
+      success: true,
+      data: {
+        compile: { stderr: data.compileOutput || '' },
+        run: { stdout: data.output || '', stderr: data.stderr || '', code: data.statusCode || 0 }
+      }
+    };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
 function showAutocomplete() {
   const word = getWordBeforeCursor();
   
@@ -764,9 +773,12 @@ function closeAutocomplete() {
 async function runCode() {
   if (isCompiling) return;
   isCompiling = true;
+  executionController = new AbortController();
 
   const btn = $('btnRun');
-  btn.innerHTML = `<span class="compile-spinner"></span><span>Compiling...</span>`;
+  const stopBtn = $('btnStop');
+  btn.classList.add('hidden');
+  stopBtn.classList.remove('hidden');
   btn.style.opacity = '0.7';
   btn.disabled = true;
 
@@ -782,33 +794,51 @@ async function runCode() {
   const startTime = performance.now();
 
   try {
-    // Try online first
-    const onlineResult = await tryOnlineCompile(code);
-    if (onlineResult.success) {
-      displayCompileResult(onlineResult, startTime);
+    // Detect if program needs input (has scanf)
+    const needsInput = code.includes('scanf');
+    
+    if (needsInput) {
+      // Run in interactive mode
+      await runInteractiveProgram(code, startTime);
     } else {
-      // Fallback to offline simulation
-      const offlineResult = await tryOfflineCompile(code);
-      displayCompileResult(offlineResult, startTime);
+      // Normal execution
+      const onlineResult = await tryOnlineCompile(code);
+      if (onlineResult.success) {
+        displayCompileResult(onlineResult, startTime);
+      } else {
+        const offlineResult = await tryOfflineCompile(code);
+        displayCompileResult(offlineResult, startTime);
+      }
     }
   } catch (err) {
-    // Emergency fallback
-    outputContent.innerHTML = '';
-    const errorHeader = document.createElement('div');
-    errorHeader.className = 'output-line';
-    errorHeader.style.color = '#f87171';
-    errorHeader.innerHTML = `<span class="font-semibold">⚠ Compilation Error:</span>`;
-    outputContent.appendChild(errorHeader);
+    if (err.name === 'AbortError') {
+      outputContent.innerHTML = '';
+      const stoppedDiv = document.createElement('div');
+      stoppedDiv.className = 'output-line';
+      stoppedDiv.style.color = '#ffaa00';
+      stoppedDiv.innerHTML = `<span class="font-semibold">⏹ Execution stopped by user</span>`;
+      outputContent.appendChild(stoppedDiv);
+      outputStatus.textContent = '● Stopped';
+      outputStatus.style.color = '#ffaa00';
+    } else {
+      // Emergency fallback
+      outputContent.innerHTML = '';
+      const errorHeader = document.createElement('div');
+      errorHeader.className = 'output-line';
+      errorHeader.style.color = '#f87171';
+      errorHeader.innerHTML = `<span class="font-semibold">⚠ Compilation Error:</span>`;
+      outputContent.appendChild(errorHeader);
 
-    const errorMsg = document.createElement('div');
-    errorMsg.className = 'output-line';
-    errorMsg.style.color = '#ff9999';
-    errorMsg.style.paddingLeft = '12px';
-    errorMsg.textContent = err.message || 'Unknown error occurred';
-    outputContent.appendChild(errorMsg);
+      const errorMsg = document.createElement('div');
+      errorMsg.className = 'output-line';
+      errorMsg.style.color = '#ff9999';
+      errorMsg.style.paddingLeft = '12px';
+      errorMsg.textContent = err.message || 'Unknown error occurred';
+      outputContent.appendChild(errorMsg);
 
-    outputStatus.textContent = '● Error';
-    outputStatus.style.color = '#f87171';
+      outputStatus.textContent = '● Error';
+      outputStatus.style.color = '#f87171';
+    }
   }
 
   // Auto-scroll to bottom
@@ -818,43 +848,229 @@ async function runCode() {
 
   // Re-enable button
   isCompiling = false;
+  executionController = null;
+  stopBtn.classList.add('hidden');
+  btn.classList.remove('hidden');
   btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i><span id="runBtnText">${currentConfig.run_button_text || 'Run Code'}</span>`;
   btn.style.opacity = '1';
   btn.disabled = false;
   lucide.createIcons({ nameAttr: 'data-lucide' });
 }
 
-async function tryOnlineCompile(code) {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+async function runInteractiveProgram(code, startTime) {
+  outputContent.innerHTML = '';
+  outputContent.style.background = '#000000';
+  
+  return new Promise((resolve) => {
+    // Extract printf prompts from code
+    const printfRegex = /printf\s*\(\s*"([^"]*)"\s*\)/g;
+    const prompts = [];
+    let match;
+    while ((match = printfRegex.exec(code)) !== null) {
+      const text = match[1].replace(/\\n/g, '').trim();
+      if (text.length > 0 && text.length < 50) {
+        prompts.push(text);
+      }
+    }
     
-    const resp = await fetch('https://emkc.org/api/v2/piston/execute', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        language: 'c',
-        version: '10.2.0',
-        files: [{ name: files[activeFileIdx].name, content: code }],
-        stdin: ''
-      })
-    });
+    // Count scanf calls
+    const scanfMatches = code.match(/scanf\s*\(/g) || [];
+    const scanfCount = scanfMatches.length;
 
-    clearTimeout(timeout);
+    // Create input fields with smart prompts - directly in output
+    const inputFields = [];
+    const defaultPrompts = [
+      'Enter first number: ',
+      'Enter second number: ',
+      'Enter third number: ',
+      'Enter value: '
+    ];
 
-    if (!resp.ok) {
-      return { success: false, error: `HTTP ${resp.status}` };
+    for (let i = 0; i < scanfCount; i++) {
+      const fieldWrapper = document.createElement('div');
+      fieldWrapper.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 12px;
+      `;
+
+      const prompt = document.createElement('span');
+      prompt.style.cssText = `
+        color: #ffffff;
+        font-size: 13px;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 500;
+        white-space: pre;
+      `;
+      const promptText = prompts[i] || defaultPrompts[i % defaultPrompts.length];
+      prompt.textContent = promptText.endsWith(': ') ? promptText : promptText + ': ';
+      fieldWrapper.appendChild(prompt);
+
+      const inputField = document.createElement('input');
+      inputField.type = 'text';
+      inputField.placeholder = '';
+      inputField.style.cssText = `
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #50fa7b;
+        color: #50fa7b;
+        padding: 2px 0px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        box-sizing: border-box;
+        outline: none;
+        flex: 1;
+        max-width: 200px;
+        transition: border-color 0.2s;
+        caret-color: #50fa7b;
+      `;
+      inputField.addEventListener('focus', () => {
+        inputField.style.borderColor = '#00d4ff';
+      });
+      inputField.addEventListener('blur', () => {
+        inputField.style.borderColor = '#50fa7b';
+      });
+      inputField.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (i < scanfCount - 1) {
+            inputFields[i + 1].focus();
+          } else {
+            executeWithInput();
+          }
+        }
+      });
+      
+      fieldWrapper.appendChild(inputField);
+      outputContent.appendChild(fieldWrapper);
+      inputFields.push(inputField);
     }
 
-    const data = await resp.json();
-    return { success: true, data: data };
-  } catch (err) {
-    return { success: false, error: err.message };
-  }
+    // Create button group - merged into output
+    const buttonGroup = document.createElement('div');
+    buttonGroup.style.cssText = `
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      justify-content: flex-start;
+    `;
+
+    const runBtn = document.createElement('button');
+    runBtn.innerHTML = '▶ Execute';
+    runBtn.style.cssText = `
+      background: #1a5a1a;
+      color: #ffffff;
+      border: 1px solid #2a7a2a;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    `;
+    runBtn.addEventListener('mouseenter', () => {
+      runBtn.style.background = '#228a22';
+      runBtn.style.borderColor = '#3aaa3a';
+      runBtn.style.boxShadow = '0 0 10px rgba(34, 138, 34, 0.3)';
+    });
+    runBtn.addEventListener('mouseleave', () => {
+      runBtn.style.background = '#1a5a1a';
+      runBtn.style.borderColor = '#2a7a2a';
+      runBtn.style.boxShadow = 'none';
+    });
+
+    const clearBtn = document.createElement('button');
+    clearBtn.innerHTML = 'Clear';
+    clearBtn.style.cssText = `
+      background: #5a1a1a;
+      color: #ffffff;
+      border: 1px solid #7a2a2a;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    `;
+    clearBtn.addEventListener('click', () => {
+      inputFields.forEach(f => f.value = '');
+      inputFields[0].focus();
+    });
+    clearBtn.addEventListener('mouseenter', () => {
+      clearBtn.style.background = '#7a2a2a';
+      clearBtn.style.borderColor = '#9a3a3a';
+    });
+    clearBtn.addEventListener('mouseleave', () => {
+      clearBtn.style.background = '#5a1a1a';
+      clearBtn.style.borderColor = '#7a2a2a';
+    });
+
+    buttonGroup.appendChild(runBtn);
+    buttonGroup.appendChild(clearBtn);
+    outputContent.appendChild(buttonGroup);
+
+    // Add separator
+    const separator = document.createElement('div');
+    separator.style.cssText = `
+      height: 1px;
+      background: #333333;
+      margin-bottom: 12px;
+    `;
+    outputContent.appendChild(separator);
+
+    // Handle input submission
+    const executeWithInput = async () => {
+      // Validate inputs
+      const values = inputFields.map(f => f.value.trim());
+      if (values.some(v => !v)) {
+        const errorMsg = document.createElement('div');
+        errorMsg.style.cssText = `
+          color: #ff6666;
+          font-size: 11px;
+          padding: 8px 10px;
+          background: rgba(255, 102, 102, 0.1);
+          border-left: 2px solid #ff6666;
+          border-radius: 2px;
+          margin-top: 8px;
+        `;
+        errorMsg.innerHTML = '⚠ Please fill all input fields';
+        outputContent.appendChild(errorMsg);
+        setTimeout(() => errorMsg.remove(), 3000);
+        return;
+      }
+
+      // Store input values for display
+      const userInputs = values;
+      
+      // Remove input fields and buttons to show output
+      inputFields.forEach(f => f.parentElement.remove());
+      buttonGroup.remove();
+      separator.remove();
+
+      // Run the program with collected input
+      const inputString = values.join('\n');
+      const result = await tryOnlineCompile(code, inputString);
+      if (result.success) {
+        displayCompileResult(result, startTime, true, userInputs);
+      } else {
+        const offlineResult = await tryOfflineCompile(code, inputString);
+        displayCompileResult(offlineResult, startTime, true, userInputs);
+      }
+      resolve();
+    };
+
+    // Button handlers
+    runBtn.addEventListener('click', executeWithInput);
+
+    // Focus first field
+    setTimeout(() => inputFields[0].focus(), 100);
+  });
 }
 
-function tryOfflineCompile(code) {
+function tryOfflineCompile(code, stdin = '') {
   // Simulate compilation with basic syntax checking
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -868,8 +1084,8 @@ function tryOfflineCompile(code) {
           }
         });
       } else {
-        // Simulate execution
-        const output = simulateExecution(code);
+        // Simulate execution with input
+        const output = simulateExecutionWithInput(code, stdin);
         resolve({
           success: true,
           data: {
@@ -1026,14 +1242,149 @@ function simulateExecution(code) {
   return outputs.join('\n');
 }
 
-function displayCompileResult(result, startTime) {
-  outputContent.innerHTML = '';
+function simulateExecutionWithInput(code, stdin) {
+  // Parse input values
+  const inputs = stdin.trim().split('\n').map(l => l.trim()).filter(l => l);
+  const inputValues = inputs.map(v => {
+    const num = parseInt(v);
+    return isNaN(num) ? v : num;
+  });
+
+  // Extract all printf calls and their format strings with proper parsing
+  const outputs = [];
+  let i = 0;
+  let inputIdx = 0;
+
+  // Simple variable tracking
+  const variables = {
+    num1: undefined,
+    num2: undefined,
+    sum: undefined,
+    result: undefined,
+    product: undefined,
+    quotient: undefined,
+    remainder: undefined
+  };
+
+  // Assign input values to common variable names in order
+  const varNames = Object.keys(variables);
+  inputValues.forEach((val, idx) => {
+    if (idx < varNames.length) {
+      variables[varNames[idx]] = val;
+    }
+  });
+
+  // Calculate sum if both num1 and num2 exist
+  if (variables.num1 !== undefined && variables.num2 !== undefined) {
+    variables.sum = variables.num1 + variables.num2;
+    variables.result = variables.sum;
+    variables.product = variables.num1 * variables.num2;
+    variables.quotient = Math.floor(variables.num1 / variables.num2);
+    variables.remainder = variables.num1 % variables.num2;
+  }
+
+  // Extract all printf statements
+  const printfRegex = /printf\s*\(\s*"([^"]*)"\s*(?:,\s*([^)]*?))?\s*\)/g;
+  let match;
+
+  while ((match = printfRegex.exec(code)) !== null) {
+    let formatStr = match[1];
+    const args = match[2] ? match[2].split(',').map(a => a.trim()) : [];
+
+    // Replace escape sequences
+    formatStr = formatStr.replace(/\\n/g, '\n');
+    formatStr = formatStr.replace(/\\t/g, '\t');
+    formatStr = formatStr.replace(/\\r/g, '\r');
+
+    // Replace format specifiers with actual values
+    let result = formatStr;
+    let argIdx = 0;
+
+    // %d - integer
+    result = result.replace(/%d/g, () => {
+      if (argIdx < args.length) {
+        const arg = args[argIdx++].trim().replace('&', '');
+        if (variables[arg] !== undefined) {
+          return variables[arg].toString();
+        }
+        return arg;
+      }
+      return inputIdx < inputValues.length ? inputValues[inputIdx++].toString() : '0';
+    });
+
+    // %s - string
+    result = result.replace(/%s/g, () => {
+      if (argIdx < args.length) {
+        const arg = args[argIdx++].trim();
+        return arg;
+      }
+      return inputIdx < inputValues.length ? inputValues[inputIdx++].toString() : '';
+    });
+
+    // %f - float
+    result = result.replace(/%f/g, () => {
+      if (argIdx < args.length) {
+        const arg = args[argIdx++].trim().replace('&', '');
+        if (variables[arg] !== undefined) {
+          return parseFloat(variables[arg]).toFixed(2);
+        }
+        return arg;
+      }
+      return inputIdx < inputValues.length ? parseFloat(inputValues[inputIdx++]).toFixed(2) : '0.0';
+    });
+
+    // %c - char
+    result = result.replace(/%c/g, () => {
+      if (argIdx < args.length) {
+        const arg = args[argIdx++].trim();
+        return arg.charAt(0) || '';
+      }
+      return inputIdx < inputValues.length ? inputValues[inputIdx++].toString().charAt(0) : '';
+    });
+
+    if (result.trim()) {
+      outputs.push(result);
+    }
+  }
+
+  // If no printf found, show a helpful message
+  if (outputs.length === 0) {
+    return 'Program executed successfully.\n(No output detected - add printf() to see results)';
+  }
+
+  return outputs.join('');
+}
+
+function displayCompileResult(result, startTime, skipInputDisplay = false, userInputs = []) {
+  if (!skipInputDisplay) {
+    outputContent.innerHTML = '';
+  }
+  outputContent.style.background = '#000000';
   const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
 
   let hasError = false;
   let hasOutput = false;
   let errorCount = 0;
   let warningCount = 0;
+
+  // Display user inputs if provided (GDB-style input echo)
+  if (userInputs && userInputs.length > 0) {
+    userInputs.forEach(input => {
+      const inputLine = document.createElement('div');
+      inputLine.className = 'output-line';
+      inputLine.style.color = '#50fa7b';
+      inputLine.style.fontStyle = 'italic';
+      inputLine.textContent = input;
+      outputContent.appendChild(inputLine);
+    });
+    
+    // Add separator after inputs
+    const separator = document.createElement('div');
+    separator.style.height = '1px';
+    separator.style.background = '#333333';
+    separator.style.margin = '8px 0';
+    outputContent.appendChild(separator);
+  }
 
   // Display compilation errors (PRIORITY)
   if (result.data.compile && result.data.compile.stderr && result.data.compile.stderr.trim()) {
@@ -1048,15 +1399,15 @@ function displayCompileResult(result, startTime) {
 
     const errorHeader = document.createElement('div');
     errorHeader.className = 'output-line';
-    errorHeader.style.color = '#f87171';
+    errorHeader.style.color = '#ff3333';
     errorHeader.style.fontWeight = 'bold';
     errorHeader.style.marginBottom = '6px';
     
     if (errorCount > 0) {
-      errorHeader.innerHTML = `<span>🛑 ${errorCount} Compilation Error${errorCount > 1 ? 's' : ''}${warningCount > 0 ? ` + ${warningCount} Warning${warningCount > 1 ? 's' : ''}` : ''}</span>`;
+      errorHeader.innerHTML = `<span>error: ${errorCount} error${errorCount > 1 ? 's' : ''}${warningCount > 0 ? ` + ${warningCount} warning${warningCount > 1 ? 's' : ''}` : ''}</span>`;
     } else if (warningCount > 0) {
-      errorHeader.innerHTML = `<span>⚠️ ${warningCount} Warning${warningCount > 1 ? 's' : ''}</span>`;
-      errorHeader.style.color = '#ffcc00';
+      errorHeader.innerHTML = `<span>warning: ${warningCount} warning${warningCount > 1 ? 's' : ''}</span>`;
+      errorHeader.style.color = '#ffaa00';
     }
     outputContent.appendChild(errorHeader);
 
@@ -1068,18 +1419,14 @@ function displayCompileResult(result, startTime) {
         errorLine.className = 'output-line';
         
         if (line.toLowerCase().includes('error:')) {
-          errorLine.style.color = '#ff6b6b';
-          errorLine.style.paddingLeft = '12px';
-          errorLine.style.borderLeft = '3px solid #ff6b6b';
-          errorLine.style.paddingLeft = '10px';
+          errorLine.style.color = '#ff5555';
+          errorLine.style.paddingLeft = '4px';
         } else if (line.toLowerCase().includes('warning:')) {
-          errorLine.style.color = '#ffa94d';
-          errorLine.style.paddingLeft = '12px';
-          errorLine.style.borderLeft = '3px solid #ffa94d';
-          errorLine.style.paddingLeft = '10px';
+          errorLine.style.color = '#ffbb44';
+          errorLine.style.paddingLeft = '4px';
         } else {
-          errorLine.style.color = '#ff9999';
-          errorLine.style.paddingLeft = '12px';
+          errorLine.style.color = '#cccccc';
+          errorLine.style.paddingLeft = '4px';
         }
         
         errorLine.textContent = line;
@@ -1091,7 +1438,7 @@ function displayCompileResult(result, startTime) {
     if (result.data.run) {
       const separator = document.createElement('div');
       separator.style.height = '1px';
-      separator.style.background = 'rgba(255,255,255,0.1)';
+      separator.style.background = '#333333';
       separator.style.margin = '12px 0';
       outputContent.appendChild(separator);
     }
@@ -1101,20 +1448,12 @@ function displayCompileResult(result, startTime) {
   if (result.data.run && !hasError) {
     if (result.data.run.stdout && result.data.run.stdout.trim()) {
       hasOutput = true;
-      const outputHeader = document.createElement('div');
-      outputHeader.className = 'output-line';
-      outputHeader.style.color = '#50fa7b';
-      outputHeader.style.fontWeight = 'bold';
-      outputHeader.style.marginBottom = '6px';
-      outputHeader.innerHTML = `<span>✅ Output:</span>`;
-      outputContent.appendChild(outputHeader);
-
       const stdoutLines = result.data.run.stdout.split('\n');
       stdoutLines.forEach(line => {
         const outputLine = document.createElement('div');
         outputLine.className = 'output-line';
-        outputLine.style.color = '#50fa7b';
-        outputLine.style.paddingLeft = '12px';
+        outputLine.style.color = '#ffffff';
+        outputLine.style.paddingLeft = '0px';
         outputLine.textContent = line;
         outputContent.appendChild(outputLine);
       });
@@ -1126,8 +1465,8 @@ function displayCompileResult(result, startTime) {
         if (line.trim()) {
           const warningLine = document.createElement('div');
           warningLine.className = 'output-line';
-          warningLine.style.color = '#ffcc00';
-          warningLine.style.paddingLeft = '12px';
+          warningLine.style.color = '#ffaa00';
+          warningLine.style.paddingLeft = '0px';
           warningLine.textContent = line;
           outputContent.appendChild(warningLine);
         }
@@ -1137,11 +1476,10 @@ function displayCompileResult(result, startTime) {
     if (result.data.run.code !== 0 && result.data.run.code !== undefined) {
       const exitLine = document.createElement('div');
       exitLine.className = 'output-line';
-      exitLine.style.color = '#ff9999';
+      exitLine.style.color = '#50fa7b';
       exitLine.style.marginTop = '8px';
-      exitLine.textContent = `⚠️ Process exited with code ${result.data.run.code}`;
+      exitLine.textContent = `Program finished with exit code ${result.data.run.code}`;
       outputContent.appendChild(exitLine);
-      hasError = true;
     }
   }
 
@@ -1149,20 +1487,20 @@ function displayCompileResult(result, startTime) {
   if (!hasOutput && !hasError) {
     const noOutputDiv = document.createElement('div');
     noOutputDiv.className = 'output-line';
-    noOutputDiv.style.color = '#888888';
-    noOutputDiv.innerHTML = `<i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Program ran successfully with no output`;
+    noOutputDiv.style.color = '#666666';
+    noOutputDiv.innerHTML = `(no output)`;
     outputContent.appendChild(noOutputDiv);
   }
 
-  // Show execution time
+  // Show execution footer
   const timeDiv = document.createElement('div');
   timeDiv.className = 'output-line';
-  timeDiv.style.color = '#666666';
-  timeDiv.style.fontSize = '10px';
+  timeDiv.style.color = '#888888';
+  timeDiv.style.fontSize = '12px';
   timeDiv.style.marginTop = '12px';
-  timeDiv.style.borderTop = '1px solid rgba(255,255,255,0.1)';
+  timeDiv.style.borderTop = '1px solid #333333';
   timeDiv.style.paddingTop = '8px';
-  timeDiv.textContent = `⏱️ Executed in ${elapsed}s`;
+  timeDiv.textContent = `Press ENTER to exit console.`;
   outputContent.appendChild(timeDiv);
 
   // Update status
@@ -1336,6 +1674,11 @@ $('sidebarOverlay').addEventListener('click', () => {
 
 // ==================== BUTTON HANDLERS ====================
 $('btnRun').addEventListener('click', runCode);
+$('btnStop').addEventListener('click', () => {
+  if (executionController) {
+    executionController.abort();
+  }
+});
 $('btnFormat').addEventListener('click', formatCode);
 $('btnDownload').addEventListener('click', downloadFile);
 $('btnNewFile').addEventListener('click', addFile);
@@ -1402,6 +1745,7 @@ function loadFromStorage() {
 const defaultConfig = {
   app_title: 'Craby C Compiler',
   run_button_text: 'Run Code',
+  stop_button_text: 'Stop',
   background_color: '#0d0d14',
   surface_color: '#16161e',
   text_color: '#c5c8d4',
@@ -1421,6 +1765,8 @@ function applyConfig(config) {
   if (titleEl) titleEl.textContent = config.app_title || defaultConfig.app_title;
   const runText = $('runBtnText');
   if (runText && !isCompiling) runText.textContent = config.run_button_text || defaultConfig.run_button_text;
+  const stopText = $('stopBtnText');
+  if (stopText && isCompiling) stopText.textContent = config.stop_button_text || defaultConfig.stop_button_text;
 
   // Colors
   const accent = config.accent_color || defaultConfig.accent_color;
@@ -1475,7 +1821,8 @@ if (window.elementSdk) {
     }),
     mapToEditPanelValues: (config) => new Map([
       ['app_title', config.app_title || defaultConfig.app_title],
-      ['run_button_text', config.run_button_text || defaultConfig.run_button_text]
+      ['run_button_text', config.run_button_text || defaultConfig.run_button_text],
+      ['stop_button_text', config.stop_button_text || defaultConfig.stop_button_text]
     ])
   });
 }
@@ -1492,5 +1839,5 @@ outputContent.innerHTML = `<div class="text-gray-500 flex items-center gap-2"><i
 
 lucide.createIcons({ nameAttr: 'data-lucide' });
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e0b09f7209d4254',t:'MTc3NDI0Mzc3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e0bbe2b43f647d5',t:'MTc3NDI1MTE1My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
