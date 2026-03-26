@@ -13,46 +13,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <title>Introduction to Java Programming | Java Basics | Craby Editor</title>
-    <meta name="description" content="Get started with Java programming. Learn about the JVM, JRE, JDK, and why Java is the most popular language for enterprise applications.">
-    <meta name="keywords" content="Java Tutorial, Java Introduction, JVM, JDK vs JRE, Object Oriented Programming, Java Basics, Craby Editor">
-    <meta name="author" content="Craby Editor">
-    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
-
+    <title>Java Programming Masterclass | Craby Editor Tutorials</title>
+    <meta name="description" content="Master Java from scratch. Comprehensive guide covering JVM, OOPs, Collections, and Syntax with real-world examples.">
+    
     <link rel="stylesheet" href="/css/index.css">
     <script src="/js/theme-settings.js"></script>
     <script src="/js/tag.js"></script>
 
     <style>
-        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
-        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
-        
-        .code-box {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 18px;
-            border-radius: 8px;
-            overflow-x: auto; 
-            white-space: pre;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            border: 1px solid #333;
-            margin: 15px 0;
-        }
-
-        .concept-card {
-            background: #f8f9fa;
-            border-left: 5px solid #f89820; /* Java Orange */
+        .intro-card {
+            background: #fff3e0;
+            border-left: 6px solid #f89820;
             padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
+            margin: 25px 0;
+            border-radius: 4px;
         }
 
-        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
-        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
-        th { background: #f8f9fa; color: #333; font-weight: 600; }
-        .java-keyword { color: #f89820; font-family: monospace; font-weight: bold; }
+        .chapter-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .chapter-card {
+            background: #ffffff;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .chapter-card:hover {
+            border-color: #f89820;
+            background: #fffbf5;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .chapter-number {
+            font-weight: bold;
+            color: #f89820;
+            font-size: 20px;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+
+        .feature-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .feature-tag {
+            background: #e1f5fe;
+            color: #0277bd;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -72,83 +97,55 @@
 </header>
 
 <div class="section">
-    <div class="nav-container">
-        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-grid.html'">« Previous</button>
-        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-variables.html'">Next »</button>
+    <h1>Java Programming Course</h1>
+    
+    <div class="intro-card">
+        <strong>What is Java?</strong><br>
+        Java is a high-level, class-based, object-oriented programming language. Its famous motto is <b>"Write Once, Run Anywhere" (WORA)</b>, meaning compiled Java code can run on all platforms that support Java without the need for recompilation.
     </div>
 
-    <h1>Introduction to Java</h1>
-    <p><b>Java</b> is a high-level, class-based, object-oriented programming language designed to have as few implementation dependencies as possible. Its famous slogan is: <i>"Write Once, Run Anywhere" (WORA)</i>.</p>
-
-    <h2>1. Key Features of Java</h2>
-    <ul>
-        <li><b>Object-Oriented:</b> Everything in Java is an Object.</li>
-        <li><b>Platform Independent:</b> Java code is compiled into bytecode, which runs on any device with a JVM.</li>
-        <li><b>Secure:</b> Java provides a secure environment by eliminating pointers and running code inside a sandbox.</li>
-        <li><b>Robust:</b> Strong memory management and exception handling make Java highly reliable.</li>
-    </ul>
-
-    <h2>2. The Java Ecosystem (JDK, JRE, JVM)</h2>
-    <p>To run Java, you need to understand three core components:</p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Component</th>
-                <th>Full Form</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><span class="java-keyword">JVM</span></td>
-                <td>Java Virtual Machine</td>
-                <td>Executes the bytecode on the specific OS.</td>
-            </tr>
-            <tr>
-                <td><span class="java-keyword">JRE</span></td>
-                <td>Java Runtime Environment</td>
-                <td>Contains JVM + Libraries to run Java apps.</td>
-            </tr>
-            <tr>
-                <td><span class="java-keyword">JDK</span></td>
-                <td>Java Development Kit</td>
-                <td>Contains JRE + Tools (like <code>javac</code>) to develop Java apps.</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h2>3. Your First Java Program</h2>
-    <p>Every Java program must have a class and a <code>main</code> method. Here is the standard "Hello World" example:</p>
-
-    <div class="card">
-        <div class="code-box">
-public class Main {
-    public static void main(String[] args) {
-        // This is a comment
-        System.out.println("Hello, Welcome to Craby Editor!");
-    }
-}
-        </div>
+    <h2>Core Features of Java</h2>
+    <div class="feature-grid">
+        <span class="feature-tag">Platform Independent</span>
+        <span class="feature-tag">Secure & Robust</span>
+        <span class="feature-tag">Multi-threaded</span>
+        <span class="feature-tag">Architecture Neutral</span>
     </div>
 
-    <div class="concept-card">
-        <strong>Breakdown of the code:</strong>
-        <ul>
-            <li><span class="java-keyword">public class Main</span>: Defines a class named Main.</li>
-            <li><span class="java-keyword">static void main</span>: The entry point of any Java program.</li>
-            <li><span class="java-keyword">System.out.println</span>: Used to print text to the console.</li>
-        </ul>
-    </div>
-
-    <h2>4. How Java Works</h2>
-    <p>1. You write source code in a <b>.java</b> file.<br>
-       2. The compiler (javac) converts it into <b>.class</b> (bytecode) files.<br>
-       3. The JVM translates bytecode into machine code that the computer understands.</p>
-
-    <div class="nav-container" style="margin-top: 50px;">
-        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-grid.html'">« Previous</button>
-        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-variables.html'">Next Topic »</button>
+    <h2>Course Curriculum</h2>
+    <div class="chapter-list">
+        <a href="/tutorials/java/java-intro.html" class="chapter-card">
+            <span class="chapter-number">01</span>
+            <div><strong>Introduction</strong><br><small>JVM, JDK, and Setup</small></div>
+        </a>
+        <a href="/tutorials/java/java-variables.html" class="chapter-card">
+            <span class="chapter-number">02</span>
+            <div><strong>Variables</strong><br><small>Data Types & Casting</small></div>
+        </a>
+        <a href="/tutorials/java/java-loops.html" class="chapter-card">
+            <span class="chapter-number">03</span>
+            <div><strong>Loops</strong><br><small>Iteration Logic</small></div>
+        </a>
+        <a href="/tutorials/java/java-arrays.html" class="chapter-card">
+            <span class="chapter-number">04</span>
+            <div><strong>Arrays</strong><br><small>Storing Data Sets</small></div>
+        </a>
+        <a href="/tutorials/java/java-methods.html" class="chapter-card">
+            <span class="chapter-number">05</span>
+            <div><strong>Methods</strong><br><small>Reusable Code Blocks</small></div>
+        </a>
+        <a href="/tutorials/java/java-oops.html" class="chapter-card">
+            <span class="chapter-number">06</span>
+            <div><strong>OOPs Pillars</strong><br><small>Classes & Inheritance</small></div>
+        </a>
+        <a href="/tutorials/java/java-exceptions.html" class="chapter-card">
+            <span class="chapter-number">07</span>
+            <div><strong>Exceptions</strong><br><small>Error Handling</small></div>
+        </a>
+        <a href="/tutorials/java/java-collections.html" class="chapter-card">
+            <span class="chapter-number">08</span>
+            <div><strong>Collections</strong><br><small>ArrayList & HashMap</small></div>
+        </a>
     </div>
 </div>
 
@@ -177,8 +174,6 @@ public class Main {
     <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 <div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
     <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
     <div class="footer-icons" style="margin: 15px 0;">
@@ -188,6 +183,7 @@ public class Main {
     <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
 </div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="/js/script1.js"></script>
 <script src="/js/theme-setting.js"></script>
 </body>
