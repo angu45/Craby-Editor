@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Advanced HTML Forms Guide - Inputs, Validation & Layouts | Craby Editor</title>
+
+    <meta name="description" content="A comprehensive guide to HTML forms. Learn about input types, select menus, fieldsets, and modern HTML5 form validation techniques.">
+    <meta name="keywords" content="HTML forms tutorial, html5 input types, form validation, fieldset legend html, craby editor tutorials">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        .tag-badge { background: #f0f4f8; color: #1a56db; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        .detail-card { border-left: 4px solid #007bff; background: #fafafa; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f1f5f9; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tags.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tables.html'">Next »</button>
+    </div>
+
+    <h1>Advanced HTML Forms & User Interaction</h1>
+    <p>Forms are the bridge between a user and the server. Whether you are building a simple "Search" box or a complex "User Registration" system, understanding how to structure your forms correctly is vital for data security and user experience.</p>
+
+    <div class="detail-card">
+        <h3>1. Essential Form Attributes</h3>
+        <p>When you create a <span class="tag-badge">&lt;form&gt;</span>, these two attributes define how the data travels:</p>
+        <ul>
+            <li><strong>Action:</strong> The URL where the form data will be sent (e.g., <code>action="/save-user"</code>).</li>
+            <li><strong>Method:</strong> Use <b>GET</b> for non-sensitive data (like searches) or <b>POST</b> for sensitive data (like passwords).</li>
+        </ul>
+    </div>
+
+    <h2>2. Grouping Data with Fieldset & Legend</h2>
+    <p>For long forms, it is a professional practice to group related fields together. This makes the form easier to read for humans and more accessible for screen readers.</p>
+
+    <div class="card">
+        <div class="code-box">
+&lt;form&gt;<br>
+&nbsp;&nbsp;&lt;fieldset&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;legend&gt;Personal Info&lt;/legend&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&gt;First Name:&lt;/label&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;input type="text" name="fname"&gt;<br>
+&nbsp;&nbsp;&lt;/fieldset&gt;<br>
+&lt;/form&gt;
+        </div>
+        <button class="btn" style="margin-top: 10px; background: #28a745;" onclick="window.location.href='/html-editor.html'">Run Example</button>
+    </div>
+
+    <h2>3. New HTML5 Input Types</h2>
+    <p>Modern browsers provide built-in validation for specific data types. Using these correctly saves you from writing extra JavaScript.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Input Type</th>
+                <th>Usage</th>
+                <th>Benefit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>&lt;input type="number"&gt;</code></td>
+                <td>Quantity, Age, Price</td>
+                <td>Shows a number pad on mobile devices.</td>
+            </tr>
+            <tr>
+                <td><code>&lt;input type="date"&gt;</code></td>
+                <td>Birthdays, Booking dates</td>
+                <td>Opens a native calendar picker.</td>
+            </tr>
+            <tr>
+                <td><code>&lt;input type="color"&gt;</code></td>
+                <td>Theme selection</td>
+                <td>Opens a color picker tool.</td>
+            </tr>
+            <tr>
+                <td><code>&lt;input type="range"&gt;</code></td>
+                <td>Volume, Filters</td>
+                <td>Shows a slider control.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Button Types within Forms</h2>
+    <p>Inside a form, a button can behave in three different ways. You must define the <code>type</code> to avoid unexpected page refreshes.</p>
+    <ul>
+        <li><strong>type="submit":</strong> Sends the form data to the server (Default).</li>
+        <li><strong>type="reset":</strong> Clears all fields in the form to their default values.</li>
+        <li><strong>type="button":</strong> Does nothing by itself; used for triggering JavaScript functions.</li>
+    </ul>
+
+    <h2>5. Built-in Form Validation</h2>
+    <p>You don't always need complex scripts to validate a form. HTML provides simple attributes to ensure data quality:</p>
+    <div class="description-box">
+        <ul>
+            <li><strong>required:</strong> Prevents submission if the field is empty.</li>
+            <li><strong>placeholder:</strong> Provides a hint inside the field (e.g., "Enter your email").</li>
+            <li><strong>min/max:</strong> Sets a range for number or date inputs.</li>
+            <li><strong>pattern:</strong> Allows you to use Regular Expressions (Regex) for custom validation.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3>Comprehensive Example</h3>
+        <div class="code-box">
+&lt;form action="#"&gt;<br>
+&nbsp;&nbsp;&lt;label&gt;Email (Required):&lt;/label&gt;<br>
+&nbsp;&nbsp;&lt;input type="email" required placeholder="me@example.com"&gt;<br><br>
+&nbsp;&nbsp;&lt;label&gt;Experience (1-10 years):&lt;/label&gt;<br>
+&nbsp;&nbsp;&lt;input type="number" min="1" max="10"&gt;<br><br>
+&nbsp;&nbsp;&lt;button type="submit"&gt;Register Now&lt;/button&gt;<br>
+&lt;/form&gt;
+        </div>
+        <button class="btn btn-c" onclick="window.location.href='/html-editor.html'">Try Validation</button>
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tags.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tables.html'">Next »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
