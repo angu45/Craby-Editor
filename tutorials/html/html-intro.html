@@ -1,1 +1,186 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Tutorials Hub - Craby Editor</title>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .tutorial-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .tutorial-section-title {
+            border-left: 5px solid var(--accent, #007bff);
+            padding-left: 15px;
+            margin: 30px 0 20px;
+            font-size: 24px;
+        }
+        .tutorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .tut-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            border: 1px solid #eee;
+        }
+        .tut-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent, #007bff);
+        }
+        .tut-card h3 { margin-bottom: 15px; font-size: 18px; color: #333; }
+        .tut-list { list-style: none; padding: 0; }
+        .tut-list li { margin-bottom: 10px; }
+        .tut-list a {
+            text-decoration: none;
+            color: #555;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tut-list a:hover { color: var(--accent, #007bff); }
+        .tut-list i { font-size: 12px; color: #999; }
+        
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            display: block;
+            padding: 15px 20px;
+            border-radius: 30px;
+            border: 2px solid #ddd;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+    <div class="logo-container">
+        <a href="/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo" style="height: 40px;">
+        </a>
+    </div>
+    <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
+        <nav><a href="/" style="text-decoration: none; color: inherit; font-weight: bold;">Editor</a></nav>
+        <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+    </div>
+</header>
+
+<div class="hero" style="text-align: center; padding: 60px 20px;">
+    <h1>Master Coding Step-by-Step 📚</h1>
+    <p>Comprehensive tutorials for Web Development and Java Programming.</p>
+</div>
+
+<div class="tutorial-container">
+    <input type="text" class="search-box" placeholder="Search topics (e.g. Flexbox, OOPS)...">
+
+    <h2 class="tutorial-section-title">🌐 HTML Tutorials</h2>
+    <div class="tutorial-grid">
+        <div class="tut-card">
+            <h3>Basic HTML</h3>
+            <ul class="tut-list">
+                <li><a href="/tutorials/html/html-intro.html"><i class="fas fa-chevron-right"></i> HTML Introduction</a></li>
+                <li><a href="/tutorials/html/html-tags.html"><i class="fas fa-chevron-right"></i> Essential Tags</a></li>
+            </ul>
+        </div>
+        <div class="tut-card">
+            <h3>Structure & Media</h3>
+            <ul class="tut-list">
+                <li><a href="/tutorials/html/html-tables.html"><i class="fas fa-chevron-right"></i> Working with Tables</a></li>
+                <li><a href="/tutorials/html/html-forms.html"><i class="fas fa-chevron-right"></i> Form Elements</a></li>
+                <li><a href="/tutorials/html/html-media.html"><i class="fas fa-chevron-right"></i> Images & Video</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="tutorial-section-title">🎨 CSS Styling</h2>
+    <div class="tutorial-grid">
+        <div class="tut-card">
+            <h3>Fundamentals</h3>
+            <ul class="tut-list">
+                <li><a href="/tutorials/css/css-intro.html"><i class="fas fa-chevron-right"></i> CSS Introduction</a></li>
+                <li><a href="/tutorials/css/css-selectors.html"><i class="fas fa-chevron-right"></i> Selectors & Colors</a></li>
+                <li><a href="/tutorials/css/css-box-model.html"><i class="fas fa-chevron-right"></i> The Box Model</a></li>
+            </ul>
+        </div>
+        <div class="tut-card">
+            <h3>Modern Layouts</h3>
+            <ul class="tut-list">
+                <li><a href="/tutorials/css/css-flexbox.html"><i class="fas fa-chevron-right"></i> Flexbox Guide</a></li>
+                <li><a href="/tutorials/css/css-grid.html"><i class="fas fa-chevron-right"></i> CSS Grid Layout</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="tutorial-section-title">☕ Java Programming</h2>
+    <div class="tutorial-grid">
+        <div class="tut-card">
+            <h3>Core Java</h3>
+            <ul class="tut-list">
+                <li><a href="/tutorials/java/java-intro.html"><i class="fas fa-chevron-right"></i> Getting Started</a></li>
+                <li><a href="/tutorials/java/java-variables.html"><i class="fas fa-chevron-right"></i> Variables & Data Types</a></li>
+                <li><a href="/tutorials/java/java-loops.html"><i class="fas fa-chevron-right"></i> Control Statements</a></li>
+            </ul>
+        </div>
+        <div class="tut-card">
+            <h3>Advanced Concepts</h3>
+            <ul class="tut-list">
+                <li><a href="/tutorials/java/java-oops.html"><i class="fas fa-chevron-right"></i> OOPs Principles</a></li>
+                <li><a href="/tutorials/java/java-arrays.html"><i class="fas fa-chevron-right"></i> Arrays & Collections</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor Tutorials</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" style="margin: 0 15px; color: #E1306C; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Learn, Code, Deploy</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
