@@ -8,148 +8,140 @@
       gtag('js', new Date());
       gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
     </script>
+
     <meta name="google-adsense-account" content="ca-pub-7444755444888327">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Tutorials Hub - Craby Editor</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>HTML Introduction - Learn Web Development | Craby Editor</title>
+
+    <meta name="description" content="Complete guide to HTML basics. Learn HTML structure, tags, and how to create your first web page with Craby Editor.">
+    <meta name="keywords" content="HTML tutorial, learn HTML, web development, HTML5, Craby Editor, online coding">
 
     <link rel="stylesheet" href="/css/index.css">
     <script src="/js/theme-settings.js"></script>
     <script src="/js/tag.js"></script>
 
     <style>
-        .tutorial-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        .tutorial-section-title {
-            border-left: 5px solid var(--accent, #007bff);
-            padding-left: 15px;
-            margin: 30px 0 20px;
-            font-size: 24px;
-        }
-        .tutorial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .tut-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            border: 1px solid #eee;
-        }
-        .tut-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent, #007bff);
-        }
-        .tut-card h3 { margin-bottom: 15px; font-size: 18px; color: #333; }
-        .tut-list { list-style: none; padding: 0; }
-        .tut-list li { margin-bottom: 10px; }
-        .tut-list a {
-            text-decoration: none;
-            color: #555;
-            font-size: 15px;
+        /* Fix Navigation Button Sizes */
+        .nav-container {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            margin: 20px 0;
         }
-        .tut-list a:hover { color: var(--accent, #007bff); }
-        .tut-list i { font-size: 12px; color: #999; }
-
-        .search-box {
+        .nav-btn-fix {
+            width: 120px; /* Fixed small size */
+            padding: 8px 0 !important;
+            text-align: center;
+            font-size: 14px !important;
+        }
+        .disabled-btn {
+            background: #ccc !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        /* Custom Table Styling for better look */
+        .html-table {
             width: 100%;
-            max-width: 600px;
-            margin: 0 auto 40px;
-            display: block;
-            padding: 15px 20px;
-            border-radius: 30px;
-            border: 2px solid #ddd;
-            font-size: 16px;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
         }
+        .html-table th, .html-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .html-table th { background-color: #f4f4f4; }
     </style>
 </head>
 
 <body>
 
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+<header>
     <div class="logo-container">
-        <a href="/">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo" style="height: 40px;">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
         </a>
     </div>
-    <div class="header-actions" style="display: flex; align-items: center; gap: 20px;">
-        <nav><a href="/" style="text-decoration: none; color: inherit; font-weight: bold;">Editor</a></nav>
-        <button class="icon-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
     </div>
 </header>
 
-<div class="hero" style="text-align: center; padding: 60px 20px;">
-    <h1>Master Coding Step-by-Step 📚</h1>
-    <p>Comprehensive tutorials for Web Development and Java Programming.</p>
-</div>
-
-<div class="tutorial-container">
-    <input type="text" class="search-box" placeholder="Search topics (e.g. Flexbox, OOPS)...">
-
-    <h2 class="tutorial-section-title">🌐 HTML Tutorials</h2>
-    <div class="tutorial-grid">
-        <div class="tut-card">
-            <h3>Basic HTML</h3>
-            <ul class="tut-list">
-                <li><a href="/tutorials/html/html-intro.html"><i class="fas fa-chevron-right"></i> HTML Introduction</a></li>
-                <li><a href="/tutorials/html/html-tags.html"><i class="fas fa-chevron-right"></i> Essential Tags</a></li>
-            </ul>
-        </div>
-        <div class="tut-card">
-            <h3>Structure & Media</h3>
-            <ul class="tut-list">
-                <li><a href="/tutorials/html/html-tables.html"><i class="fas fa-chevron-right"></i> Working with Tables</a></li>
-                <li><a href="/tutorials/html/html-forms.html"><i class="fas fa-chevron-right"></i> Form Elements</a></li>
-                <li><a href="/tutorials/html/html-media.html"><i class="fas fa-chevron-right"></i> Images & Video</a></li>
-            </ul>
-        </div>
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix disabled-btn" disabled>« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tags.html'">Next »</button>
     </div>
 
-    <h2 class="tutorial-section-title">🎨 CSS Styling</h2>
-    <div class="tutorial-grid">
-        <div class="tut-card">
-            <h3>Fundamentals</h3>
-            <ul class="tut-list">
-                <li><a href="/tutorials/css/css-intro.html"><i class="fas fa-chevron-right"></i> CSS Introduction</a></li>
-                <li><a href="/tutorials/css/css-selectors.html"><i class="fas fa-chevron-right"></i> Selectors & Colors</a></li>
-                <li><a href="/tutorials/css/css-box-model.html"><i class="fas fa-chevron-right"></i> The Box Model</a></li>
-            </ul>
-        </div>
-        <div class="tut-card">
-            <h3>Modern Layouts</h3>
-            <ul class="tut-list">
-                <li><a href="/tutorials/css/css-flexbox.html"><i class="fas fa-chevron-right"></i> Flexbox Guide</a></li>
-                <li><a href="/tutorials/css/css-grid.html"><i class="fas fa-chevron-right"></i> CSS Grid Layout</a></li>
-            </ul>
-        </div>
+    <h1>Introduction to HTML 🌐</h1>
+    
+    <div class="description-box">
+        <h2>What is HTML?</h2>
+        <p>HTML mhanje <strong>HyperText Markup Language</strong>. Hi language web pages cha structure banavnyasathi vaparli jate. Browser (Chrome, Firefox) ya HTML code la vachun tumhala ek sundar website dakhavto.</p>
+        <p>HTML shikne khup sopa ahe. Jar tumhala ek paragraph lihaycha asel kiwa ek image takaychi asel, tar tumhala fakt tya sathi aslele <strong>Tags</strong> mahit pahije.</p>
     </div>
 
-    <h2 class="tutorial-section-title">☕ Java Programming</h2>
-    <div class="tutorial-grid">
-        <div class="tut-card">
-            <h3>Core Java</h3>
-            <ul class="tut-list">
-                <li><a href="/tutorials/java/java-intro.html"><i class="fas fa-chevron-right"></i> Getting Started</a></li>
-                <li><a href="/tutorials/java/java-variables.html"><i class="fas fa-chevron-right"></i> Variables & Data Types</a></li>
-                <li><a href="/tutorials/java/java-loops.html"><i class="fas fa-chevron-right"></i> Control Statements</a></li>
-            </ul>
+    <h2>HTML Structure Breakdown</h2>
+    <p>Ek standard HTML page madhe khali dilele components hamesha astat:</p>
+    <ul>
+        <li><strong>&lt;!DOCTYPE html&gt;:</strong> He browser la sangte ki hi HTML5 file ahe.</li>
+        <li><strong>&lt;html&gt;:</strong> Ha main container ahe, yachya aat sagle tags yetat.</li>
+        <li><strong>&lt;head&gt;:</strong> Yat title, CSS links, ani Meta tags asat je page var disat nahit pan garjeche astat.</li>
+        <li><strong>&lt;body&gt;:</strong> Yatla sagle content (Text, Images, Buttons) user la website var distat.</li>
+    </ul>
+
+    <h2>Let's Write Some Code!</h2>
+    <div class="card">
+        <h3>Sample: Basic Page</h3>
+        <div class="code-box">
+            &lt;!DOCTYPE html&gt;<br>
+            &lt;html&gt;<br>
+            &lt;head&gt;<br>
+            &nbsp;&nbsp;&lt;title&gt;My First Page&lt;/title&gt;<br>
+            &lt;/head&gt;<br>
+            &lt;body&gt;<br><br>
+            &nbsp;&nbsp;&lt;h1&gt;Welcome to Craby Editor&lt;/h1&gt;<br>
+            &nbsp;&nbsp;&lt;p&gt;Start your coding journey here.&lt;/p&gt;<br><br>
+            &lt;/body&gt;<br>
+            &lt;/html&gt;
         </div>
-        <div class="tut-card">
-            <h3>Advanced Concepts</h3>
-            <ul class="tut-list">
-                <li><a href="/tutorials/java/java-oops.html"><i class="fas fa-chevron-right"></i> OOPs Principles</a></li>
-                <li><a href="/tutorials/java/java-arrays.html"><i class="fas fa-chevron-right"></i> Arrays & Collections</a></li>
-            </ul>
-        </div>
+        <button class="btn" style="margin-top: 15px; background: #28a745;" onclick="window.location.href='/html-editor.html'">
+            <i class="fas fa-play"></i> Try it in Editor
+        </button>
+    </div>
+
+    <h2>Why is HTML Important?</h2>
+    <p>Internet varil pratyek website, mag ti Google aso ki Facebook, HTML shivay banu shakat nahi. He web development che <strong>Foundational Pillar</strong> ahe. HTML shikle ki tumhi CSS ani JavaScript sahaj shikhu shakta.</p>
+
+    <h2>HTML Versions Over Time</h2>
+    <table class="html-table">
+        <thead>
+            <tr>
+                <th>Version</th>
+                <th>Year Launched</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>HTML 1.0</td><td>1991</td></tr>
+            <tr><td>HTML 2.0</td><td>1995</td></tr>
+            <tr><td>HTML 4.01</td><td>1999</td></tr>
+            <tr><td>XHTML</td><td>2000</td></tr>
+            <tr><td><strong>HTML5</strong></td><td><strong>2014 (Latest)</strong></td></tr>
+        </tbody>
+    </table>
+
+    <div class="description-box" style="background: #fff3cd; border-left: 5px solid #ffc107;">
+        <strong>Pro Tip:</strong> HTML Tags hamesha lower-case madhe liha (e.g., &lt;p&gt; instead of &lt;P&gt;). He professional coding chi padhat ahe.
+    </div>
+
+    <div class="nav-container" style="margin-top: 40px;">
+        <button class="btn nav-btn-fix disabled-btn" disabled>« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tags.html'">Next »</button>
     </div>
 </div>
 
@@ -159,24 +151,38 @@
         <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
     </div>
     <div class="s-group">
-        <label>Theme</label>
-        <select id="theme-sel" onchange="updateThemeAndFont()">
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
         </select>
     </div>
-    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE</button>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
-    <p><strong>Craby Editor Tutorials</strong></p>
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
     <div class="footer-icons" style="margin: 15px 0;">
-        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; font-size: 24px;"><i class="fas fa-envelope"></i></a>
-        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" style="margin: 0 15px; color: #E1306C; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+        <a href="mailto:crabylab01@gmail.com" title="Email Us" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;">
+            <i class="fas fa-envelope"></i>
+        </a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" title="Follow on Instagram" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;">
+            <i class="fab fa-instagram"></i>
+        </a>
     </div>
-    <p style="font-size: 13px;">© 2026 Craby-Editor | Learn, Code, Deploy</p>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
 </div>
 
 <script src="/js/script1.js"></script>
