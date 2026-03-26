@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>HTML Tables Guide - Rows, Columns & Merging | Craby Editor</title>
+
+    <meta name="description" content="Master HTML tables. Learn how to use table headers, rows, and data cells, plus advanced merging techniques like colspan and rowspan.">
+    <meta name="keywords" content="HTML tables tutorial, table rows, table headers, colspan rowspan html, web development, craby editor">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        .tag-badge { background: #fff3e0; color: #ef6c00; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; font-weight: bold; }
+        
+        /* Demo Table Styling */
+        .demo-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; }
+        .demo-table th, .demo-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .demo-table th { background-color: #f8f9fa; color: #333; }
+        .demo-table tr:nth-child(even) { background-color: #fafafa; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-forms.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-media.html'">Next »</button>
+    </div>
+
+    <h1>Building Data Tables in HTML</h1>
+    <p>Tables allow you to arrange data—like text, images, and links—into rows and columns. While tables were used for layouts in the past, today they are strictly used for displaying <b>tabular data</b>.</p>
+
+    <div class="description-box">
+        <h3>1. The Core Table Tags</h3>
+        <ul>
+            <li><span class="tag-badge">&lt;table&gt;</span>: The main container for the entire table.</li>
+            <li><span class="tag-badge">&lt;tr&gt;</span>: Defines a <b>Table Row</b>.</li>
+            <li><span class="tag-badge">&lt;th&gt;</span>: Defines a <b>Table Header</b> (Standardized as bold and centered).</li>
+            <li><span class="tag-badge">&lt;td&gt;</span>: Defines <b>Table Data</b> (The actual cell content).</li>
+        </ul>
+    </div>
+
+    <h2>2. Basic Table Example</h2>
+    <p>A simple table consists of a header row followed by multiple data rows.</p>
+
+    <div class="card">
+        <div class="code-box">
+&lt;table border="1"&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;th&gt;Name&lt;/th&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;th&gt;Role&lt;/th&gt;<br>
+&nbsp;&nbsp;&lt;/tr&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Omii&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Developer&lt;/td&gt;<br>
+&nbsp;&nbsp;&lt;/tr&gt;<br>
+&lt;/table&gt;
+        </div>
+        <button class="btn" style="margin-top: 15px; background: #28a745;" onclick="window.location.href='/html-editor.html'">
+            <i class="fas fa-edit"></i> Edit this Table
+        </button>
+    </div>
+
+    <h2>3. Advanced: Merging Cells</h2>
+    <p>Sometimes you need a cell to span across multiple columns or multiple rows. This is done using <b>Colspan</b> and <b>Rowspan</b>.</p>
+
+    <div class="description-box" style="border-left: 5px solid #ff5722;">
+        <p><strong>Colspan:</strong> Use <code>colspan="2"</code> to merge two columns horizontally.</p>
+        <p><strong>Rowspan:</strong> Use <code>rowspan="2"</code> to merge two rows vertically.</p>
+    </div>
+
+    <div class="card">
+        <h3>Example: Merged Header</h3>
+        <div class="code-box">
+&lt;table border="1"&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;th colspan="2"&gt;Contact Details&lt;/th&gt;<br>
+&nbsp;&nbsp;&lt;/tr&gt;<br>
+&nbsp;&nbsp;&lt;tr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;Email&lt;/td&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;crabylab01@gmail.com&lt;/td&gt;<br>
+&nbsp;&nbsp;&lt;/tr&gt;<br>
+&lt;/table&gt;
+        </div>
+    </div>
+
+    <h2>4. Table Sections (Thead, Tbody, Tfoot)</h2>
+    <p>For large data sets, it is better to group your rows. This helps browsers scroll through data independently of the header.</p>
+    <ul>
+        <li><strong>&lt;thead&gt;</strong>: Wraps the header content.</li>
+        <li><strong>&lt;tbody&gt;</strong>: Wraps the main body of the table.</li>
+        <li><strong>&lt;tfoot&gt;</strong>: Wraps the footer/summary row at the bottom.</li>
+    </ul>
+
+    <table class="demo-table">
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Accessibility</td>
+                <td>Using <code>&lt;th&gt;</code> helps screen readers read data correctly.</td>
+            </tr>
+            <tr>
+                <td>Border Collapse</td>
+                <td>CSS <code>border-collapse: collapse;</code> makes tables look clean.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-forms.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-media.html'">Next »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
