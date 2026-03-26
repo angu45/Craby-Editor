@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Professional Web Certification | Craby Editor</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root { --brand: #2196f3; --dark: #1a252f; --bg: #f8fafc; }
+        body { background-color: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        
+        .exam-container { max-width: 650px; margin: 50px auto; padding: 40px; background: #fff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); border-top: 10px solid var(--brand); text-align: center; }
+        .step { display: none; }
+        .active { display: block; }
+        
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+        .input-box { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        
+        .option-btn { display: block; width: 100%; padding: 16px; margin: 12px 0; border: 1px solid #edf2f7; border-radius: 12px; cursor: pointer; text-align: left; background: #fff; transition: 0.2s; }
+        .option-btn:hover { border-color: var(--brand); background: #f0f9ff; }
+        .selected { background: var(--dark) !important; color: #fff !important; }
+        
+        .action-btn { background: var(--brand); color: #fff; padding: 18px; width: 100%; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 16px; margin-top: 25px; text-transform: uppercase; }
+        
+        #timer { background: #e2e8f0; color: #475569; padding: 6px 16px; border-radius: 30px; font-weight: 700; }
+        .res-summary { background: #f1f5f9; padding: 30px; border-radius: 15px; margin: 30px 0; text-align: left; border-left: 6px solid var(--brand); }
+    </style>
+</head>
+<body>
+
+<header style="padding: 30px; text-align: center;">
+    <a href="#">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Logo" id="siteLogo" style="height: 65px;">
+    </a>
+</header>
+
+<div class="exam-container">
+    <div id="step1" class="step active">
+        <h2 style="color: var(--dark);">Web Mastery Examination</h2>
+        <p style="color: #64748b; margin-bottom: 30px;">Complete the form to unlock your certification.</p>
+        
+        <div class="form-group">
+            <label>Legal Full Name</label>
+            <input type="text" id="stuName" class="input-box" placeholder="Your name for certificate">
+        </div>
+        <div class="form-group">
+            <label>Professional Email</label>
+            <input type="email" id="stuEmail" class="input-box" placeholder="example@mail.com">
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Age</label>
+                <input type="number" id="stuAge" class="input-box" value="21">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Gender</label>
+                <select id="stuGender" class="input-box">
+                    <option>Male</option><option>Female</option><option>Other</option>
+                </select>
+            </div>
+        </div>
+        <button class="action-btn" onclick="startExam()">Start Examination</button>
+    </div>
+
+    <div id="step2" class="step">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <span id="qCount" style="color: var(--brand); font-weight: 800;">QUESTION 1/15</span>
+            <span id="timer">00:00</span>
+        </div>
+        <h3 id="questionText" style="margin-bottom: 30px; color: var(--dark);"></h3>
+        <div id="optionsBox"></div>
+        <button class="action-btn" id="nextBtn" onclick="processNext()" style="display: none;">Next Step →</button>
+    </div>
+
+    <div id="step3" class="step">
+        <div style="font-size: 70px; margin-bottom: 20px;">🥇</div>
+        <h2 style="color: #1e293b;">Credential Approved</h2>
+        <div class="res-summary">
+            <p><strong>Candidate:</strong> <span id="resName"></span></p>
+            <p><strong>Final Score:</strong> <span id="resPercent" style="color:var(--brand); font-weight:800;">0%</span></p>
+            <p><strong>Reference:</strong> <span id="resId"></span></p>
+        </div>
+        <button class="action-btn" style="background: #10b981;" onclick="generateCertificate()">Download Realistic Certificate</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { q: "What does HTML stand for?", opts: ["Hyper Text Markup Language", "High Tech Modern Language", "Hyper Tabular Main Log", "Home Tool Markup Language"], a: 0 },
+        { q: "Which tag is used for the largest heading?", opts: ["<heading>", "<h6>", "<h1>", "<head>"], a: 2 },
+        { q: "Which CSS property controls the text size?", opts: ["font-style", "text-size", "font-size", "text-style"], a: 2 },
+        { q: "How do you add a background color in CSS?", opts: ["color:", "bg-color:", "background-color:", "background:"], a: 2 },
+        { q: "What is the correct tag for a line break?", opts: ["<lb>", "<break>", "<br>", "<hr>"], a: 2 },
+        { q: "Which character is used to indicate an end tag?", opts: ["*", "<", "/", "^"], a: 2 },
+        { q: "How do you select an element with id 'demo' in CSS?", opts: [".demo", "demo", "#demo", "*demo"], a: 2 },
+        { q: "Which property is used to change the left margin?", opts: ["padding-left", "margin-left", "indent-left", "spacing-left"], a: 1 },
+        { q: "Which CSS property defines the font?", opts: ["font-family", "font-weight", "font-style", "font-type"], a: 0 },
+        { q: "How do you make text bold in CSS?", opts: ["font:bold;", "style:bold;", "font-weight:bold;", "text-decoration:bold;"], a: 2 },
+        { q: "Which attribute defines inline styles?", opts: ["class", "styles", "font", "style"], a: 3 },
+        { q: "What is the default position value?", opts: ["relative", "fixed", "absolute", "static"], a: 3 },
+        { q: "HTML tag for a numbered list?", opts: ["<ul>", "<list>", "<ol>", "<dl>"], a: 2 },
+        { q: "What does the '%' operator return?", opts: ["Quotient", "Remainder", "Square Root", "Product"], a: 1 },
+        { q: "How to create a link?", opts: ["<a>url</a>", "<a href='url'>Text</a>", "<a>Text</a>", "<link>url</link>"], a: 1 }
+    ];
+
+    let current = 0, correct = 0, selectedIdx = -1, timer;
+
+    function startExam() {
+        if(!document.getElementById('stuName').value) return alert("Enter Name");
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+        let sec = 0;
+        timer = setInterval(() => {
+            sec++;
+            document.getElementById('timer').innerText = String(Math.floor(sec/60)).padStart(2,'0') + ":" + String(sec%60).padStart(2,'0');
+        }, 1000);
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        selectedIdx = -1;
+        document.getElementById('nextBtn').style.display = 'none';
+        let data = quizData[current];
+        document.getElementById('qCount').innerText = `QUESTION ${current + 1}/${quizData.length}`;
+        document.getElementById('questionText').innerText = data.q;
+        let box = document.getElementById('optionsBox');
+        box.innerHTML = "";
+        data.opts.forEach((opt, i) => {
+            let b = document.createElement('button');
+            b.className = "option-btn";
+            b.innerText = opt;
+            b.onclick = () => {
+                document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                b.classList.add('selected');
+                selectedIdx = i;
+                document.getElementById('nextBtn').style.display = 'block';
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function processNext() {
+        if(selectedIdx === quizData[current].a) correct++;
+        current++;
+        if(current < quizData.length) loadQuestion();
+        else {
+            clearInterval(timer);
+            document.getElementById('resName').innerText = document.getElementById('stuName').value;
+            document.getElementById('resPercent').innerText = Math.round((correct/quizData.length)*100) + "%";
+            document.getElementById('resId').innerText = "CRB-WEB-" + Date.now().toString().slice(-8);
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
+        }
+    }
+
+    function generateCertificate() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        
+        const name = document.getElementById('resName').innerText.toUpperCase();
+        const score = document.getElementById('resPercent').innerText;
+        const certId = document.getElementById('resId').innerText;
+        const date = new Date().toLocaleDateString('en-GB');
+
+        // 1. Watermark Background
+        doc.setFillColor(254, 255, 255); doc.rect(0, 0, 297, 210, 'F');
+        doc.setFontSize(50); doc.setTextColor(248, 248, 248);
+        for(let i=0; i<300; i+=100) { for(let j=0; j<220; j+=60) { doc.text("CRABY EDITOR", i, j, { angle: 30 }); } }
+
+        // 2. Main Borders
+        doc.setDrawColor(33, 150, 243); doc.setLineWidth(3); doc.rect(5, 5, 287, 200);
+        doc.setDrawColor(20, 100, 200); doc.setLineWidth(0.5); doc.rect(7, 7, 283, 196);
+
+        // 3. BRANDING LOGO (Adjusted Spacing)
+        const logo = document.getElementById('siteLogo');
+        doc.addImage(logo, 'PNG', 133, 12, 30, 15); // Centered logo
+        
+        doc.setFontSize(14); doc.setTextColor(33, 150, 243); doc.setFont("helvetica", "bold");
+        doc.text("VERIFIED PROFESSIONAL", 280, 20, { align: "right" });
+
+        // 4. TITLES (Fixed Heading Problem - Lowered Y-coord)
+        doc.setTextColor(26, 37, 47); 
+        doc.setFontSize(32); // Slightly smaller to avoid crowding
+        doc.setFont("times", "bold");
+        doc.text("CERTIFICATE OF TECHNICAL COMPETENCE", 148, 45, { align: "center" });
+        
+        doc.setFontSize(16); doc.setFont("times", "italic");
+        doc.text("This international credential is officially granted to", 148, 58, { align: "center" });
+
+        // 5. STUDENT NAME
+        doc.setFontSize(40); doc.setTextColor(0, 0, 0); doc.setFont("times", "bold");
+        doc.text(name, 148, 85, { align: "center" });
+        doc.setDrawColor(33, 150, 243); doc.setLineWidth(1); doc.line(80, 88, 217, 88);
+
+        // 6. DESCRIPTION
+        doc.setTextColor(60, 60, 60); doc.setFontSize(12); doc.setFont("helvetica", "normal");
+        const bodyText = `In recognition of their extensive knowledge in Modern Web Standards. The recipient has proven proficiency in Semantic HTML5 Architecture, CSS3 Advanced Styling (Flexbox/Grid), Responsive Web Design (RWD), and standardized Document Object Model practices. This certification confirms that the individual has successfully cleared the standardized examination.`;
+        const splitText = doc.splitTextToSize(bodyText, 220);
+        doc.text(splitText, 148, 105, { align: "center" });
+
+        // 7. SCORE
+        doc.setFontSize(22); doc.setTextColor(33, 150, 243); doc.setFont("helvetica", "bold");
+        doc.text(`ATTAINED SCORE: ${score} (GRADE: A)`, 148, 145, { align: "center" });
+
+        // 8. SIGNATURE & SEAL
+        doc.setTextColor(30, 40, 90); doc.setFontSize(26); doc.setFont("times", "italic");
+        doc.text("Anguworkshop", 65, 175, { align: "center" });
+        doc.setDrawColor(100, 100, 100); doc.setLineWidth(0.5); doc.line(35, 178, 95, 178);
+        doc.setFontSize(10); doc.text("Director of Education", 65, 183, { align: "center" });
+
+        // Realistic Blue Seal
+        doc.setFillColor(33, 150, 243); doc.circle(245, 172, 18, 'F');
+        doc.setDrawColor(255, 255, 255); doc.circle(245, 172, 16, 'S');
+        doc.setFontSize(8); doc.setTextColor(255, 255, 255);
+        doc.text("CRABY EDITOR", 245, 168, { align: "center" });
+        doc.text("OFFICIAL", 245, 173, { align: "center" });
+        doc.text("2026", 245, 178, { align: "center" });
+
+        // 9. FOOTER
+        doc.setFontSize(9); doc.setTextColor(100, 100, 100);
+        doc.text(`Certificate ID: ${certId} | Issue Date: ${date} | Verify: craby-editor.vercel.app`, 148, 198, { align: "center" });
+
+        doc.save(`${name}_Web_Certification.pdf`);
+    }
+</script>
+</body>
+</html>
