@@ -100,17 +100,31 @@
 
 <body>
 
-<header>
-    <div class="logo-container">
-        <a href="https://craby-editor.vercel.app/">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Professional Logo">
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+
+    <!-- Left Side (Logo + Tutorials Link) -->
+    <div style="display: flex; align-items: center; gap: 20px;">
+        
+        <div class="logo-container">
+            <a href="https://craby-editor.vercel.app/">
+                <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Professional Logo" style="height: 40px;">
+            </a>
+        </div>
+
+        <!-- Tutorials Link -->
+        <a href="tutorials/html/tutorial.html" class="nav-item" style="text-decoration: none; font-weight: 500;">
+            📚 Tutorials
         </a>
+
     </div>
+
+    <!-- Right Side -->
     <div class="header-actions">
         <button class="icon-btn" onclick="toggleSettings()" title="Settings">
             <i class="fas fa-cog"></i>
         </button>
     </div>
+
 </header>
 
 <div class="hero">
