@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Complete CSS Flexbox Guide | Modern Layouts | Craby Editor</title>
+    <meta name="description" content="Learn CSS Flexbox with interactive examples. Master flex-direction, justify-content, and align-items to create responsive web layouts easily with Craby Editor.">
+    <meta name="keywords" content="CSS Flexbox, CSS Layout, Responsive Design, Flex-direction, Justify-content, Web Development Tutorial, Craby Editor, Frontend Coding">
+    <meta name="author" content="Craby Editor">
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+
+    <meta property="og:title" content="Mastering CSS Flexbox - Step-by-Step Guide">
+    <meta property="og:description" content="The ultimate guide to building modern responsive layouts using CSS Flexbox.">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        /* Flexbox Demo Styles */
+        .flex-demo-container {
+            background: #f4f4f9;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .flex-row { display: flex; gap: 15px; background: #fff; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #eee; }
+        
+        /* Flex Alignment Examples */
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .flex-column { flex-direction: column; }
+
+        .flex-box {
+            background: #e91e63;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .prop-name { color: #e91e63; font-family: monospace; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-box-model.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-grid.html'">Next »</button>
+    </div>
+
+    <h1>Understanding CSS Flexbox</h1>
+    <p>The <b>Flexible Box Layout Module (Flexbox)</b> makes it easier to design flexible responsive layout structures without using float or positioning. It allows you to align items and distribute space within a container automatically.</p>
+
+    <h2>1. The Flex Container Properties</h2>
+    <p>To start using Flexbox, you must define a parent container with <code>display: flex;</code>.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Common Values</th>
+                <th>Effect</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="prop-name">flex-direction</span></td>
+                <td>row, column, row-reverse</td>
+                <td>Sets the direction of the items.</td>
+            </tr>
+            <tr>
+                <td><span class="prop-name">justify-content</span></td>
+                <td>center, space-between, flex-end</td>
+                <td>Aligns items along the main axis (Horizontal).</td>
+            </tr>
+            <tr>
+                <td><span class="prop-name">align-items</span></td>
+                <td>center, stretch, baseline</td>
+                <td>Aligns items along the cross axis (Vertical).</td>
+            </tr>
+            <tr>
+                <td><span class="prop-name">flex-wrap</span></td>
+                <td>nowrap, wrap, wrap-reverse</td>
+                <td>Allows items to wrap to the next line.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="card">
+        <div class="code-box">
+/* Basic Flexbox Setup */
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 200px;
+  background-color: #f0f0f0;
+}
+        </div>
+    </div>
+
+    <h2>2. Visual Examples</h2>
+    
+    <h3>Example A: Centering Content (Justify-Content: Center)</h3>
+    <div class="flex-demo-container">
+        <div class="flex-row justify-center">
+            <div class="flex-box">1</div>
+            <div class="flex-box">2</div>
+            <div class="flex-box">3</div>
+        </div>
+    </div>
+
+    <h3>Example B: Space Between Items</h3>
+    <div class="flex-demo-container">
+        <div class="flex-row justify-between">
+            <div class="flex-box">Left</div>
+            <div class="flex-box">Middle</div>
+            <div class="flex-box">Right</div>
+        </div>
+    </div>
+
+    <h3>Example C: Column Layout</h3>
+    <div class="flex-demo-container">
+        <div class="flex-row flex-column">
+            <div class="flex-box">Stack 1</div>
+            <div class="flex-box">Stack 2</div>
+            <div class="flex-box">Stack 3</div>
+        </div>
+    </div>
+
+    <h2>3. Flex Item Properties</h2>
+    <p>You can also control individual items inside the flex container:</p>
+    <ul>
+        <li><b>flex-grow:</b> Defines the ability for a flex item to grow if necessary.</li>
+        <li><b>order:</b> Controls the order in which items appear.</li>
+        <li><b>align-self:</b> Allows the default alignment to be overridden for individual items.</li>
+    </ul>
+
+    <div class="description-box" style="background: #e8f5e9; border-left: 5px solid #4caf50; padding: 15px;">
+        <strong>Key Advantage:</strong> Flexbox is "Direction-Agnostic." Unlike regular layouts (which are block/vertically and inline/horizontally based), flexbox works perfectly for any UI design regardless of screen orientation.
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-box-model.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-grid.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
