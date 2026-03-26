@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Java Collections Framework | ArrayList & HashMap Guide | Craby Editor</title>
+    <meta name="description" content="Learn the Java Collections Framework. Master dynamic data structures like ArrayList, LinkedList, and HashMap with practical examples and clear theory.">
+    <meta name="keywords" content="Java Collections, ArrayList Java, HashMap Example, Java List vs Set, Java Programming, Craby Editor">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0 5px 0;
+        }
+
+        .output-box {
+            background: #2d2d2d;
+            color: #a9ffaf;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .collection-card {
+            background: #e8f5e9;
+            border-left: 5px solid #2e7d32;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .theory-box {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-exceptions.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-files.html'">Next »</button>
+    </div>
+
+    <h1>Java Collections Framework</h1>
+
+    <div class="collection-card">
+        <strong>What is the Collections Framework?</strong><br>
+        It is a unified architecture for representing and manipulating collections. It allows you to store, retrieve, and manipulate groups of data (objects) efficiently.
+    </div>
+
+    
+
+    <h2>1. The ArrayList (Dynamic Array)</h2>
+    <p>The <code>ArrayList</code> class is a resizable array. While a standard array is fixed in size, an ArrayList grows automatically as you add elements.</p>
+
+    <div class="card">
+        <div class="code-box">
+import java.util.ArrayList; // Step 1: Import
+
+public class ListDemo {
+    public static void main(String[] args) {
+        ArrayList<String> students = new ArrayList<>();
+
+        // Step 2: Add elements
+        students.add("John");
+        students.add("Jane");
+        students.add("Craby");
+
+        // Step 3: Access and Remove
+        System.out.println("Student at index 0: " + students.get(0));
+        students.remove("Jane");
+
+        System.out.println("List Size: " + students.size());
+    }
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Student at index 0: John<br>
+List Size: 2
+        </div>
+    </div>
+
+    <h2>2. The HashMap (Key-Value Pairs)</h2>
+    <p>A <code>HashMap</code> stores items in <b>"Key/Value"</b> pairs. You can access them by an index of another type (e.g., a String). Think of it like a real dictionary: the word is the <b>Key</b>, and the definition is the <b>Value</b>.</p>
+
+    <div class="card">
+        <div class="code-box">
+import java.util.HashMap;
+
+public class MapDemo {
+    public static void main(String[] args) {
+        HashMap<String, Integer> userAges = new HashMap<>();
+
+        // Add keys and values (Name, Age)
+        userAges.put("Alice", 25);
+        userAges.put("Bob", 30);
+
+        // Accessing a value using its key
+        System.out.println("Alice's Age: " + userAges.get("Alice"));
+    }
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Alice's Age: 25
+        </div>
+    </div>
+
+    <h2>3. Key Theory: List vs. Set</h2>
+    <div class="theory-box">
+        <ul>
+            <li><b>List:</b> An ordered collection that <b>allows duplicate</b> elements (e.g., ArrayList, LinkedList).</li>
+            <li><b>Set:</b> A collection that <b>does not allow duplicates</b> (e.g., HashSet). If you try to add the same item twice, it simply ignores the second one.</li>
+            <li><b>Map:</b> An object that maps keys to values. Keys must be unique!</li>
+        </ul>
+    </div>
+
+    <div class="description-box" style="background: #fff8e1; border-left: 5px solid #ffca28; padding: 15px;">
+        <strong>Human Note:</strong> Why use these? In modern development, we almost never use standard Arrays. Whether you are building an Android app or a web server, <code>ArrayList</code> and <code>HashMap</code> are your best friends for handling data that changes over time.
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-exceptions.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-files.html'">Next Topic »</button>
+    </div>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
