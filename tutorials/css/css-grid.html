@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Mastering CSS Grid Layout | 2D Responsive Design | Craby Editor</title>
+    <meta name="description" content="Master CSS Grid Layout. Learn about fractional units (fr), grid areas, and responsive auto-fill techniques to create professional web structures.">
+    <meta name="keywords" content="CSS Grid, CSS Layout, 2D Grid, fr unit, grid-template-areas, responsive design, frontend development, Craby Editor">
+    <meta name="author" content="Craby Editor">
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        /* Grid Demo Styles */
+        .grid-demo-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-gap: 15px;
+            background: #f4f4f9;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .grid-item {
+            background: #2196f3;
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* Complex Grid Area */
+        .complex-grid {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "sidebar main main"
+                "footer footer footer";
+            grid-gap: 10px;
+            margin: 20px 0;
+        }
+        .g-header { grid-area: header; background: #333; color: #fff; padding: 10px; text-align: center; border-radius: 4px;}
+        .g-sidebar { grid-area: sidebar; background: #e91e63; color: #fff; padding: 20px; border-radius: 4px;}
+        .g-main { grid-area: main; background: #fff; border: 1px solid #ccc; padding: 20px; border-radius: 4px;}
+        .g-footer { grid-area: footer; background: #777; color: #fff; padding: 10px; text-align: center; border-radius: 4px;}
+
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .prop-name { color: #2196f3; font-family: monospace; font-weight: bold; }
+        .highlight-text { color: #e91e63; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-flexbox.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-intro.html'">Next »</button>
+    </div>
+
+    <h1>Advanced CSS Grid Guide</h1>
+    <p>CSS Grid is a <b>two-dimensional</b> layout system. It allows you to align content into rows and columns simultaneously, giving you total control over the web page structure.</p>
+
+    
+
+    <h2>1. Understanding the 'fr' Unit</h2>
+    <p>The <span class="highlight-text">fr</span> unit represents a fraction of the free space in the grid container. It is much better than using percentages because it handles gaps automatically.</p>
+    <div class="card">
+        <div class="code-box">
+/* Three columns: first is 200px, others split remaining space */
+.container {
+  display: grid;
+  grid-template-columns: 200px 1fr 2fr;
+}
+        </div>
+    </div>
+
+    <h2>2. Key Container Properties</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="prop-name">grid-template-columns</span></td>
+                <td>Defines column widths (e.g., <code>1fr 1fr 1fr</code>).</td>
+            </tr>
+            <tr>
+                <td><span class="prop-name">repeat(n, size)</span></td>
+                <td>Helper function to avoid typing same values (e.g., <code>repeat(3, 1fr)</code>).</td>
+            </tr>
+            <tr>
+                <td><span class="prop-name">place-items</span></td>
+                <td>Shorthand to center items both vertically & horizontally (e.g., <code>center</code>).</td>
+            </tr>
+            <tr>
+                <td><span class="prop-name">gap</span></td>
+                <td>Controls the spacing between rows and columns.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Responsive Magic: Auto-Fit & MinMax</h2>
+    <p>One of the most powerful features of Grid is creating responsive layouts <b>without media queries</b>. The example below uses <code>auto-fit</code>.</p>
+    
+    <div class="grid-demo-container">
+        <div class="grid-item">Card 1</div>
+        <div class="grid-item">Card 2</div>
+        <div class="grid-item">Card 3</div>
+        <div class="grid-item">Card 4</div>
+    </div>
+
+    <div class="card">
+        <div class="code-box">
+/* This will automatically wrap items based on screen size */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+        </div>
+    </div>
+
+    <h2>4. Naming Layout Areas</h2>
+    <p>Using <code>grid-template-areas</code> makes your CSS readable. You can literally "draw" your layout in the code.</p>
+
+    <div class="complex-grid">
+        <div class="g-header">Header</div>
+        <div class="g-sidebar">Sidebar</div>
+        <div class="g-main">Main Content Area</div>
+        <div class="g-footer">Footer</div>
+    </div>
+
+    <div class="description-box" style="background: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px;">
+        <strong>Flexbox vs Grid:</strong> Remember, <span class="highlight-text">Flexbox</span> is for small components (like a navbar), while <span class="highlight-text">Grid</span> is for the whole page layout (header, sidebar, content).
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-flexbox.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-intro.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
