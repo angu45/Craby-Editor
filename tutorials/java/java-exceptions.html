@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Advanced Java Exception Handling | Multi-Catch & Custom Errors | Craby Editor</title>
+    <meta name="description" content="Master Java Exception handling with multiple catch blocks, custom exception classes, and professional error management strategies.">
+    
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0 5px 0;
+        }
+
+        .output-box {
+            background: #2d2d2d;
+            color: #ff9999;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-bottom: 25px;
+            border-left: 4px solid #f44336;
+        }
+
+        .logic-card {
+            background: #f3e5f5;
+            border-left: 5px solid #9c27b0;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .theory-section {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .keyword { color: #f89820; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-methods.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-collections.html'">Next »</button>
+    </div>
+
+    <h1>Java Exception Handling: Pro Edition</h1>
+
+    <div class="logic-card">
+        <strong>The "Catch-All" Concept:</strong> In complex apps, one <code>try</code> block might trigger different errors. You don't need a separate try-catch for every line; you can chain multiple <code>catch</code> blocks together.
+    </div>
+
+    <h2>1. Multiple Catch Blocks</h2>
+    <p>When using multiple catch blocks, Java executes the first one that matches the exception type. <b>Order matters:</b> Always catch specific exceptions (like <code>ArithmeticException</code>) before general ones (like <code>Exception</code>).</p>
+
+    
+
+    <div class="card">
+        <div class="code-box">
+public class MultiCatchDemo {
+    public static void main(String[] args) {
+        try {
+            int[] a = new int[5];
+            a[5] = 30 / 0; // This triggers ArithmeticException first!
+        } 
+        catch (ArithmeticException e) {
+            System.out.println("Mathematical Error: Divide by zero.");
+        } 
+        catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Array Error: Wrong index.");
+        } 
+        catch (Exception e) {
+            System.out.println("Generic Error: " + e.getMessage());
+        }
+    }
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Mathematical Error: Divide by zero.
+        </div>
+    </div>
+
+    <h2>2. Creating Custom Exceptions</h2>
+    <p>In large projects, standard Java exceptions aren't enough. You can create your own exception class by extending the <code>Exception</code> class. This is common for "Business Logic" errors.</p>
+
+    <div class="card">
+        <div class="code-box">
+// Step 1: Create the custom class
+class InvalidAgeException extends Exception {
+    public InvalidAgeException(String message) {
+        super(message);
+    }
+}
+
+public class CustomDemo {
+    // Step 2: Use 'throws' in signature
+    static void validate(int age) throws InvalidAgeException {
+        if (age < 18) {
+            throw new InvalidAgeException("Age not valid for Voting!");
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            validate(13);
+        } catch (InvalidAgeException e) {
+            System.out.println("Caught Custom Error: " + e.getMessage());
+        }
+    }
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Caught Custom Error: Age not valid for Voting!
+        </div>
+    </div>
+
+    <h2>3. The 'throws' Keyword Explained</h2>
+    <p>If a method doesn't want to handle an exception itself, it uses <code>throws</code> to pass the responsibility to whoever calls that method. It's like a warning label: "Hey, if you use this method, be ready for an error!"</p>
+
+    <div class="description-box" style="background: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px;">
+        <strong>Execution Summary:</strong>
+        <ul>
+            <li><b>Try:</b> Monitor for errors.</li>
+            <li><b>Catch:</b> Handle the error.</li>
+            <li><b>Finally:</b> Cleanup (always runs).</li>
+            <li><b>Throw:</b> Manually start an error.</li>
+            <li><b>Throws:</b> Warn about a potential error.</li>
+        </ul>
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-methods.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-collections.html'">Next Topic »</button>
+    </div>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
