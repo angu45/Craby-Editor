@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Java Methods Tutorial | Parameters & Return Types | Craby Editor</title>
+    <meta name="description" content="Learn how to create and use Methods in Java. Understand method parameters, return values, and why methods are essential for clean code.">
+    <meta name="keywords" content="Java Methods, Method Parameters, Java Functions, Return Type Java, Static Methods, Craby Editor">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0 5px 0;
+        }
+
+        .output-box {
+            background: #2d2d2d;
+            color: #a9ffaf;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .method-part {
+            color: #f89820;
+            font-weight: bold;
+        }
+
+        .highlight-box {
+            background: #f1f8e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-arrays.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-exceptions.html'">Next »</button>
+    </div>
+
+    <h1>Java Methods (Functions)</h1>
+
+    <div class="highlight-box">
+        <strong>Definition:</strong><br>
+        A <b>Method</b> is a block of code which only runs when it is called. You can pass data, known as parameters, into a method. Methods are used to perform certain actions, and they are also known as <b>functions</b>.
+    </div>
+
+    
+
+    <h2>1. Method Syntax Breakdown</h2>
+    <p>A method must be declared within a class. It looks like this:</p>
+    
+    <div class="card">
+        <div class="code-box">
+public class Main {
+    // 1. Declaration
+    static void myMethod() {
+        System.out.println("I just got executed!");
+    }
+
+    public static void main(String[] args) {
+        // 2. Execution (Calling the method)
+        myMethod();
+        myMethod(); // Can be called multiple times
+    }
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+I just got executed!<br>
+I just got executed!
+        </div>
+    </div>
+
+    <h2>2. Parameters and Arguments</h2>
+    <p>Information can be passed to methods as a parameter. Parameters act as variables inside the method.</p>
+    
+    <div class="card">
+        <div class="code-box">
+static void sayHello(String name) {
+    System.out.println("Hello " + name);
+}
+
+public static void main(String[] args) {
+    sayHello("Alex");
+    sayHello("Sarah");
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Hello Alex<br>
+Hello Sarah
+        </div>
+    </div>
+
+    <h2>3. Return Values</h2>
+    <p>The <span class="method-part">void</span> keyword indicates that the method should not return a value. If you want the method to return a value, you can use a primitive type (like <code>int</code> or <code>double</code>) instead of <code>void</code>.</p>
+
+    <div class="card">
+        <div class="code-box">
+static int addNumbers(int x, int y) {
+    return x + y; // Sends the result back
+}
+
+public static void main(String[] args) {
+    int result = addNumbers(5, 3);
+    System.out.println("The sum is: " + result);
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+The sum is: 8
+        </div>
+    </div>
+
+    <h2>4. Why use Methods?</h2>
+    <ul>
+        <li><b>Code Reusability:</b> Define the code once, and use it many times.</li>
+        <li><b>Better Organization:</b> Break complex problems into smaller, manageable "tasks."</li>
+        <li><b>Easy Maintenance:</b> If a bug exists in a calculation, you only have to fix it in one method rather than everywhere in your program.</li>
+    </ul>
+
+    <div class="description-box" style="background: #fff8e1; border-left: 5px solid #ffca28; padding: 15px;">
+        <strong>Common Mistake:</strong> Forgetting the <code>static</code> keyword. In these early tutorials, we use <code>static</code> so we can call the method without creating an object of the class first.
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-arrays.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-exceptions.html'">Next Topic »</button>
+    </div>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
