@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Advanced HTML Media & Attributes Guide | Craby Editor</title>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        /* FIX: Professional Scrollable Code Box */
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        /* Responsive Media Layout */
+        .media-showcase {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #333; font-weight: 600; }
+        .attr-name { color: #e91e63; font-family: monospace; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tables.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-semantic.html'">Next »</button>
+    </div>
+
+    <h1>Advanced Media & Tag Attributes</h1>
+    <p>To build a high-performance website, you need to know more than just the tag name. You need to understand <b>Attributes</b>. Attributes provide additional information about an element and control how it behaves.</p>
+
+    <h2>1. The Comprehensive Attribute List</h2>
+    <p>Here are the most commonly used attributes for media and general tags that every developer must know:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>Applies to</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="attr-name">src</span></td>
+                <td>&lt;img&gt;, &lt;video&gt;, &lt;iframe&gt;</td>
+                <td>Specifies the path to the media file or URL.</td>
+            </tr>
+            <tr>
+                <td><span class="attr-name">alt</span></td>
+                <td>&lt;img&gt;, &lt;area&gt;</td>
+                <td>Alternative text for screen readers and SEO.</td>
+            </tr>
+            <tr>
+                <td><span class="attr-name">controls</span></td>
+                <td>&lt;video&gt;, &lt;audio&gt;</td>
+                <td>Displays play/pause, volume, and seek bars.</td>
+            </tr>
+            <tr>
+                <td><span class="attr-name">autoplay</span></td>
+                <td>&lt;video&gt;, &lt;audio&gt;</td>
+                <td>Starts playing as soon as the page loads (use with 'muted').</td>
+            </tr>
+            <tr>
+                <td><span class="attr-name">loop</span></td>
+                <td>&lt;video&gt;, &lt;audio&gt;</td>
+                <td>Automatically restarts the media when it finishes.</td>
+            </tr>
+            <tr>
+                <td><span class="attr-name">poster</span></td>
+                <td>&lt;video&gt;</td>
+                <td>An image shown before the video starts playing.</td>
+            </tr>
+            <tr>
+                <td><span class="attr-name">loading</span></td>
+                <td>&lt;img&gt;, &lt;iframe&gt;</td>
+                <td>Use <code>"lazy"</code> to speed up page loading.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>2. Working with Images (Live Reference)</h2>
+    <p>Using a placeholder from an online library like <b>Unsplash</b> is great for testing layouts. We also use the <code>loading="lazy"</code> attribute here to optimize performance.</p>
+    
+    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80" 
+         alt="Code on a screen" class="media-showcase" loading="lazy">
+
+    <div class="card">
+        <div class="code-box">
+&lt;!-- Optimized Image Implementation --&gt;
+&lt;img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97" 
+     alt="Laptop showing workspace" 
+     loading="lazy" 
+     width="800"&gt;
+        </div>
+    </div>
+
+    <h2>3. Video with Controls & Poster</h2>
+    <p>A "Poster" image acts as a thumbnail. It makes the video look professional before the user clicks play.</p>
+
+    <video controls class="media-showcase" poster="https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=800">
+        <source src="https://player.vimeo.com/external/434045526.sd.mp4?s=c27dc36997050327da9393ad730076a5b678120e&profile_id=164&oauth2_token_id=57447761" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+
+    <div class="card">
+        <div class="code-box">
+&lt;video controls poster="thumbnail.jpg" width="100%"&gt;
+  &lt;source src="my-video.mp4" type="video/mp4"&gt;
+  &lt;p&gt;Update your browser to view this content.&lt;/p&gt;
+&lt;/video&gt;
+        </div>
+    </div>
+
+    <h2>4. Favicons & External Metadata</h2>
+    <p>A <b>Favicon</b> is the small icon you see in the browser tab. This is added in the <code>&lt;head&gt;</code> using the <code>&lt;link&gt;</code> tag.</p>
+    
+    <div class="card">
+        <div class="code-box">
+&lt;!-- Add this inside your &lt;head&gt; tag --&gt;
+&lt;link rel="icon" type="image/x-icon" href="/favicon.ico"&gt;
+        </div>
+    </div>
+
+    <div class="description-box" style="background: #fff8e1; border-left: 5px solid #ffa000;">
+        <strong>Performance Tip:</strong> Always specify <code>width</code> and <code>height</code> for images. This prevents "Layout Shift" where the page jumps around while loading, leading to a much better user experience.
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-tables.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-semantic.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
