@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Java Variables & Data Types | Deep Dive Guide | Craby Editor</title>
+    <meta name="description" content="A comprehensive human-written guide to Java Variables, Type Casting, and Data Types. Learn with real-world examples and clear syntax.">
+    <meta name="keywords" content="Java Variables, Data Types, Type Casting Java, Java Programming for Beginners, Java Syntax, Craby Editor">
+    <meta name="author" content="Craby Editor">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        .var-table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        .var-table th, .var-table td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        .var-table th { background: #fff3e0; color: #e65100; font-weight: 600; }
+        
+        .type-label { 
+            display: inline-block; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            background: #f89820; 
+            color: white; 
+            font-family: monospace; 
+            font-size: 12px;
+        }
+
+        .human-note {
+            background: #f1f8e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-intro.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-loops.html'">Next »</button>
+    </div>
+
+    <h1>Deep Dive: Java Variables & Data Types</h1>
+    
+    <div class="human-note">
+        "Think of a variable as a storage box. If you want to store a book, you need a book-sized box. If you want to store a car, you need a garage. In Java, you can't put a 'Car' (String) into a 'Book Box' (int). You must pick the right size first!"
+    </div>
+
+    <h2>1. Comprehensive Syntax Examples</h2>
+    <p>Here is how we handle different types of data in a real program:</p>
+    <div class="card">
+        <div class="code-box">
+public class VariableDemo {
+    public static void main(String[] args) {
+        // 1. Numeric Types
+        int studentId = 101;           // Whole numbers
+        double gradePoint = 9.5;      // Decimals
+        float temperature = 36.6f;    // Note the 'f' for float!
+
+        // 2. Character and Boolean
+        char section = 'A';           // Single quotes for char
+        boolean isGraduated = false;  // Only true or false
+
+        // 3. Text (Reference Type)
+        String schoolName = "Craby Academy"; // Double quotes for String
+
+        // Outputting values
+        System.out.println(schoolName + " ID: " + studentId);
+    }
+}
+        </div>
+    </div>
+
+    <h2>2. Primitive Data Types Breakdown</h2>
+    <table class="var-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Usage Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="type-label">byte</span></td>
+                <td>1 byte</td>
+                <td>Small numbers (-128 to 127)</td>
+            </tr>
+            <tr>
+                <td><span class="type-label">long</span></td>
+                <td>8 bytes</td>
+                <td>Big numbers (e.g., <code>900L</code>)</td>
+            </tr>
+            <tr>
+                <td><span class="type-label">float</span></td>
+                <td>4 bytes</td>
+                <td>Simple decimals (e.g., <code>5.99f</code>)</td>
+            </tr>
+            <tr>
+                <td><span class="type-label">String</span></td>
+                <td>Varies</td>
+                <td>Text (e.g., <code>"Hello World"</code>)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Java Type Casting</h2>
+    <p>Sometimes, you need to convert a value from one type to another. There are two types of casting:</p>
+    
+    <h3>A. Widening Casting (Automatic)</h3>
+    <p>Converting a smaller type to a larger type size. Java does this for you!</p>
+    <div class="card">
+        <div class="code-box">
+int myInt = 9;
+double myDouble = myInt; // Automatic casting: int to double
+        </div>
+    </div>
+
+    <h3>B. Narrowing Casting (Manual)</h3>
+    <p>Converting a larger type to a smaller size. You must do this manually by placing the type in parentheses.</p>
+    <div class="card">
+        <div class="code-box">
+double myDouble = 9.78d;
+int myInt = (int) myDouble; // Manual casting: double to int (result is 9)
+        </div>
+    </div>
+
+    <div class="description-box" style="background: #fff8e1; border-left: 5px solid #ffca28; padding: 15px;">
+        <strong>Important Warning:</strong> In Narrowing Casting, you might lose data. For example, converting <code>9.78</code> to an <code>int</code> will remove the <code>.78</code> entirely!
+    </div>
+
+    <h2>4. Constants in Java</h2>
+    <p>If you don't want others (or yourself) to overwrite existing values, use the <span class="java-keyword">final</span> keyword. This creates a "constant."</p>
+    <div class="card">
+        <div class="code-box">
+final int BIRTH_YEAR = 1998;
+// BIRTH_YEAR = 2000; // This will cause an ERROR!
+        </div>
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-intro.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-loops.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
