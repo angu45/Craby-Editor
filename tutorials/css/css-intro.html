@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Introduction to CSS - Styling the Modern Web | Craby Editor</title>
+
+    <meta name="description" content="Learn the basics of CSS (Cascading Style Sheets). Understand selectors, properties, values, and how to link CSS to your HTML projects.">
+    
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        /* FIX: Professional Scrollable Code Box */
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        .concept-card {
+            border-left: 4px solid #38bdf8;
+            background: #f0f9ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #0284c7; }
+        .css-prop { color: #be185d; font-weight: bold; font-family: monospace; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-media.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-selectors.html'">Next »</button>
+    </div>
+
+    <h1>Welcome to the World of CSS 🎨</h1>
+    <p>If HTML is the skeleton of a building, <b>CSS (Cascading Style Sheets)</b> is the paint, the furniture, and the decoration. CSS is what makes a website look professional, clean, and beautiful.</p>
+
+    <div class="concept-card">
+        <h3>What is CSS?</h3>
+        <p>CSS is a language used to describe the presentation of a web page. It handles the layout, colors, fonts, and even animations. By separating CSS from HTML, you can change the look of an entire website just by editing one file.</p>
+    </div>
+
+    <h2>1. Understanding the Syntax</h2>
+    <p>CSS works on a simple <b>Selector-Declaration</b> rule. You pick an HTML element (Selector) and tell it how to look (Declaration).</p>
+
+    <div class="card">
+        <h3>CSS Rule Structure:</h3>
+        <div class="code-box">
+/* Selector { Property: Value; } */
+
+h1 {
+  color: #3498db;      /* Set text color */
+  font-size: 24px;     /* Set text size */
+  text-align: center;  /* Center the text */
+}
+        </div>
+        <button class="btn" style="margin-top: 10px; background: #28a745;" onclick="window.location.href='/html-editor.html'">Try CSS in Editor</button>
+    </div>
+
+    <h2>2. Common CSS Functions</h2>
+    <p>CSS isn't just static values; it has powerful built-in functions to perform calculations and handle colors dynamically.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Function</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="css-prop">rgb() / rgba()</span></td>
+                <td>Defines colors using Red, Green, Blue. 'a' is for transparency.</td>
+                <td><code>rgba(255, 0, 0, 0.5)</code></td>
+            </tr>
+            <tr>
+                <td><span class="css-prop">calc()</span></td>
+                <td>Allows mathematical calculations for sizes.</td>
+                <td><code>width: calc(100% - 20px);</code></td>
+            </tr>
+            <tr>
+                <td><span class="css-prop">url()</span></td>
+                <td>Used to link external images or fonts.</td>
+                <td><code>background-image: url('bg.jpg');</code></td>
+            </tr>
+            <tr>
+                <td><span class="css-prop">var()</span></td>
+                <td>Used to insert a CSS variable value.</td>
+                <td><code>color: var(--main-color);</code></td>
+            </tr>
+            <tr>
+                <td><span class="css-prop">linear-gradient()</span></td>
+                <td>Creates smooth color transitions.</td>
+                <td><code>background: linear-gradient(to right, red, blue);</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Three Ways to Add CSS</h2>
+    <p>There are three common methods to apply styles to your HTML elements:</p>
+    <ul>
+        <li><strong>External CSS:</strong> Using a <code>&lt;link&gt;</code> tag (Recommended for real projects).</li>
+        <li><strong>Internal CSS:</strong> Using a <code>&lt;style&gt;</code> tag inside the HTML head.</li>
+        <li><strong>Inline CSS:</strong> Using the <code>style</code> attribute directly on an element (Not recommended for large sites).</li>
+    </ul>
+
+    <div class="card">
+        <h3>Example: External Link</h3>
+        <div class="code-box">
+&lt;!-- Inside the &lt;head&gt; section --&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;
+        </div>
+    </div>
+
+    <h2>4. The Box Model (Quick Preview)</h2>
+    <p>In CSS, every element is considered a box. Understanding the <b>Margin, Border, Padding, and Content</b> is the key to mastering layout. We will dive deeper into this in the next lessons.</p>
+
+    <div class="description-box" style="background: #fff8e1; border-left: 5px solid #ffa000;">
+        <strong>Human Tip:</strong> When you start learning CSS, don't try to memorize everything. Use the browser "Inspect Element" (F12) to play with styles in real-time. It's the fastest way to learn!
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-media.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-selectors.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
