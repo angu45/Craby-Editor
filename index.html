@@ -78,6 +78,10 @@
         .btn-c {
             background: #007bff !important;
         }
+        .btn-learn {
+            background: #28a745 !important;
+            color: white !important;
+        }
         .image-gallery {
             text-align: center;
             margin: 20px 0;
@@ -102,23 +106,20 @@
 
 <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
 
-    <!-- Left Side (Logo + Tutorials Link) -->
     <div style="display: flex; align-items: center; gap: 20px;">
-        
+
         <div class="logo-container">
             <a href="https://craby-editor.vercel.app/">
                 <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Professional Logo" style="height: 40px;">
             </a>
         </div>
 
-        <!-- Tutorials Link -->
         <a id="tuto" href="tutorials/html/tutorial.html" class="nav-item" style="text-decoration: none; font-weight: 500;">
             📚 Tutorials
         </a>
 
     </div>
 
-    <!-- Right Side -->
     <div class="header-actions">
         <button class="icon-btn" onclick="toggleSettings()" title="Settings">
             <i class="fas fa-cog"></i>
@@ -130,10 +131,11 @@
 <div class="hero">
     <h1>Build & Test Code Instantly 🚀</h1>
     <p>Craby Editor is a fast and powerful online tool for Web Development and C Programming. Designed for developers who need speed and efficiency.</p>
-    
+
     <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
         <button class="btn" onclick="window.location.href='html-editor.html'">HTML Editor</button>
         <button class="btn btn-c" onclick="window.location.href='C-compiler.html'">C Compiler</button>
+        <button class="btn btn-learn" onclick="window.location.href='tutorials/html/tutorial.html'">Start Learning</button>
     </div>
 </div>
 
@@ -146,15 +148,17 @@
     <div class="description-box">
         <h2>About Craby Editor - Your All-in-One Coding Workspace</h2>
         <p>Craby Editor is a modern, web-based Integrated Development Environment (IDE) built for students, professional developers, and hobbyists. Our platform eliminates the need for heavy software installations, allowing you to write, compile, and debug code directly from your browser. Whether you are building a responsive website using <strong>HTML5, CSS3, and JavaScript</strong>, or practicing algorithmic logic with our <strong>High-Speed C Compiler</strong>, Craby Editor provides a seamless experience.</p>
-        
+
         <p>In our mission to provide the best coding environment, we have integrated features like live previews, multiple editor themes (including Dracula and Monokai), and mobile-friendly layouts. This makes Craby Editor the perfect tool for coding on the go or testing snippets of code quickly and efficiently.</p>
         
+        <p>Want to master coding? <strong><a href="tutorials/html/tutorial.html">Click here to start learning HTML</a></strong> with our step-by-step guides.</p>
+
         <p>Check out our partner tools: <a target='_blank' href='https://freeonlinedice.com/'>random coin toss now</a> for quick decision making during development.</p>
     </div>
 </div>
 
 <div class="section">
-    <h2>🛠️ Our Online Compilers</h2>
+    <h2>🛠️ Our Online Compilers & Learning</h2>
     <div class="tool-grid">
         <div class="card tool-card" onclick="window.location.href='index.html'">
             <div style="font-size: 40px; margin-bottom: 10px;">🌐</div>
@@ -168,6 +172,13 @@
             <h3>C Compiler</h3>
             <p>Execute C programs instantly. Our compiler supports standard libraries for robust programming practice.</p>
             <span style="color: #007bff; font-weight: bold;">Run C Code →</span>
+        </div>
+
+        <div class="card tool-card" onclick="window.location.href='tutorials/html/tutorial.html'">
+            <div style="font-size: 40px; margin-bottom: 10px;">📖</div>
+            <h3>Start Learning</h3>
+            <p>New to coding? Follow our interactive tutorials to learn HTML, CSS, and C from scratch.</p>
+            <span style="color: #28a745; font-weight: bold;">View Tutorials →</span>
         </div>
     </div>
 </div>
@@ -247,7 +258,7 @@
 
 <div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
     <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
-    
+
     <div class="footer-icons" style="margin: 15px 0;">
         <a href="mailto:crabylab01@gmail.com" title="Email Us" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;">
             <i class="fas fa-envelope"></i>
