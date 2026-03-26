@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Java Loops Guide | Syntax, Examples & Outputs | Craby Editor</title>
+    <meta name="description" content="Master Java For, While, and Do-While loops. Learn the exact syntax, execution flow, and see real code outputs for better programming logic.">
+    <meta name="keywords" content="Java Loops, For Loop Syntax, While Loop Output, Java Programming, Loop Control, Craby Editor">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0 5px 0;
+        }
+
+        .output-box {
+            background: #2d2d2d;
+            color: #a9ffaf;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .def-box {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ffe082;
+            margin: 20px 0;
+        }
+
+        .syntax-label { color: #f89820; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-variables.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-oops.html'">Next »</button>
+    </div>
+
+    <h1>Java Loops: Complete Tutorial</h1>
+
+    <div class="def-box">
+        <strong>What is a Loop?</strong><br>
+        A loop is a programming structure that repeats a sequence of instructions until a specific condition is met. It saves time, reduces errors, and makes the code more readable.
+    </div>
+
+    [attachment_0](attachment)
+
+    <h2>1. The For Loop</h2>
+    <p>The <b>For Loop</b> is best used when you know the exact number of iterations required.</p>
+    
+    <p><span class="syntax-label">Syntax:</span><br>
+    <code>for (initialization; condition; update) { // body }</code></p>
+
+    <div class="card">
+        <div class="code-box">
+for (int i = 1; i <= 3; i++) {
+    System.out.println("Counting: " + i);
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Counting: 1<br>
+Counting: 2<br>
+Counting: 3
+        </div>
+    </div>
+
+    <h2>2. The While Loop</h2>
+    <p>The <b>While Loop</b> checks the condition <i>before</i> executing the code block. If the condition is false at the start, the code never runs.</p>
+
+    <p><span class="syntax-label">Syntax:</span><br>
+    <code>while (condition) { // code; update; }</code></p>
+
+    <div class="card">
+        <div class="code-box">
+int count = 10;
+while (count > 7) {
+    System.out.println("Countdown: " + count);
+    count--;
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Countdown: 10<br>
+Countdown: 9<br>
+Countdown: 8
+        </div>
+    </div>
+
+    <h2>3. The Do-While Loop</h2>
+    <p>The <b>Do-While Loop</b> is unique because it executes the body <i>first</i>, and then checks the condition. This guarantees the loop runs <b>at least once</b>.</p>
+
+    <p><span class="syntax-label">Syntax:</span><br>
+    <code>do { // code } while (condition);</code></p>
+
+    <div class="card">
+        <div class="code-box">
+int x = 100;
+do {
+    System.out.println("Value of x: " + x);
+    x++;
+} while (x < 10); 
+        </div>
+        <div class="output-box">
+// Output:<br>
+Value of x: 100
+        </div>
+    </div>
+
+    <div class="description-box" style="background: #e3f2fd; border-left: 5px solid #2196f3; padding: 15px;">
+        <strong>Key Difference:</strong> Use <code>while</code> when the condition is primary. Use <code>for</code> when the counter is primary. Use <code>do-while</code> when the action must happen at least once (like showing a menu).
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-variables.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-oops.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
