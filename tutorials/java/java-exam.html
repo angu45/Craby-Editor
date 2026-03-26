@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Java Certification | Craby Editor</title>
+    
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root { --brand: #f89820; --dark: #333; --bg: #f4f7f6; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        .exam-container { max-width: 600px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 8px solid var(--brand); text-align: center; position: relative; overflow: hidden; }
+        .step { display: none; }
+        .active { display: block; }
+        
+        /* Background decorative circles */
+        .exam-container::before { content: ""; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(248, 152, 32, 0.1); border-radius: 50%; z-index: 0; }
+        
+        .form-group { margin-bottom: 18px; text-align: left; position: relative; z-index: 1; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #555; font-size: 14px; }
+        .input-box { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; box-sizing: border-box; font-size: 15px; transition: 0.3s; }
+        .input-box:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 8px rgba(248, 152, 32, 0.2); }
+        
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 12px 0; border: 1px solid #eee; border-radius: 10px; cursor: pointer; text-align: left; background: #fff; transition: 0.3s; font-size: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .option-btn:hover { background: #fffcf8; border-color: var(--brand); transform: translateY(-2px); }
+        .selected { background: var(--dark) !important; color: #fff !important; border-color: var(--dark) !important; }
+        
+        .action-btn { background: var(--brand); color: #fff; padding: 16px; width: 100%; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; box-shadow: 0 5px 15px rgba(248, 152, 32, 0.3); }
+        .action-btn:hover { background: #e68a1a; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(248, 152, 32, 0.4); }
+        
+        #timer { background: var(--dark); color: #fff; padding: 5px 15px; border-radius: 20px; font-family: 'Courier New', monospace; font-weight: bold; }
+        .res-summary { background: #fff; border: 2px solid #eee; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: left; position: relative; border-left: 5px solid var(--brand); }
+    </style>
+</head>
+
+<body>
+
+<header style="padding: 20px; text-align: center;">
+    <a href="https://craby-editor.vercel.app/">
+        <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Logo" id="siteLogo" style="height: 60px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+    </a>
+</header>
+
+<div class="exam-container">
+    <div id="step1" class="step active">
+        <h2 style="margin-bottom: 5px;">Candidate Portal</h2>
+        <p style="color: #777; font-size: 14px; margin-bottom: 25px;">Enter your credentials to unlock the Java Professional Certification.</p>
+        
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="stuName" class="input-box" placeholder="As it will appear on Certificate">
+        </div>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="stuEmail" class="input-box" placeholder="name@example.com">
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Age</label>
+                <input type="number" id="stuAge" class="input-box" value="18">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Gender</label>
+                <select id="stuGender" class="input-box">
+                    <option>Male</option><option>Female</option><option>Other</option>
+                </select>
+            </div>
+        </div>
+        <button class="action-btn" onclick="startExam()">Launch Examination</button>
+    </div>
+
+    <div id="step2" class="step">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span id="qCount" style="color: var(--brand); font-weight: bold; font-size: 18px;">Q. 1/15</span>
+            <span id="timer">00:00</span>
+        </div>
+        <h3 id="questionText" style="margin-bottom: 25px; color: var(--dark); line-height: 1.5;"></h3>
+        <div id="optionsBox"></div>
+        <button class="action-btn" id="nextBtn" onclick="processNext()" style="display: none;">Continue →</button>
+    </div>
+
+    <div id="step3" class="step">
+        <div style="font-size: 60px; margin-bottom: 10px;">🌟</div>
+        <h2 style="color: #2e7d32; margin-bottom: 5px;">Assessment Verified</h2>
+        <p>Your performance has been evaluated.</p>
+        
+        <div class="res-summary">
+            <p style="margin: 5px 0;"><strong>Student:</strong> <span id="resName"></span></p>
+            <p style="margin: 5px 0;"><strong>Final Grade:</strong> <span id="resPercent" style="color:var(--brand); font-weight:bold;">0%</span></p>
+            <p style="margin: 5px 0;"><strong>Reference:</strong> <span id="certId" style="font-family: monospace;"></span></p>
+        </div>
+        <button class="action-btn" style="background: #28a745; box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);" onclick="generateCertificate()">Download PDF Certificate</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { q: "Which tool compiles Java code into bytecode?", opts: ["java", "javac", "javadoc", "jre"], a: 1 },
+        { q: "What is the memory size of an 'int' in Java?", opts: ["16-bit", "32-bit", "64-bit", "8-bit"], a: 1 },
+        { q: "Which keyword is required for class inheritance?", opts: ["extends", "implements", "inherits", "using"], a: 0 },
+        { q: "Which of these is the root class of all Java classes?", opts: ["String", "Object", "Main", "System"], a: 1 },
+        { q: "Which method acts as the standard entry point?", opts: ["start()", "init()", "main()", "run()"], a: 2 },
+        { q: "Which keyword creates a non-modifiable variable?", opts: ["static", "final", "const", "fixed"], a: 1 },
+        { q: "Which loop structure always executes at least once?", opts: ["for", "while", "do-while", "if-else"], a: 2 },
+        { q: "Identify the correct type for logic true/false.", opts: ["int", "String", "boolean", "double"], a: 2 },
+        { q: "JVM stands for...", opts: ["Java Virtual Machine", "Java Visual Machine", "Java Vital Module", "None"], a: 0 },
+        { q: "Which package provides the Scanner class?", opts: ["java.lang", "java.io", "java.util", "java.net"], a: 2 },
+        { q: "Bundling data and methods into a single unit is?", opts: ["Inheritance", "Encapsulation", "Polymorphism", "Abstraction"], a: 1 },
+        { q: "Which operator compares two primitive values?", opts: ["=", "==", "===", ":="], a: 1 },
+        { q: "Standard extension for Java source files?", opts: [".class", ".java", ".jar", ".txt"], a: 1 },
+        { q: "The modulus operator (%) returns what?", opts: ["Quotient", "Remainder", "Square Root", "Product"], a: 1 },
+        { q: "What is the default value for an unassigned int?", opts: ["null", "0", "1", "undefined"], a: 1 }
+    ];
+
+    let current = 0, correct = 0, selectedIdx = -1, timer;
+
+    function startExam() {
+        if(!document.getElementById('stuName').value) return alert("Please enter your name.");
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+        let sec = 0;
+        timer = setInterval(() => {
+            sec++;
+            document.getElementById('timer').innerText = String(Math.floor(sec/60)).padStart(2,'0') + ":" + String(sec%60).padStart(2,'0');
+        }, 1000);
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        selectedIdx = -1;
+        document.getElementById('nextBtn').style.display = 'none';
+        let data = quizData[current];
+        document.getElementById('qCount').innerText = `Q. ${current + 1}/${quizData.length}`;
+        document.getElementById('questionText').innerText = data.q;
+        let box = document.getElementById('optionsBox');
+        box.innerHTML = "";
+        data.opts.forEach((opt, i) => {
+            let b = document.createElement('button');
+            b.className = "option-btn";
+            b.innerText = opt;
+            b.onclick = () => {
+                document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                b.classList.add('selected');
+                selectedIdx = i;
+                document.getElementById('nextBtn').style.display = 'block';
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function processNext() {
+        if(selectedIdx === quizData[current].a) correct++;
+        current++;
+        if(current < quizData.length) loadQuestion();
+        else {
+            clearInterval(timer);
+            document.getElementById('resName').innerText = document.getElementById('stuName').value;
+            document.getElementById('resPercent').innerText = Math.round((correct/quizData.length)*100) + "%";
+            document.getElementById('certId').innerText = "CERT-" + Date.now().toString().slice(-6);
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
+        }
+    }
+
+    function generateCertificate() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        
+        const name = document.getElementById('resName').innerText.toUpperCase();
+        const score = document.getElementById('resPercent').innerText;
+        const certId = document.getElementById('certId').innerText;
+        const date = new Date().toLocaleDateString('en-GB');
+
+        // --- 1. REALISTIC BACKGROUND (Paper Texture Effect) ---
+        doc.setFillColor(253, 251, 245); doc.rect(0, 0, 297, 210, 'F');
+        
+        // GUILLOCHE PATTERN (Subtle lines for realism)
+        doc.setDrawColor(240, 230, 210); doc.setLineWidth(0.1);
+        for(let i=0; i<297; i+=5) { doc.line(i, 0, i, 210); }
+        for(let j=0; j<210; j+=5) { doc.line(0, j, 297, j); }
+
+        // --- 2. BORDERS ---
+        doc.setDrawColor(248, 152, 32); doc.setLineWidth(2); doc.rect(5, 5, 287, 200); // Outer
+        doc.setDrawColor(40, 40, 40); doc.setLineWidth(0.5); doc.rect(8, 8, 281, 194); // Inner
+
+        // --- 3. WATERMARK ---
+        doc.setFontSize(60); doc.setTextColor(240, 240, 240); doc.setFont("helvetica", "bold");
+        doc.text("CRABY EDITOR", 148, 110, { align: "center", angle: 45 });
+
+        // --- 4. HEADER LOGO ---
+        const logo = document.getElementById('siteLogo');
+        doc.addImage(logo, 'PNG', 125, 15, 47, 15);
+
+        // --- 5. TITLES ---
+        doc.setTextColor(40, 40, 40); doc.setFontSize(42); doc.setFont("times", "bold");
+        doc.text("CERTIFICATE OF ACHIEVEMENT", 148, 55, { align: "center" });
+        
+        doc.setFontSize(18); doc.setFont("times", "italic");
+        doc.text("This credential formally recognizes that", 148, 72, { align: "center" });
+
+        // --- 6. STUDENT NAME ---
+        doc.setFontSize(38); doc.setTextColor(180, 120, 30); doc.setFont("times", "bold");
+        doc.text(name, 148, 95, { align: "center" });
+        doc.setDrawColor(180, 120, 30); doc.setLineWidth(0.8); doc.line(80, 98, 217, 98);
+
+        // --- 7. BODY TEXT ---
+        doc.setTextColor(60, 60, 60); doc.setFontSize(14); doc.setFont("helvetica", "normal");
+        const bodyText = `Has successfully demonstrated technical proficiency and mastery in the Java Programming Fundamentals assessment. Through rigorous evaluation, the candidate has proven their ability to implement scalable logic, manage data structures, and follow professional coding standards.`;
+        const splitText = doc.splitTextToSize(bodyText, 210);
+        doc.text(splitText, 148, 115, { align: "center" });
+
+        doc.setFontSize(22); doc.setTextColor(40, 40, 40); doc.setFont("helvetica", "bold");
+        doc.text(`EXAMINATION SCORE: ${score}`, 148, 148, { align: "center" });
+
+        // --- 8. FOOTER: SIGNATURE & SEAL ---
+        // Realistic Gold Seal
+        doc.setFillColor(248, 152, 32); doc.circle(250, 170, 18, 'F');
+        doc.setDrawColor(210, 140, 20); doc.setLineWidth(1); doc.circle(250, 170, 15, 'S');
+        doc.setFontSize(8); doc.setTextColor(255, 255, 255);
+        doc.text("VERIFIED", 250, 168, { align: "center" });
+        doc.text("2026", 250, 173, { align: "center" });
+
+        // Signature
+        doc.setTextColor(30, 30, 80); doc.setFontSize(28); doc.setFont("times", "italic");
+        doc.text("Anguworkshop", 60, 175, { align: "center" }); // Signature
+        doc.setDrawColor(100, 100, 100); doc.setLineWidth(0.4); doc.line(30, 178, 90, 178);
+        doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.setFont("helvetica", "normal");
+        doc.text("Director of Education", 60, 183, { align: "center" });
+
+        // --- 9. METADATA ---
+        doc.setFontSize(9); doc.text(`Date of Issue: ${date} | Credential ID: ${certId}`, 148, 198, { align: "center" });
+
+        doc.save(`${name.replace(" ", "_")}_Certificate.pdf`);
+    }
+</script>
+</body>
+</html>
