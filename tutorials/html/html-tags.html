@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta name="google-adsense-account" content="ca-pub-7444755444888327">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Deep Dive into HTML Tags | Elements & Attributes - Craby Editor</title>
+
+    <meta name="description" content="Master HTML tags from basics to advanced. Learn about formatting, semantic elements, and attributes with real-world examples in Craby Editor.">
+    
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        .tag-block { margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .attr-tag { color: #e91e63; font-weight: bold; }
+        .explain-box { background: #fdfdfd; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-top: 10px; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-intro.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-forms.html'">Next »</button>
+    </div>
+
+    <h1>HTML Tags & Elements: The Deep Dive</h1>
+    <p>HTML madhe pratyek tag cha ek vishisht 'Role' asto. Fakt text dakhvne mhanje HTML nahi, tar to text 'kaay' ahe he browser la samjavne mhanje HTML.</p>
+
+    <div class="tag-block">
+        <h2>1. Text Formatting Tags</h2>
+        <p>Text la bold, italic kiwa underline karnyathi he tags vaprtat. Pan he fakt styling sathi nahit, tar he content cha mahatva suddha dakhvtat.</p>
+        
+        <div class="explain-box">
+            <ul>
+                <li><code>&lt;strong&gt;</code>: Text <b>Bold</b> karto (Important content sathi).</li>
+                <li><code>&lt;em&gt;</code>: Text <i>Italic</i> karto (Emphasis sathi).</li>
+                <li><code>&lt;mark&gt;</code>: Text <mark>Highlight</mark> karnyathi vaprtat.</li>
+                <li><code>&lt;del&gt;</code>: <del>Strike-through</del> text sathi (Deleted content).</li>
+            </ul>
+        </div>
+        <div class="card">
+            <div class="code-box">
+                &lt;p&gt;He khup &lt;strong&gt;mahatvache&lt;/strong&gt; ahe.&lt;/p&gt;<br>
+                &lt;p&gt;Aaj &lt;mark&gt;Offer&lt;/mark&gt; suru ahe!&lt;/p&gt;
+            </div>
+            <button class="btn btn-c" onclick="window.location.href='/html-editor.html'">Try Formatting</button>
+        </div>
+    </div>
+
+    <div class="tag-block">
+        <h2>2. Semantic Tags (Meaningful Structure)</h2>
+        <p>Modern HTML5 madhe sagle <code>&lt;div&gt;</code> vaprun chalat nahi. Browser ani Google la website cha structure samjava mhanje 'Semantic Tags' garjeche ahet.</p>
+        <div class="explain-box">
+            <ul>
+                <li><code>&lt;header&gt;</code>: Website cha top part.</li>
+                <li><code>&lt;nav&gt;</code>: Navigation links sathi container.</li>
+                <li><code>&lt;main&gt;</code>: Page cha main unique content.</li>
+                <li><code>&lt;footer&gt;</code>: Page cha shevatcha bhag (Copyright info).</li>
+                <li><code>&lt;section&gt;</code>: Ek tharaavik group of content.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tag-block">
+        <h2>3. Links & Attributes</h2>
+        <p>Attributes tags la 'Extra Information' detat. Jashe ki link kuthli ahe kiwa photo kiti motha pahije.</p>
+        <div class="card">
+            <div class="code-box">
+                &lt;!-- target="_blank" navin tab madhe link open karto --&gt;<br>
+                &lt;a href="https://craby-editor.vercel.app" target="_blank"&gt;Go to Home&lt;/a&gt;<br><br>
+                &lt;!-- title attribute hover kelyavar mahiti deto --&gt;<br>
+                &lt;p title="I am a tooltip"&gt;Hover over me!&lt;/p&gt;
+            </div>
+        </div>
+    </div>
+
+    <div class="tag-block">
+        <h2>4. Block vs Inline Tags</h2>
+        <p>HTML madhe don prakarche tags astat:</p>
+        <div class="explain-box">
+            <p><strong>Block Level:</strong> He tags navin line pasun suru hotat ani poorn width ghetat. (e.g. <code>&lt;div&gt;</code>, <code>&lt;h1&gt;</code>, <code>&lt;p&gt;</code>)</p>
+            <p><strong>Inline:</strong> He tags fakt garjeitkiach jag ghetat. (e.g. <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;img&gt;</code>)</p>
+        </div>
+    </div>
+
+    <div class="tag-block">
+        <h2>5. The Metadata Tag (&lt;meta&gt;)</h2>
+        <p>He tags website var disat nahit pan Google Search (SEO) sathi khup mahatvache ahet. He <code>&lt;head&gt;</code> tag chya aat lihile jatat.</p>
+        <div class="card">
+            <div class="code-box" style="font-size: 13px;">
+                &lt;meta name="description" content="Learning HTML tags"&gt;<br>
+                &lt;meta charset="UTF-8"&gt;
+            </div>
+        </div>
+    </div>
+
+    <div class="description-box" style="background: #e7f3ff; border-left: 5px solid #007bff;">
+        <strong>Quick Note:</strong> HTML madhe 100 peksha jast tags ahet, pan daily vaprat fakt 20-30 tags yetat. Tevde shikle tari tumhi professional website banvu shakta!
+    </div>
+
+    <div class="nav-container" style="margin-top: 40px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-intro.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/html/html-forms.html'">Next »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" title="Email Us" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;">
+            <i class="fas fa-envelope"></i>
+        </a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" title="Follow on Instagram" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
