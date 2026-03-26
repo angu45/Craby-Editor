@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Complete CSS Selectors Guide - Types & Examples | Craby Editor</title>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        /* FIX: Professional Scrollable Code Box */
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        .type-label { 
+            display: inline-block; 
+            background: #e0f2fe; 
+            color: #0369a1; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 14px; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #0284c7; }
+        .sel-name { font-weight: bold; color: #be185d; font-family: monospace; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-intro.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-boxmodel.html'">Next »</button>
+    </div>
+
+    <h1>CSS Selectors: The Complete Reference</h1>
+    <p>Think of CSS Selectors as a search engine for your HTML. They allow you to find specific elements and apply visual rules to them. Without a solid understanding of selectors, your CSS will become a repetitive mess.</p>
+
+    
+
+    <div class="detail-block">
+        <span class="type-label">Level 1: Simple Selectors</span>
+        <h2>Basic Targeting</h2>
+        <p>These are the fundamental ways to pick elements based on their name, class, or unique identity.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Selector</th>
+                    <th>Syntax</th>
+                    <th>Example & Use Case</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="sel-name">Universal</span></td>
+                    <td><code>*</code></td>
+                    <td><code>* { margin: 0; }</code> - Resets all elements.</td>
+                </tr>
+                <tr>
+                    <td><span class="sel-name">Element</span></td>
+                    <td><code>tag</code></td>
+                    <td><code>p { line-height: 1.5; }</code> - Styles all paragraphs.</td>
+                </tr>
+                <tr>
+                    <td><span class="sel-name">Class</span></td>
+                    <td><code>.name</code></td>
+                    <td><code>.btn { border: none; }</code> - Styles reusable components.</td>
+                </tr>
+                <tr>
+                    <td><span class="sel-name">ID</span></td>
+                    <td><code>#name</code></td>
+                    <td><code>#navbar { position: fixed; }</code> - Styles one unique element.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="detail-block">
+        <span class="type-label">Level 2: Combinators</span>
+        <h2>Relationship Selectors</h2>
+        <p>Combinators explain the relationship between two selectors. They are used when you want to style an element only if it resides within a specific parent or follows another element.</p>
+
+        <div class="card">
+            <div class="code-box">
+/* 1. Descendant Selector (Space) */
+/* Targets all &lt;p&gt; tags inside &lt;div&gt; */
+div p { color: blue; }
+
+/* 2. Child Selector (&gt;) */
+/* Targets only &lt;p&gt; tags that are direct children of &lt;div&gt; */
+div > p { font-weight: bold; }
+
+/* 3. Adjacent Sibling Selector (+) */
+/* Targets the first &lt;p&gt; immediately following a &lt;div&gt; */
+div + p { margin-top: 20px; }
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-block">
+        <span class="type-label">Level 3: Attributes</span>
+        <h2>Attribute Selectors</h2>
+        <p>These allow you to style elements based on the presence or value of an HTML attribute (like <code>type</code>, <code>href</code>, or <code>target</code>).</p>
+        
+        <div class="card">
+            <div class="code-box">
+/* Targets all inputs with type="text" */
+input[type="text"] { border: 2px solid #ccc; }
+
+/* Targets all links that open in a new tab */
+a[target="_blank"] { color: red; }
+
+/* Targets images where 'alt' contains the word "logo" */
+img[alt*="logo"] { width: 100px; }
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-block">
+        <span class="type-label">Level 4: States</span>
+        <h2>Pseudo Selectors</h2>
+        <p>Pseudo-classes style an element's <b>state</b> (hover, focus), while pseudo-elements style a <b>specific part</b> of an element (like the first letter).</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Selector</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pseudo-Class</td>
+                    <td><code>:hover</code></td>
+                    <td>Styles when user hovers mouse.</td>
+                </tr>
+                <tr>
+                    <td>Pseudo-Class</td>
+                    <td><code>:nth-child(2n)</code></td>
+                    <td>Styles every even row (useful for tables).</td>
+                </tr>
+                <tr>
+                    <td>Pseudo-Element</td>
+                    <td><code>::before</code></td>
+                    <td>Inserts content before the element.</td>
+                </tr>
+                <tr>
+                    <td>Pseudo-Element</td>
+                    <td><code>::placeholder</code></td>
+                    <td>Styles the hint text inside inputs.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="description-box" style="background: #fff1f2; border-left: 5px solid #e11d48;">
+        <strong>The Rule of Specificity:</strong> Not all selectors are equal. An <b>ID (#)</b> is stronger than a <b>Class (.)</b>, and a <b>Class</b> is stronger than an <b>Element</b>. If you apply different colors to the same tag using both, the strongest one wins!
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-intro.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-boxmodel.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold;">X</span>
+    </div>
+    <div class="s-group">
+        <label>Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label>Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 30px; font-family: sans-serif; line-height: 1.8;">
+    <p><strong>Craby Editor - The Professional Free Online Code IDE</strong></p>
+    <div class="footer-icons" style="margin: 15px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 24px;"><i class="fas fa-envelope"></i></a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 24px;"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="font-size: 13px;">© 2026 Craby-Editor | Empowering Developers through Open Access Tools</p>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
