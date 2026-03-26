@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>Java Arrays Tutorial | Indices, Elements & Length | Craby Editor</title>
+    <meta name="description" content="Learn how to declare, initialize, and access Java Arrays. Understand zero-based indexing and how to loop through array elements efficiently.">
+    <meta name="keywords" content="Java Arrays, Array Index, Java Programming, Data Structures Java, Array Length, Craby Editor">
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #333;
+            margin: 15px 0 5px 0;
+        }
+
+        .output-box {
+            background: #2d2d2d;
+            color: #a9ffaf;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .def-box {
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ffcdd2;
+            margin: 20px 0;
+        }
+
+        .index-warning {
+            background: #fff9c4;
+            border-left: 5px solid #fbc02d;
+            padding: 15px;
+            margin: 20px 0;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-oops.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-methods.html'">Next »</button>
+    </div>
+
+    <h1>Understanding Java Arrays</h1>
+
+    <div class="def-box">
+        <strong>Definition:</strong><br>
+        An <b>Array</b> is a collection of similar types of elements which has a contiguous memory location. In Java, arrays are objects that store a fixed-size sequential collection of elements of the same type.
+    </div>
+
+    
+
+    <h2>1. Declaration and Execution</h2>
+    <p>To use an array, you first define the <b>type</b> of data it will hold, followed by <b>square brackets []</b>.</p>
+    
+    <p><strong>Syntax:</strong><br>
+    <code>dataType[] arrayName = {value1, value2, ...};</code></p>
+
+    <div class="card">
+        <div class="code-box">
+public class ArraySample {
+    public static void main(String[] args) {
+        // Creating an array of Strings
+        String[] cars = {"Volvo", "BMW", "Ford", "Mazda"};
+        
+        // Accessing the first element
+        System.out.println("First car: " + cars[0]);
+        
+        // Changing an element
+        cars[0] = "Tesla";
+        System.out.println("Updated first car: " + cars[0]);
+    }
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+First car: Volvo<br>
+Updated first car: Tesla
+        </div>
+    </div>
+
+    <h2>2. Zero-Based Indexing</h2>
+    <div class="index-warning">
+        <strong>Important:</strong> Computers start counting from <b>0</b>. 
+        <ul>
+            <li>[0] is the 1st element.</li>
+            <li>[1] is the 2nd element.</li>
+            <li>If you have 4 items, the last index is <b>3</b>.</li>
+        </ul>
+    </div>
+
+    <h2>3. Finding Array Length</h2>
+    <p>You can find out how many elements an array has using the <code>.length</code> property. This is very useful for loops.</p>
+    <div class="card">
+        <div class="code-box">
+int[] numbers = {10, 20, 30, 40, 50};
+System.out.println("Array Size: " + numbers.length);
+        </div>
+        <div class="output-box">
+// Output:<br>
+Array Size: 5
+        </div>
+    </div>
+
+    <h2>4. Looping through an Array</h2>
+    <p>The most common way to process array data is using a <code>for</code> loop or the "Enhanced For Loop" (for-each).</p>
+
+    <div class="card">
+        <div class="code-box">
+String[] fruits = {"Apple", "Banana", "Cherry"};
+
+// The 'For-Each' Loop (Easier to read)
+for (String f : fruits) {
+    System.out.println("Fruit name: " + f);
+}
+        </div>
+        <div class="output-box">
+// Output:<br>
+Fruit name: Apple<br>
+Fruit name: Banana<br>
+Fruit name: Cherry
+        </div>
+    </div>
+
+    <div class="description-box" style="background: #e1f5fe; border-left: 5px solid #03a9f4; padding: 15px;">
+        <strong>Pro Insight:</strong> Once you create an array in Java, you <b>cannot</b> change its size. If you need a list that grows and shrinks, you would use something called an <code>ArrayList</code>, which is part of the Java Collections Framework.
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-oops.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/java/java-methods.html'">Next Topic »</button>
+    </div>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
