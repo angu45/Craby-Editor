@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H', { 'page_path': window.location.pathname, 'cookie_flags': 'SameSite=None;Secure' });
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Mastering CSS Box Model - Padding, Margin & Layouts | Craby Editor</title>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <script src="/js/theme-settings.js"></script>
+    <script src="/js/tag.js"></script>
+
+    <style>
+        .nav-container { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn-fix { width: 120px; padding: 8px 0 !important; text-align: center; font-size: 14px !important; }
+        
+        /* Professional Scrollable Code Box */
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto; 
+            white-space: pre;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            border: 1px solid #333;
+            margin: 15px 0;
+        }
+
+        /* LIVE PADDING VS MARGIN DEMO */
+        .visual-demo-area {
+            background: #fdf2f2; /* Margin Zone (Light Red) */
+            border: 2px dashed #f87171;
+            padding: 50px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .visual-demo-area::before {
+            content: "MARGIN ZONE (Outside)";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 10px;
+            color: #f87171;
+        }
+
+        .padding-box-visual {
+            background: #34d399; /* The Element / Border Zone */
+            padding: 40px;      /* THE PADDING */
+            border: 8px solid #065f46;
+            display: inline-block;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-core {
+            background: #064e3b; /* The Content Zone */
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .concept-title { color: #0284c7; border-bottom: 2px solid #e0f2fe; padding-bottom: 5px; margin-top: 30px; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo-container">
+        <a href="https://craby-editor.vercel.app/">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        </a>
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+</header>
+
+<div class="section">
+    <div class="nav-container">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-selectors.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-colors.html'">Next »</button>
+    </div>
+
+    <h1>Mastering the Box Model</h1>
+    <p>Every element in HTML is a rectangular box. To be a great web developer, you must understand how these boxes stack, push, and breathe. Let's look at the "Three Pillars" of spacing.</p>
+
+    
+
+    <div class="visual-demo-area">
+        <div class="padding-box-visual">
+            <div class="content-core">CONTENT AREA</div>
+            <p style="margin: 10px 0 0 0; font-size: 11px;">The Green Space around me is PADDING</p>
+        </div>
+    </div>
+
+    <h2 class="concept-title">1. Padding: The Internal Cushion</h2>
+    <p>Padding is the space between the content and its border. It is used to prevent text from touching the edges of a container.</p>
+    <ul>
+        <li><b>Background:</b> Padding inherits the background color of the element.</li>
+        <li><b>Usage:</b> Use padding to make buttons larger or give text "air."</li>
+    </ul>
+
+    <div class="card">
+        <div class="code-box">
+.card {
+  padding: 20px; /* Equal spacing on all sides */
+  background-color: #ffffff;
+}
+        </div>
+    </div>
+
+    <h2 class="concept-title">2. Margin: The External Buffer</h2>
+    <p>Margin is the space *outside* the border. It pushes neighboring elements away.</p>
+    <ul>
+        <li><b>Transparency:</b> Margins are always transparent.</li>
+        <li><b>Auto-Centering:</b> <code>margin: 0 auto;</code> is the gold standard for centering layouts.</li>
+    </ul>
+
+    <div class="card">
+        <div class="code-box">
+.container {
+  max-width: 800px;
+  margin: 0 auto; /* Centers the box horizontally */
+}
+        </div>
+    </div>
+
+    <h2 class="concept-title">3. Margin Collapsing (Pro Topic)</h2>
+    <p>A strange thing happens in CSS: when two vertical margins meet, they don't add up. Instead, the larger one "eats" the smaller one. This is called <b>Margin Collapsing</b>.</p>
+    
+    <div class="description-box" style="background: #fffbeb; border-left: 5px solid #f59e0b;">
+        <strong>Example:</strong> If a Top Box has <code>margin-bottom: 30px</code> and a Bottom Box has <code>margin-top: 20px</code>, the total space between them is <b>30px</b>, not 50px!
+    </div>
+
+    <h2 class="concept-title">4. Box Sizing: The Best Practice</h2>
+    <p>By default, adding padding makes your element wider than you intended. To fix this, always use <code>box-sizing: border-box</code>.</p>
+
+    <div class="card">
+        <div class="code-box">
+/* The Professional Way to start any CSS file */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+        </div>
+    </div>
+
+    <div class="nav-container" style="margin-top: 50px;">
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-selectors.html'">« Previous</button>
+        <button class="btn nav-btn-fix" onclick="window.location.href='/tutorials/css/css-colors.html'">Next Topic »</button>
+    </div>
+</div>
+
+<div id="settingsPanel" class="settings-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: var(--accent);">IDE Settings</h3>
+        <span onclick="toggleSettings()" style="cursor: pointer; color: #ff4d4d; font-weight: bold; font-size: 20px;">&times;</span>
+    </div>
+    <div class="s-group">
+        <label><i class="fas fa-font"></i> Font Family</label>
+        <select id="font-family-sel" onchange="updateThemeAndFont()">
+            <option value="'Fira Code', monospace">Fira Code</option>
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Source Code Pro', monospace">Source Code Pro</option>
+        </select>
+    </div>
+    <div class="s-group">
+        <label><i class="fas fa-palette"></i> Editor Theme</label>
+        <select id="theme-sel" onchange="updateThemeAndFont()">
+            <option value="dark">Github Dark</option>
+            <option value="monokai">Monokai Pro</option>
+            <option value="dracula">Dracula</option>
+            <option value="light">Simple Light</option>
+        </select>
+    </div>
+    <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px; width: 100%;">SAVE & CLOSE</button>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="footer" style="text-align: center; padding: 40px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; border-top: 1px solid #eee; margin-top: 60px;">
+    <p style="font-size: 18px; color: #333; margin-bottom: 10px;"><strong>Craby Editor</strong></p>
+    <p style="color: #666; max-width: 600px; margin: 0 auto 20px auto;">The Professional Free Online Code IDE for modern developers. Practice, learn, and build with real-time feedback.</p>
+    
+    <div class="footer-icons" style="margin: 20px 0;">
+        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 26px;" title="Contact Email">
+            <i class="fas fa-envelope"></i>
+        </a>
+        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 26px;" title="Follow Instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+    
+    <div style="font-size: 13px; color: #999; border-top: 1px solid #f5f5f5; padding-top: 20px;">
+        © 2026 Craby-Editor | Empowering Developers through Open Access Tools
+    </div>
+</div>
+
+<script src="/js/script1.js"></script>
+<script src="/js/theme-setting.js"></script>
+</body>
+</html>
