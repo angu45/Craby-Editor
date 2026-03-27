@@ -1,8 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Root Pages -->
   <url>
     <loc>https://craby-editor.vercel.app/</loc>
-    <lastmod>2024-05-20</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/c-compiler.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/html-editor.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Tutorials Main Page -->
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/tutorial.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- HTML Tutorials -->
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/html/html-intro.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/html/html-forms.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/html/html-media.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/html/html-tables.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/html/html-tags.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- CSS Tutorials -->
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/css/css-intro.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/css/css-selectors.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/css/css-boxmodel.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/css/css-flexbox.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/css/css-grid.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/css/web-exam.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Java Tutorials -->
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-intro.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-variables.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-loops.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-methods.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-arrays.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-collections.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-exceptions.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/tutorials/java/java-exam.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>
