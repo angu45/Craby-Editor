@@ -14,7 +14,7 @@ h1 {
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, bold style */
     font-size: 3rem;
     font-weight: 800;                     /* Extra bold for impact */
-    color: #ff4500;                       /* Original color preserved */
+                      /* Original color preserved */
     text-align: center;
     text-shadow: 3px 3px 6px rgba(0,0,0,0.25); /* Slightly stronger shadow for depth */
     letter-spacing: 2px;
@@ -25,7 +25,7 @@ h1 {
 p {
     font-family: 'Roboto', 'Arial', sans-serif; /* Clean, readable font */
     font-size: 1.1rem;
-    color: #333333;                            /* Original color preserved */
+                              /* Original color preserved */
     line-height: 1.8;
     text-align: justify;
     margin: 12px 0;
