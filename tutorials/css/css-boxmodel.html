@@ -136,16 +136,29 @@
 
 <body>
 
-<header>
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 5px 15px; background: #0a0c10; border-bottom: 1px solid #00ff41;">
+    
     <div class="logo-container">
-        <a href="https://craby-editor.vercel.app/">
-            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Craby Editor Logo">
+        <a href="https://craby-editor.vercel.app/" target="_blank">
+            <img src="https://i.ibb.co/4wn3rb7Y/1000176075-removebg-preview.png" alt="Logo" s>
         </a>
     </div>
+
     <div class="header-actions">
-        <button class="icon-btn" onclick="toggleSettings()" title="Settings">
-            <i class="fas fa-cog"></i>
+        
+        <a href="tutorials/html/tutorial.html" class="icon-btn">
+            <i class="fas fa-book" ></i> TUTORIAL
+        </a>
+
+        <a href="contact.html" class="icon-btn" >
+            <i class="fas fa-envelope" ></i> 
+        </a>
+        
+       
+        <button class="icon-btn" onclick="toggleSettings()" >
+            <i class="fas fa-sliders-h"></i>
         </button>
+        
     </div>
 </header>
 
@@ -251,25 +264,53 @@
     <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px; width: 100%;">SAVE & CLOSE</button>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<footer class="footer" style="text-align: center; padding: 40px 20px; font-family: sans-serif; line-height: 1.6; border-top: 1px solid; opacity: 0.8;">
+    
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: left;">
+        
+        <div>
+            <p><strong>Craby Editor</strong></p>
+            <p style="font-size: 13px; color: inherit;">A professional-grade, browser-based IDE for modern developers. Write, compile, and learn code without the heavy installations.</p>
+        </div>
 
-<div class="footer" style="text-align: center; padding: 40px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; border-top: 1px solid #eee; margin-top: 60px;">
-    <p style="font-size: 18px; color: #333; margin-bottom: 10px;"><strong>Craby Editor</strong></p>
-    <p style="color: #666; max-width: 600px; margin: 0 auto 20px auto;">The Professional Free Online Code IDE for modern developers. Practice, learn, and build with real-time feedback.</p>
-    
-    <div class="footer-icons" style="margin: 20px 0;">
-        <a href="mailto:crabylab01@gmail.com" style="margin: 0 15px; color: #333; text-decoration: none; font-size: 26px;" title="Contact Email">
-            <i class="fas fa-envelope"></i>
-        </a>
-        <a href="https://www.instagram.com/_omii.cinematics" target="_blank" rel="noopener" style="margin: 0 15px; color: #E1306C; text-decoration: none; font-size: 26px;" title="Follow Instagram">
-            <i class="fab fa-instagram"></i>
-        </a>
+        <div>
+            <p><strong>Navigation</strong></p>
+            <ul style="list-style: none; padding: 0; font-size: 14px;">
+                <li style="margin-bottom: 8px;"><a href="index.html" style="text-decoration: none; color: inherit;">🏠 Home</a></li>
+                <li style="margin-bottom: 8px;"><a href="tutorial.html" style="text-decoration: none; color: inherit;">📖 All Tutorials</a></li>
+                <li style="margin-bottom: 8px;"><a href="contact.html" style="text-decoration: none; color: inherit;">✉️ Contact Us</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <p><strong>Popular Courses</strong></p>
+            <ul style="list-style: none; padding: 0; font-size: 14px;">
+                <li style="margin-bottom: 8px;"><a href="tutorials/html/html-intro.html" style="text-decoration: none; color: inherit;">HTML5 Mastery</a></li>
+                <li style="margin-bottom: 8px;"><a href="tutorials/css/css-intro.html" style="text-decoration: none; color: inherit;">Modern CSS3</a></li>
+                <li style="margin-bottom: 8px;"><a href="tutorials/java/java-intro.html" style="text-decoration: none; color: inherit;">Java Programming</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <p><strong>Support</strong></p>
+            <p style="font-size: 13px;">Email: crabylab01@gmail.com</p>
+            <div style="margin-top: 10px;">
+                <a href="mailto:crabylab01@gmail.com" style="margin-right: 15px; color: inherit; font-size: 20px;"><i class="fas fa-envelope"></i></a>
+                <a href="https://www.instagram.com/_omii.cinematics" target="_blank" style="color: inherit; font-size: 20px;"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
     </div>
-    
-    <div style="font-size: 13px; color: #999; border-top: 1px solid #f5f5f5; padding-top: 20px;">
-        © 2026 Craby-Editor | Empowering Developers through Open Access Tools
+
+    <hr style="width: 100%; margin: 30px 0; border: 0.1px solid; opacity: 0.2;">
+
+    <div style="font-size: 12px; margin-bottom: 15px;">
+        <a href="Privacy-Policy.html" style="margin: 0 10px; text-decoration: none; color: inherit; opacity: 0.7;">Privacy Policy</a> | 
+        <a href="Terms-of-Service.html" style="margin: 0 10px; text-decoration: none; color: inherit; opacity: 0.7;">Terms of Service</a> | 
+        <a href="Disclaimer.html" style="margin: 0 10px; text-decoration: none; color: inherit; opacity: 0.7;">Disclaimer</a>
     </div>
-</div>
+
+    <p style="font-size: 12px; opacity: 0.6;">© 2026 Craby-Editor | Built for the Global Developer Community</p>
+</footer>
 
 <script src="/js/script1.js"></script>
 <script src="/js/theme-setting.js"></script>
