@@ -144,4 +144,23 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- New Root Pages -->
+  <url>
+    <loc>https://craby-editor.vercel.app/Disclaimer.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/Privacy-Policy.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://craby-editor.vercel.app/Terms-of-Service.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
 </urlset>
