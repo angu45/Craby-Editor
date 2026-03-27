@@ -11,23 +11,24 @@
 /* CSS for h1 and p tags */
 
 h1 {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 3rem;             /* Big heading */
-    font-weight: 700;            /* Bold */
-    color: #ff4500;              /* Bright orange-red */
-    text-align: center;          /* Centered text */
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Subtle shadow */
-    letter-spacing: 2px;         /* Space between letters */
-    margin: 20px 0;              /* Vertical spacing */
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, bold style */
+    font-size: 3rem;
+    font-weight: 800;                     /* Extra bold for impact */
+    color: #ff4500;                       /* Original color preserved */
+    text-align: center;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.25); /* Slightly stronger shadow for depth */
+    letter-spacing: 2px;
+    margin: 25px 0;
+    line-height: 1.2;
 }
 
 p {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', 'Arial', sans-serif; /* Clean, readable font */
     font-size: 1.1rem;
-    color: #333333;              /* Dark gray text */
-    line-height: 1.8;            /* Better readability */
-    text-align: justify;          /* Justify text for neat look */
-    margin: 10px 0;              /* Vertical spacing */
+    color: #333333;                            /* Original color preserved */
+    line-height: 1.8;
+    text-align: justify;
+    margin: 12px 0;
 }
 * {
     box-sizing: border-box;
