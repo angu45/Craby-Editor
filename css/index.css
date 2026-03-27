@@ -8,7 +8,27 @@
     --border: rgba(255, 255, 255, 0.1);
     --window-header-bg: #21262d;
 }
+/* CSS for h1 and p tags */
 
+h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 3rem;             /* Big heading */
+    font-weight: 700;            /* Bold */
+    color: #ff4500;              /* Bright orange-red */
+    text-align: center;          /* Centered text */
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Subtle shadow */
+    letter-spacing: 2px;         /* Space between letters */
+    margin: 20px 0;              /* Vertical spacing */
+}
+
+p {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.1rem;
+    color: #333333;              /* Dark gray text */
+    line-height: 1.8;            /* Better readability */
+    text-align: justify;          /* Justify text for neat look */
+    margin: 10px 0;              /* Vertical spacing */
+}
 * {
     box-sizing: border-box;
     margin: 0;
