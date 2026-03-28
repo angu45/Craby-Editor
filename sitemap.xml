@@ -22,7 +22,7 @@
 
   <!-- Tutorials Main Page -->
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/tutorial.html</loc>
+    <loc>https://craby-editor.vercel.app/tutorials/html/tutorial.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
