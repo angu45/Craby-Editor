@@ -1,45 +1,57 @@
 /* --- 1. GLOBAL VARIABLES & RESET --- */
 :root {
-    --bg: #0d1117;
-    --panel: #161b22;
-    --bg-header: #010409;
-    --accent: #ffb400;
-    --text: #c9d1d9;
-    --border: rgba(255, 255, 255, 0.1);
-    --window-header-bg: #21262d;
+    --bg: #f0f4f8;          /* Default Light Faint Blue */
+    --panel: #ffffff;
+    --bg-header: #f0f4f8;   /* Default Header/Footer Background */
+    --accent: #be123c;      /* Deep Wine Red */
+    --text: #1e293b;        /* Dark Text for readability */
+    --border: rgba(0, 0, 0, 0.1);
+    --window-header-bg: #e2e8f0;
 }
+
 /* CSS for h1 and p tags */
 h1 {
     font-family: 'Monaco', monospace;
+    color: var(--accent);
 }
 
 p {
-    font-family: 'Arial', sans-serif; /* Clean readable font for paragraph */
+    font-family: 'Arial', sans-serif; 
+    color: var(--text);
 }
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-}#tuto {
+}
+
+/* --- TUTO BUTTON (Theme Related & No Resize) --- */
+#tuto {
     position: relative;
     text-decoration: none;
     font-weight: 600;
-    font-size: 15px;
-    padding: 8px 20px;
-    border-radius: 30px;
-    color: #fff;
-    background: linear-gradient(135deg, #ff7a18, #ff3d00);
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 6px;
+    color: #ffffff !important; /* Text visible on accent */
+    background: var(--accent); /* Theme dependent color */
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px; /* Fixed Height */
+    width: 120px; /* Fixed Width */
     transition: all 0.3s ease;
     overflow: hidden;
 }
 
-/* Hover Effect */
+/* Hover Effect without changing size */
 #tuto:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(255, 61, 0, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
 }
 
-/* Glow Shine Effect */
 #tuto::before {
     content: "";
     position: absolute;
@@ -47,7 +59,7 @@ p {
     left: -120%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
     transition: 0.6s;
 }
 
@@ -64,9 +76,9 @@ body {
 }
 
 /* --- 2. TOPBAR & HEADER --- */
-.topbar, header {
+header, .topbar {
     height: 60px;
-    background: #010409;
+    background: var(--bg-header) !important; /* Changes with theme */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -85,14 +97,15 @@ body {
 }
 
 .logo img { height: 35px; width: auto; }
-.logo span { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
+.logo span, .logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
 
 .header-actions { display: flex; gap: 10px; align-items: center; }
 
+/* Header Buttons (No Resize, Perfect Balance) */
 .icon-btn {
     background: var(--panel);
     border: 1px solid var(--border);
-    color: white;
+    color: var(--text); /* Changes with theme */
     padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -101,12 +114,13 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    height: 38px; /* Fixed Height matching #tuto */
 }
 
-.icon-btn:hover { background: #1c2128; border-color: var(--accent); }
+.icon-btn:hover { background: var(--bg); border-color: var(--accent); }
 .icon-btn i { color: var(--accent); }
 
-/* --- 3. HERO SECTION (Index Page) --- */
+/* --- 3. HERO SECTION --- */
 .hero {
     text-align: center;
     padding: 80px 20px;
@@ -114,20 +128,18 @@ body {
 
 .hero h1 {
     font-size: clamp(32px, 5vw, 48px);
-    color: var(--accent);
     margin-bottom: 15px;
 }
 
 .hero p {
     max-width: 650px;
     margin: 0 auto 25px auto;
-    color: #8b949e;
 }
 
 .btn {
     padding: 14px 35px;
     background: var(--accent);
-    color: black;
+    color: #fff;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -136,7 +148,7 @@ body {
     transition: 0.3s;
 }
 
-.btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 180, 0, 0.4); }
+.btn:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
 
 /* --- 4. FEATURES & CONTENT --- */
 .section { padding: 40px 20px; max-width: 1100px; margin: auto; }
@@ -155,41 +167,30 @@ body {
     border: 1px solid var(--border);
 }
 
-.code-box {
-    background: #000;
-    padding: 15px;
-    border-radius: 8px;
-    color: #00ffcc;
-    font-family: 'Fira Code', monospace;
-    margin-top: 15px;
-    border: 1px solid #333;
-}
-
 /* --- 5. FOOTER --- */
 .footer {
     text-align: center;
     padding: 30px;
-    background: #010409;
+    background: var(--bg-header) !important; /* Changes with theme */
     border-top: 1px solid var(--border);
     margin-top: 50px;
+    color: var(--text); /* Readable on both light/dark */
 }
 
-/* --- 6. SETTINGS PANEL (RIGHT SLIDER) --- */
+/* --- 6. SETTINGS PANEL --- */
 .settings-panel {
     position: fixed;
-    right: -350px; /* बाहेर ढकलले */
+    right: -350px;
     top: 0;
     width: 320px;
     height: 100%;
-    background: rgba(22, 27, 34, 0.95);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    background: var(--panel);
     border-left: 2px solid var(--accent);
     z-index: 5000;
-    display: none; /* सुरुवातीला लपवलेले */
-    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
+    transition: right 0.4s ease;
     padding: 25px;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
 }
 
@@ -202,114 +203,19 @@ body {
 .s-group label {
     display: block;
     font-size: 11px;
-    color: #8b949e;
+    color: var(--text);
+    opacity: 0.7;
     margin-bottom: 10px;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
-.s-group select, .s-group input[type="range"] {
+.s-group select {
     width: 100%;
-    background: #0d1117;
+    background: var(--bg);
     border: 1px solid var(--border);
-    color: white;
+    color: var(--text);
     padding: 12px;
     border-radius: 8px;
     outline: none;
 }
-
-.checkbox-group { display: flex; flex-direction: column; gap: 10px; }
-.checkbox-group label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    color: white;
-    text-transform: none;
-}
-
-.add-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    border: none;
-    border-radius: 8px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 10px;
-    text-transform: uppercase;
-}
-
-.add-btn:hover { background: #fff; color: #000; }
-
-/* --- 7. EDITOR SPECIFIC (Window Frames) --- */
-.window-frame {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.window-header {
-    background: var(--window-header-bg);
-    padding: 10px 15px;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-}
-
-.window-title { color: var(--accent); font-size: 12px; font-weight: bold; }
-
-textarea {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    color: #9cdcfe;
-    padding: 15px;
-    font-family: 'Fira Code', monospace;
-    font-size: 14px;
-    outline: none;
-    resize: none;
-}
-header {
-    height: 60px;
-    background: var(--bg-header);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-    border-bottom: 2px solid var(--accent);
-    position: sticky; 
-    top: 0;
-    z-index: 3000; 
-}
-
-logo-container { display: flex; align-items: center; gap: 10px; }
-.logo-container img { height: 35px; width: auto; }
-.logo-text { color: var(--accent); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
-
-.header-actions { display: flex; gap: 10px; align-items: center; }
-
-/* Header Buttons Size Fix */
-.icon-btn {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    color: white;
-    padding: 8px 14px; /* Balanced size */
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.icon-btn:hover { background: #1c2128; border-color: var(--accent); }
-.icon-btn i { color: var(--accent); }
