@@ -1,11 +1,11 @@
-/**
- * CRABY EDITOR - UNIVERSAL THEME & SETTINGS (Final Optimized Version)
+/* * CRABY EDITOR - UNIVERSAL THEME & SETTINGS (Updated Version)
  * हा कोड Index Page आणि Editor Page दोन्हीवर सारखाच काम करतो.
  */
 
 const themes = {
+    // 'light' थीमला डीफॉल्ट आणि अजून सुंदर (Soft pastel look) बनवले आहे
+    light: { bg: '#f8fafc', panel: '#ffffff', accent: '#6366f1', text: '#1e293b', border: '#e2e8f0' },  
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#c9d1d9', border: '#30363d' }, 
-    light: { bg: '#eef1f4', panel: '#ffffff', accent: '#f59e0b', text: '#374151', border: '#e5e7eb' },  
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
     matrix: { bg: '#000000', panel: '#001a00', accent: '#00ff00', text: '#00ff00', border: '#003300' },
@@ -22,15 +22,16 @@ const themes = {
 function applyGlobalSettings() {
     const saved = localStorage.getItem('craby_settings');
     if (!saved) {
-        // जर काहीच सेव्ह नसेल तर डीफॉल्ट डार्क थीम लावा
-        updateCSSVariables(themes.dark, 'monospace', 14);
+        // जर काहीच सेव्ह नसेल तर डीफॉल्ट 'light' थीम आणि 16px साईज लावा
+        updateCSSVariables(themes.light, 'sans-serif', 16);
         return;
     }
 
     const s = JSON.parse(saved);
-    const theme = themes[s.theme] || themes.dark;
-    const font = s.font || 'monospace';
-    const size = s.size || 14;
+    // डीफॉल्ट बॅकअप म्हणून themes.light सेट केला आहे
+    const theme = themes[s.theme] || themes.light;
+    const font = s.font || 'sans-serif';
+    const size = s.size || 16;
 
     updateCSSVariables(theme, font, size);
 
@@ -40,10 +41,10 @@ function applyGlobalSettings() {
     const sizeRange = document.getElementById('font-size-range');
     const sizeValDisplay = document.getElementById('font-size-val');
 
-    if(themeSel) themeSel.value = s.theme;
-    if(fontSel) fontSel.value = s.font;
-    if(sizeRange) sizeRange.value = s.size;
-    if(sizeValDisplay) sizeValDisplay.innerText = s.size + "px";
+    if(themeSel) themeSel.value = s.theme || 'light';
+    if(fontSel) fontSel.value = s.font || 'sans-serif';
+    if(sizeRange) sizeRange.value = s.size || 16;
+    if(sizeValDisplay) sizeValDisplay.innerText = (s.size || 16) + "px";
 }
 
 // --- २. CSS व्हेरिएबल्स अपडेट करणे ---
@@ -68,9 +69,10 @@ function updateCSSVariables(theme, font, size) {
 
 // --- ३. सेटिंग सेव्ह करणे ---
 function saveSettings() {
-    const themeVal = document.getElementById('theme-sel')?.value || 'dark';
-    const sizeVal = document.getElementById('font-size-range')?.value || '14';
-    const fontVal = document.getElementById('font-family-sel')?.value || 'monospace';
+    // डीफॉल्ट व्हॅल्यूज अपडेट केल्या आहेत
+    const themeVal = document.getElementById('theme-sel')?.value || 'light';
+    const sizeVal = document.getElementById('font-size-range')?.value || '16';
+    const fontVal = document.getElementById('font-family-sel')?.value || 'sans-serif';
 
     const s = { theme: themeVal, size: sizeVal, font: fontVal };
     localStorage.setItem('craby_settings', JSON.stringify(s));
@@ -113,6 +115,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     applyGlobalSettings(); // सेव्ह केलेली थीम लोड करा
 });
+
 function openEditor(){
     window.location.href = "https://craby-editor.vercel.app/html-editor.html";
 }
