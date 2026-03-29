@@ -52,7 +52,7 @@ function applyGlobalSettings() {
     if(sizeValDisplay) sizeValDisplay.innerText = (s.size || 16) + "px";
 }
 
-// --- २. CSS व्हेरिएबल्स अपडेट करणे ---
+// --- २. CSS व्हेरिएबल्स अपडेट करणे (JavaScript Code) ---
 function updateCSSVariables(theme, font, size) {
     const root = document.documentElement;
     root.style.setProperty('--bg', theme.bg);
@@ -60,6 +60,9 @@ function updateCSSVariables(theme, font, size) {
     root.style.setProperty('--accent', theme.accent);
     root.style.setProperty('--text', theme.text);
     root.style.setProperty('--border', theme.border);
+    
+    // हेडर आणि फुटरसाठी फेंट (हलका) बॅकग्राउंड कलर सेट करणे
+    root.style.setProperty('--bg-header', theme.bg); 
 
     // Body आणि संपूर्ण पेजचा फॉन्ट
     document.body.style.fontFamily = font;
@@ -71,6 +74,7 @@ function updateCSSVariables(theme, font, size) {
         tx.style.color = theme.text;
     });
 }
+
 
 // --- ३. सेटिंग सेव्ह करणे ---
 function saveSettings() {
