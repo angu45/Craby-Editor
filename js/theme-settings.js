@@ -61,8 +61,17 @@ function updateCSSVariables(theme, font, size) {
     root.style.setProperty('--text', theme.text);
     root.style.setProperty('--border', theme.border);
     
-    // हेडर आणि फुटरसाठी फेंट (हलका) बॅकग्राउंड कलर सेट करणे
-    root.style.setProperty('--bg-header', theme.bg); 
+    // हेडर आणि फुटरचा रंग बॅकग्राउंडपेक्षा थोडा वेगळा करण्यासाठी लॉजिक
+    let headerBg;
+    if (theme.bg === '#f0f4f8' || theme.bg === '#ffffff' || theme.bg === '#eef1f4') {
+        // लाईट थीम असेल तर हेडर/फुटर थोडा डार्क (Greyish Blue) दिसेल
+        headerBg = '#e2e8f0'; 
+    } else {
+        // डार्क थीम असेल तर हेडर/फुटर थोडा फिकट (Light Dark) दिसेल
+        headerBg = '#1c2128'; 
+    }
+    
+    root.style.setProperty('--bg-header', headerBg); 
 
     // Body आणि संपूर्ण पेजचा फॉन्ट
     document.body.style.fontFamily = font;
@@ -74,6 +83,7 @@ function updateCSSVariables(theme, font, size) {
         tx.style.color = theme.text;
     });
 }
+
 
 
 // --- ३. सेटिंग सेव्ह करणे ---
