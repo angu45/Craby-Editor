@@ -1,10 +1,16 @@
-/* * CRABY EDITOR - UNIVERSAL THEME & SETTINGS (Updated Version)
+/* * CRABY EDITOR - UNIVERSAL THEME & SETTINGS (Custom Light Version)
  * हा कोड Index Page आणि Editor Page दोन्हीवर सारखाच काम करतो.
  */
 
 const themes = {
-    // 'light' थीमला डीफॉल्ट आणि अजून सुंदर (Soft pastel look) बनवले आहे
-    light: { bg: '#f8fafc', panel: '#ffffff', accent: '#6366f1', text: '#1e293b', border: '#e2e8f0' },  
+    // 'light' थीमला तुमच्या आवडीनुसार कस्टमाइझ केले आहे
+    light: { 
+        bg: '#f0f4f8',      // Faint Soft Blue background (Header/Footer/Page साठी)
+        panel: '#ffffff',   // शुद्ध पांढरा पॅनेल (टेक्स्ट एरियासाठी)
+        accent: '#be123c',  // Deep Wine / Rose Red (Heading आणि हायलाईट्ससाठी)
+        text: '#1e293b',    // Dark Slate text (वाचायला सोपे)
+        border: '#cbd5e1'   // Soft gray border
+    },  
     dark: { bg: '#0d1117', panel: '#161b22', accent: '#ffb400', text: '#c9d1d9', border: '#30363d' }, 
     monokai: { bg: '#272822', panel: '#3e3d32', accent: '#f92672', text: '#f8f8f2', border: '#49483e' },
     dracula: { bg: '#282a36', panel: '#44475a', accent: '#bd93f9', text: '#f8f8f2', border: '#6272a4' },
@@ -28,7 +34,6 @@ function applyGlobalSettings() {
     }
 
     const s = JSON.parse(saved);
-    // डीफॉल्ट बॅकअप म्हणून themes.light सेट केला आहे
     const theme = themes[s.theme] || themes.light;
     const font = s.font || 'sans-serif';
     const size = s.size || 16;
@@ -69,7 +74,6 @@ function updateCSSVariables(theme, font, size) {
 
 // --- ३. सेटिंग सेव्ह करणे ---
 function saveSettings() {
-    // डीफॉल्ट व्हॅल्यूज अपडेट केल्या आहेत
     const themeVal = document.getElementById('theme-sel')?.value || 'light';
     const sizeVal = document.getElementById('font-size-range')?.value || '16';
     const fontVal = document.getElementById('font-family-sel')?.value || 'sans-serif';
