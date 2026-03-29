@@ -1,14 +1,15 @@
 User-agent: *
 Allow: /
 
-# Block unnecessary system files (optional but safe)
-Disallow: /_next/
-Disallow: /api/
-Disallow: /temp/
+# Important pages priority (optional hint)
+Allow: /index.html
+Allow: /c-compiler.html
+Allow: /html-editor.html
 
-# Allow important assets
-Allow: /*.css$
-Allow: /*.js$
+# Tutorials
+Allow: /tutorials/
+
+# Block nothing (all open for indexing)
 
 # Sitemap location
 Sitemap: https://craby-editor.vercel.app/sitemap.xml
