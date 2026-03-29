@@ -199,28 +199,18 @@ header, .topbar {
     overflow-y: auto;
 }
 
-.settings-panel.open {
-    display: block !important;
-    right: 0 !important;
-}
+.settings-panel.open { right: 0; }
 
-.s-group { margin-bottom: 25px; }
-.s-group label {
-    display: block;
-    font-size: 11px;
-    color: var(--text);
-    opacity: 0.7;
-    margin-bottom: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.s-group select {
+.s-group { margin-bottom: 20px; }
+.s-group label { display: block; font-size: 11px; color: #8b949e; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+.s-group select, .s-group input {
     width: 100%;
-    background: var(--bg);
+    background: #0d1117;
     border: 1px solid var(--border);
-    color: var(--text);
-    padding: 12px;
-    border-radius: 8px;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
     outline: none;
 }
+.checkbox-group { display: flex; gap: 15px; }
+.checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
