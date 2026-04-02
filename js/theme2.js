@@ -22,7 +22,6 @@ const themes = {
 function applyGlobalSettings() {
     const saved = localStorage.getItem('craby_settings');
     if (!saved) {
-        // जर काहीच सेव्ह नसेल तर डीफॉल्ट डार्क थीम लावा
         updateCSSVariables(themes.dark, 'monospace', 14);
         return;
     }
@@ -34,7 +33,6 @@ function applyGlobalSettings() {
 
     updateCSSVariables(theme, font, size);
 
-    // सेटिंग पॅनेल मधील इनपुट अपडेट करणे (जर अस्तित्वात असतील तर)
     const themeSel = document.getElementById('theme-sel');
     const fontSel = document.getElementById('font-family-sel');
     const sizeRange = document.getElementById('font-size-range');
@@ -55,18 +53,59 @@ function updateCSSVariables(theme, font, size) {
     root.style.setProperty('--text', theme.text);
     root.style.setProperty('--border', theme.border);
 
-    // Body आणि संपूर्ण पेजचा फॉन्ट
     document.body.style.fontFamily = font;
 
-    // सर्व Textareas अपडेट करणे (Editor साठी)
     document.querySelectorAll('textarea').forEach(tx => { 
         tx.style.fontFamily = font; 
         tx.style.fontSize = size + "px";
         tx.style.color = theme.text;
     });
+
+    // *** ओरिजिनल लाईन नंबर पट्टीचा फॉन्ट आणि साईज सिंक करणे ***
+    const lineNumbersEle = document.getElementById('lineNumbers');
+    if (lineNumbersEle) {
+        lineNumbersEle.style.fontFamily = font;
+        lineNumbersEle.style.fontSize = size + "px";
+    }
+
+    // पेज लोड किंवा रिफ्रेश झाल्यावर लाईन नंबर्स अपडेट करणे
+    const codeInputEle = document.getElementById('codeInput');
+    if (codeInputEle) {
+        updateLineNumbers(codeInputEle.value);
+    }
 }
 
-// --- ३. सेटिंग सेव्ह करणे ---
+// --- ३. ओरिजिनल लाईन नंबरिंग फंक्शन्स (जसे आहेत तसे) ---
+function updateLineNumbers(code) {
+  const lineNumbersEle = document.getElementById('lineNumbers');
+  if (!lineNumbersEle) return; // जर इंडेक्स पेजवर नसेल तर एरर येऊ नये म्हणून
+  
+  // जर सेटिंग्जमध्ये lineNumbers फॉल्स असेल तर लपवा (ऑप्शनल)
+  lineNumbersEle.style.display = 'block';
+  
+  const lines = code.split('\n').length;
+  let html = '';
+  for (let i = 1; i <= lines; i++) {
+    html += `<div>${i}</div>`;
+  }
+  lineNumbersEle.innerHTML = html;
+}
+
+function syncScroll() {
+  const codeInputEle = document.getElementById('codeInput');
+  const highlightOverlayEle = document.getElementById('highlightOverlay');
+  const lineNumbersEle = document.getElementById('lineNumbers');
+
+  if (highlightOverlayEle && codeInputEle) {
+      highlightOverlayEle.scrollTop = codeInputEle.scrollTop;
+      highlightOverlayEle.scrollLeft = codeInputEle.scrollLeft;
+  }
+  if (lineNumbersEle && codeInputEle) {
+      lineNumbersEle.scrollTop = codeInputEle.scrollTop;
+  }
+}
+
+// --- ४. सेटिंग सेव्ह करणे ---
 function saveSettings() {
     const themeVal = document.getElementById('theme-sel')?.value || 'dark';
     const sizeVal = document.getElementById('font-size-range')?.value || '14';
@@ -75,11 +114,10 @@ function saveSettings() {
     const s = { theme: themeVal, size: sizeVal, font: fontVal };
     localStorage.setItem('craby_settings', JSON.stringify(s));
     
-    // लगेच बदल लागू करा
     applyGlobalSettings();
 }
 
-// --- ४. सेटिंग पॅनेल चालू/बंद करणे ---
+// --- ५. सेटिंग पॅनेल चालू/बंद करणे ---
 function toggleSettings() {
     const panel = document.getElementById('settingsPanel');
     if (!panel) return;
@@ -92,11 +130,11 @@ function toggleSettings() {
         setTimeout(() => { 
             panel.style.display = 'none'; 
             saveSettings(); 
-        }, 400); // CSS transition शी मॅच करा
+        }, 400); 
     }
 }
 
-// --- ५. रॅपिड अपडेट फंक्शन्स (On Input/Change) ---
+// --- ६. रॅपिड अपडेट फंक्शन्स ---
 function updateThemeAndFont() { saveSettings(); }
 function updateFontSize(val) { 
     const display = document.getElementById('font-size-val');
@@ -104,15 +142,27 @@ function updateFontSize(val) {
     saveSettings(); 
 }
 
-// --- ६. इनीशियलायझेशन (DOM लोड झाल्यावर) ---
+// --- ७. इनीशियलायझेशन (DOM लोड झाल्यावर) ---
 window.addEventListener('DOMContentLoaded', () => {
     const panel = document.getElementById('settingsPanel');
     if(panel) {
-        panel.style.display = 'none'; // सुरुवातीला लपवा
+        panel.style.display = 'none'; 
         panel.classList.remove('open');
     }
-    applyGlobalSettings(); // सेव्ह केलेली थीम लोड करा
+    
+    // लोड झाल्यावर सेटिंग्ज लावा
+    applyGlobalSettings(); 
+
+    // इव्हेंट लिसनर्स सेट करणे
+    const codeInputEle = document.getElementById('codeInput');
+    if (codeInputEle) {
+        codeInputEle.addEventListener('input', () => {
+            updateLineNumbers(codeInputEle.value);
+        });
+        codeInputEle.addEventListener('scroll', syncScroll);
+    }
 });
+
 function openEditor(){
     window.location.href = "https://craby-editor.vercel.app/html-editor.html";
 }
