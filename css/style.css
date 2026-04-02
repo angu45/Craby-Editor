@@ -1,4 +1,3 @@
-/* --- 1. CORE LAYOUT --- */
 :root {
     --bg-main: #0d1117;
     --bg-panel: #161b22;
@@ -30,7 +29,6 @@ body {
     overflow: hidden; 
 }
 
-/* --- 2. HEADER: FIXED --- */
 header {
     height: 60px;
     background: var(--bg-header);
@@ -50,12 +48,11 @@ logo-container { display: flex; align-items: center; gap: 10px; }
 
 .header-actions { display: flex; gap: 10px; align-items: center; }
 
-/* Header Buttons Size Fix */
 .icon-btn {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     color: white;
-    padding: 8px 14px; /* Balanced size */
+    padding: 8px 14px; 
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
@@ -77,7 +74,6 @@ logo-container { display: flex; align-items: center; gap: 10px; }
 
 .run-btn:hover { background: var(--accent) !important; color: #000 !important; }
 
-/* --- 3. SMART EDITOR AREA --- */
 .main-container {
     flex: 1;
     display: flex;
@@ -93,7 +89,6 @@ logo-container { display: flex; align-items: center; gap: 10px; }
     gap: 10px;
 }
 
-/* --- 4. WINDOW BOX & TEXTAREA --- */
 .window-frame {
     background: var(--bg-panel);
     border: 1px solid var(--border);
@@ -131,9 +126,35 @@ logo-container { display: flex; align-items: center; gap: 10px; }
 .window-controls i { cursor: pointer; font-size: 12px; color: var(--accent); opacity: 0.7; transition: 0.2s; }
 .window-controls i:hover { opacity: 1; transform: scale(1.1); }
 
-.window-body { flex: 1; display: flex; }
+.window-body { 
+    flex: 1; 
+    display: flex; 
+    position: relative;
+    overflow: hidden;
+}
 
-/* --- SYNTAX GLOW COLORS --- */
+#lineNumbers {
+    width: 45px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-right: 1px solid var(--border);
+    color: var(--accent);
+    opacity: 0.6;
+    text-align: right;
+    padding: 12px 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    user-select: none;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#lineNumbers div {
+    height: 1.5em;
+}
 
 .tag { 
     color: #ff7b72; 
@@ -162,33 +183,35 @@ logo-container { display: flex; align-items: center; gap: 10px; }
     text-shadow: 0 0 8px rgba(240, 136, 62, 0.5); 
 }
 
-/* --- TEXTAREA OVERLAY FOR GLOW --- */
 .highlight-layer {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: 45px;
+    width: calc(100% - 45px);
     height: 100%;
-    padding: 12px; /* textarea च्या padding शी मॅच करा */
-    pointer-events: none; /* क्लिक textarea वर व्हावे म्हणून */
+    padding: 12px; 
+    pointer-events: none; 
     white-space: pre;
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     line-height: 1.5;
     overflow: hidden;
     z-index: 1;
+    box-sizing: border-box;
 }
 
 .input-layer {
     position: relative;
     z-index: 2;
-    color: transparent !important; /* ओरिजिनल टेक्स्ट लपवण्यासाठी */
-    caret-color: #ffb400; /* फक्त कर्सर दिसेल */
+    color: transparent !important; 
+    caret-color: #ffb400; 
     background: transparent !important;
 }
+
 textarea {
     flex: 1;
-    width: 100%;
+    width: calc(100% - 45px);
+    margin-left: 45px;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
@@ -204,6 +227,7 @@ textarea {
     overflow: auto;
     text-shadow: 0 0 8px rgba(156, 221, 254, 0.4);
     transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 textarea:focus {
@@ -211,7 +235,6 @@ textarea:focus {
     text-shadow: 0 0 12px rgba(156, 221, 254, 0.6);
 }
 
-/* --- 5. SHUTTER (LEFT SLIDER) --- */
 #shutter-trigger {
     position: fixed;
     left: 0;
@@ -249,8 +272,6 @@ textarea:focus {
     margin-bottom: 15px;
 }
 
-/* --- 6. SETTINGS PANEL (RIGHT SLIDER) --- */
-
 .settings-panel.open { right: 0; }
 
 .s-group { margin-bottom: 20px; }
@@ -267,7 +288,6 @@ textarea:focus {
 .checkbox-group { display: flex; gap: 15px; }
 .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
 
-/* --- 7. PREVIEW OVERLAY --- */
 .preview-overlay {
     position: fixed;
     inset: 0;
@@ -286,14 +306,13 @@ textarea:focus {
     padding: 0 20px;
     border-bottom: 1px solid var(--border);
 }
-/* --- SHUTTER (LEFT SLIDER) - MODERN TRANSPARENT --- */
+
 .shutter {
     position: fixed;
     left: -320px;
     top: 0;
     width: 300px;
     height: 100%;
-    /* Glass Effect: Background with Blur */
     background: rgba(22, 27, 34, 0.7); 
     backdrop-filter: blur(2px); 
     -webkit-backdrop-filter: blur(2px);
@@ -308,14 +327,12 @@ textarea:focus {
     left: 0; 
 }
 
-/* --- SETTINGS PANEL (RIGHT SLIDER) - MODERN TRANSPARENT --- */
 .settings-panel {
     position: fixed;
     right: -320px;
     top: 0;
     width: 300px;
     height: 100%;
-    /* Glass Effect: Background with Blur */
     background: rgba(22, 27, 34, 0.7); 
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
@@ -330,7 +347,6 @@ textarea:focus {
     right: 0; 
 }
 
-/* --- SHUTTER TRIGGER BUTTON (UPGRADED) --- */
 #shutter-trigger {
     position: fixed;
     left: 0;
@@ -353,7 +369,6 @@ textarea:focus {
 
 #output-frame { flex: 1; border: none; width: 100%; background: white; }
 
-/* Suggestion Box Fix */
 #suggestion-box {
     position: absolute;
     z-index: 5000;
@@ -361,8 +376,8 @@ textarea:focus {
     border: 1px solid var(--accent);
     border-radius: 4px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-/* Editor Display Layer */
+}
+
 .highlight-layer {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     padding: 15px; box-sizing: border-box;
@@ -371,11 +386,10 @@ textarea:focus {
     overflow: hidden; z-index: 1;
 }
 
-/* Syntax Colors */
-.hl-html-tag { color: #ff5572; font-weight: bold; } /* Tags */
-.hl-html-attr { color: #ffcb6b; }                  /* Attributes */
-.hl-css-prop { color: #80cbc4; }                   /* CSS Property */
-.hl-js-kw { color: #c792ea; }                      /* JS Keywords */
-.hl-js-func { color: #caff33; }                    /* JS Functions/Methods */
-.hl-str { color: #c3e88d; }                        /* Strings "" */
-.hl-num { color: #f78c6c; }                        /* Numbers */
+.hl-html-tag { color: #ff5572; font-weight: bold; } 
+.hl-html-attr { color: #ffcb6b; }                  
+.hl-css-prop { color: #80cbc4; }                   
+.hl-js-kw { color: #c792ea; }                      
+.hl-js-func { color: #caff33; }                    
+.hl-str { color: #c3e88d; }                        
+.hl-num { color: #f78c6c; }                        
