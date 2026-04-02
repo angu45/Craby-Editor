@@ -231,6 +231,11 @@ transition:width 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
             <option value="midnight_purple">Midnight Purple</option>
             <option value="light">Simple Light</option>
         </select>
+    </div><div class="checkbox-group">
+        <label>
+            <input type="checkbox" id="show-lines-check" checked onchange="toggleLineNumbersSetting(this.checked)">
+            <span>Show Line Numbers</span>
+        </label>
     </div>
 
     <button class="add-btn" onclick="toggleSettings()" style="margin-top: 10px;">SAVE & CLOSE</button>
