@@ -103,6 +103,32 @@ function updateFontSize(val) {
     if(display) display.innerText = val + "px";
     saveSettings(); 
 }
+function updateLineNumbers(code) {
+  if (!settings.lineNumbers) {
+    lineNumbers.style.display = 'none';
+    return;
+  }
+  lineNumbers.style.display = 'block';
+  const lines = code.split('\n').length;
+  let html = '';
+  for (let i = 1; i <= lines; i++) {
+    html += `<div>${i}</div>`;
+  }
+  lineNumbers.innerHTML = html;
+}
+function syncScroll() {
+  highlightOverlay.scrollTop = codeInput.scrollTop;
+  highlightOverlay.scrollLeft = codeInput.scrollLeft;
+  lineNumbers.scrollTop = codeInput.scrollTop;
+}
+
+codeInput.addEventListener('input', () => {
+  files[activeFileIdx].content = codeInput.value;
+  updateEditor();
+  showAutocomplete();
+  if (settings.autoSave) saveToStorage();
+});
+codeInput.addEventListener('scroll', syncScroll);
 
 // --- ६. इनीशियलायझेशन (DOM लोड झाल्यावर) ---
 window.addEventListener('DOMContentLoaded', () => {
