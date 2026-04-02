@@ -2,157 +2,157 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://craby-editor.vercel.app</loc>
+    <loc>https://craby-lab.vercel.app</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/c-compiler.html</loc>
+    <loc>https://craby-lab.vercel.app/c-compiler.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/lab.html</loc>
+    <loc>https://craby-lab.vercel.app/lab.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/html/tutorial.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/html/tutorial.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/html/html-intro.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/html/html-intro.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/html/html-forms.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/html/html-forms.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/html/html-media.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/html/html-media.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/html/html-tables.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/html/html-tables.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/html/html-tags.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/html/html-tags.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/css/css-intro.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/css/css-intro.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/css/css-selectors.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/css/css-selectors.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/css/css-boxmodel.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/css/css-boxmodel.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/css/css-flexbox.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/css/css-flexbox.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/css/css-grid.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/css/css-grid.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/css/web-exam.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/css/web-exam.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-intro.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-intro.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-variables.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-variables.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-loops.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-loops.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-methods.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-methods.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-arrays.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-arrays.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-collections.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-collections.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-exceptions.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-exceptions.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/tutorials/java/java-exam.html</loc>
+    <loc>https://craby-lab.vercel.app/tutorials/java/java-exam.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/Disclaimer.html</loc>
+    <loc>https://craby-lab.vercel.app/Disclaimer.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/Privacy-Policy.html</loc>
+    <loc>https://craby-lab.vercel.app/Privacy-Policy.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/Terms-of-Service.html</loc>
+    <loc>https://craby-lab.vercel.app/Terms-of-Service.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
