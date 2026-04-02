@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Root Pages -->
   <url>
     <loc>https://craby-editor.vercel.app</loc>
     <changefreq>daily</changefreq>
@@ -15,19 +14,17 @@
   </url>
 
   <url>
-    <loc>https://craby-editor.vercel.app/html-editor.html</loc>
+    <loc>https://craby-editor.vercel.app/lab.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Tutorials Main Page -->
   <url>
     <loc>https://craby-editor.vercel.app/tutorials/html/tutorial.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- HTML Tutorials -->
   <url>
     <loc>https://craby-editor.vercel.app/tutorials/html/html-intro.html</loc>
     <changefreq>weekly</changefreq>
@@ -58,7 +55,6 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- CSS Tutorials -->
   <url>
     <loc>https://craby-editor.vercel.app/tutorials/css/css-intro.html</loc>
     <changefreq>weekly</changefreq>
@@ -95,7 +91,6 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- Java Tutorials -->
   <url>
     <loc>https://craby-editor.vercel.app/tutorials/java/java-intro.html</loc>
     <changefreq>weekly</changefreq>
@@ -144,7 +139,6 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- New Root Pages -->
   <url>
     <loc>https://craby-editor.vercel.app/Disclaimer.html</loc>
     <changefreq>monthly</changefreq>
