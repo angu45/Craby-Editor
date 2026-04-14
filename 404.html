@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0BGJ1913H"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z0BGJ1913H');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="robots" content="noindex, follow"> <title>404 - Code Not Found | Craby Lab</title>
+
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            background: #0a0c10;
+            color: #ffffff;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .error-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            max-width: 600px;
+        }
+
+        .glitch-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #00ff41; /* Matrix Green */
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .terminal-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .terminal-header {
+            color: #8b949e;
+            font-size: 12px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 5px;
+        }
+
+        .typewriter {
+            color: #ff7b72; /* Error Red */
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: #00ff41;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+        .btn-home {
+            background: #00ff41;
+            color: #0a0c10;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s ease;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .btn-home:hover {
+            background: #00cc33;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: 0.3s ease;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 65, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: #0a0c10; border-bottom: 1px solid #00ff41;">
+        <div class="logo-container">
+            <a href="https://craby-lab.vercel.app/">
+                <img src="Logo.png" alt="Craby Lab" style="height: 35px;">
+            </a>
+        </div>
+    </header>
+
+    <main class="error-wrapper">
+        <div class="error-container">
+            <p class="glitch-code">404</p>
+            <h2>Compilation Error: Page Not Found</h2>
+            
+            <div class="terminal-box">
+                <div class="terminal-header">craby_kernel.log</div>
+                <code style="color: #d2a8ff;">> status: searching_for_requested_url...</code><br>
+                <code class="typewriter">> [ERROR] segment_fault: The resource you requested does not exist in the repository.</code><br>
+                <code>> Suggested Action: return to main branch. <span class="cursor"></span></code>
+            </div>
+
+            <p style="color: #8b949e; margin-bottom: 30px;">The link might be broken, or the file has been moved to another directory.</p>
+
+            <div class="actions">
+                <a href="https://craby-lab.vercel.app/" class="btn-home"><i class="fas fa-home"></i> Back to Main IDE</a>
+                <a href="https://craby-lab.vercel.app/tutorials/html/tutorial.html" class="btn-secondary"><i class="fas fa-book"></i> Browse Tutorials</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" style="text-align: center; padding: 20px; font-size: 12px; border-top: 1px solid #30363d; opacity: 0.7;">
+        <p>© 2026 Craby-Editor | Syntax Error: Page Not Found</p>
+        <div>
+            <a href="contact.html" style="color: #00ff41; text-decoration: none; margin: 0 10px;">Support</a> |
+            <a href="index.html" style="color: #00ff41; text-decoration: none; margin: 0 10px;">Home</a>
+        </div>
+    </footer>
+
+</body>
+</html>
