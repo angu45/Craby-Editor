@@ -11,6 +11,14 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co/0RcjyBQF/1000176575-removebg-preview.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // तुमची पब्लिक की इथे इनिशिअलाइज केली आहे
+            emailjs.init("q-HPNvOIc20O5ryna");
+        })();
+    </script>
+
     <style>
         :root {
             --primary-blue: #007bff;
@@ -25,7 +33,6 @@
             line-height: 1.6;
         }
 
-        /* Improved Header Layout */
         .contact-header {
             background: #ffffff;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -43,7 +50,6 @@
             align-items: center;
         }
 
-        /* Main Layout */
         .main-content {
             max-width: 900px;
             margin: 40px auto;
@@ -61,7 +67,6 @@
             .contact-grid { grid-template-columns: 1fr; }
         }
 
-        /* Sidebar Info */
         .contact-info-card {
             background: white;
             padding: 25px;
@@ -82,7 +87,6 @@
 
         .info-link:hover { color: var(--primary-blue); }
 
-        /* Professional Form Styling */
         .form-card {
             background: #ffffff;
             padding: 35px;
@@ -131,17 +135,14 @@
             transition: transform 0.2s, background 0.3s;
         }
 
-        .btn-submit:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
 
-        .legal-footer {
-            margin-top: 50px;
-            padding: 40px 20px;
-            background: #fff;
-            border-top: 1px solid #eee;
-            text-align: center;
+        .btn-submit:hover:not(:disabled) {
+            background: #0056b3;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -188,20 +189,20 @@
             </aside>
 
             <section class="form-card">
-                <form action="https://formspree.io/f/xpqownvn" method="POST">
+                <form id="contact-form">
                     <div class="input-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="John Doe" required>
+                        <label for="from_name">Full Name</label>
+                        <input type="text" name="from_name" id="from_name" class="form-control" placeholder="John Doe" required>
                     </div>
 
                     <div class="input-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" name="email" id="email" class="form-control" placeholder="john@example.com" required>
+                        <label for="reply_to">Email Address</label>
+                        <input type="email" name="reply_to" id="reply_to" class="form-control" placeholder="john@example.com" required>
                     </div>
 
                     <div class="input-group">
-                        <label for="type">Inquiry Type</label>
-                        <select name="type" id="type" class="form-control">
+                        <label for="inquiry_type">Inquiry Type</label>
+                        <select name="inquiry_type" id="inquiry_type" class="form-control">
                             <option value="General">General Inquiry</option>
                             <option value="Bug">Bug Report</option>
                             <option value="Feature">Feature Request</option>
@@ -214,59 +215,40 @@
                         <textarea name="message" id="message" class="form-control" rows="5" placeholder="Tell us how we can help..." required></textarea>
                     </div>
 
-                    <button type="submit" class="btn-submit">Send Message</button>
+                    <button type="submit" id="submit-btn" class="btn-submit">Send Message</button>
                 </form>
             </section>
         </div>
     </main>
 
-   <footer class="footer" style="text-align: center; padding: 40px 20px; font-family: sans-serif; line-height: 1.6; border-top: 1px solid; opacity: 0.8;">
-    
-    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: left;">
-        
-        <div>
-            <p><strong>Craby Editor</strong></p>
-            <p style="font-size: 13px; color: inherit;">A professional-grade, browser-based IDE for modern developers. Write, compile, and learn code without the heavy installations.</p>
-        </div>
+    <footer class="footer" style="text-align: center; padding: 40px 20px; font-family: sans-serif; line-height: 1.6; border-top: 1px solid; opacity: 0.8;">
+        <p>© 2026 Craby-Editor | Built for the Global Developer Community</p>
+    </footer>
 
-        <div>
-            <p><strong>Navigation</strong></p>
-            <ul style="list-style: none; padding: 0; font-size: 14px;">
-                <li style="margin-bottom: 8px;"><a href="index.html" style="text-decoration: none; color: inherit;">🏠 Home</a></li>
-                <li style="margin-bottom: 8px;"><a href="tutorial.html" style="text-decoration: none; color: inherit;">📖 All Tutorials</a></li>
-                <li style="margin-bottom: 8px;"><a href="contact.html" style="text-decoration: none; color: inherit;">✉️ Contact Us</a></li>
-            </ul>
-        </div>
+    <script>
+        const btn = document.getElementById('submit-btn');
 
-        <div>
-            <p><strong>Popular Courses</strong></p>
-            <ul style="list-style: none; padding: 0; font-size: 14px;">
-                <li style="margin-bottom: 8px;"><a href="tutorials/html/html-intro.html" style="text-decoration: none; color: inherit;">HTML5 Mastery</a></li>
-                <li style="margin-bottom: 8px;"><a href="tutorials/css/css-intro.html" style="text-decoration: none; color: inherit;">Modern CSS3</a></li>
-                <li style="margin-bottom: 8px;"><a href="tutorials/java/java-intro.html" style="text-decoration: none; color: inherit;">Java Programming</a></li>
-            </ul>
-        </div>
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        <div>
-            <p><strong>Support</strong></p>
-            <p style="font-size: 13px;">Email: crabylab01@gmail.com</p>
-            <div style="margin-top: 10px;">
-                <a href="mailto:crabylab01@gmail.com" style="margin-right: 15px; color: inherit; font-size: 20px;"><i class="fas fa-envelope"></i></a>
-                <a href="https://www.instagram.com/_omii.cinematics" target="_blank" style="color: inherit; font-size: 20px;"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-    </div>
+            btn.disabled = true;
+            btn.innerText = 'Sending...';
 
-    <hr style="width: 100%; margin: 30px 0; border: 0.1px solid; opacity: 0.2;">
+            const serviceID = 'service_lqr9yzj';
+            const templateID = 'template_dosuzuc';
 
-    <div style="font-size: 12px; margin-bottom: 15px;">
-        <a href="Privacy-Policy.html" style="margin: 0 10px; text-decoration: none; color: inherit; opacity: 0.7;">Privacy Policy</a> | 
-        <a href="Terms-of-Service.html" style="margin: 0 10px; text-decoration: none; color: inherit; opacity: 0.7;">Terms of Service</a> | 
-        <a href="Disclaimer.html" style="margin: 0 10px; text-decoration: none; color: inherit; opacity: 0.7;">Disclaimer</a>
-    </div>
-
-    <p style="font-size: 12px; opacity: 0.6;">© 2026 Craby-Editor | Built for the Global Developer Community</p>
-</footer>
-
+            emailjs.sendForm(serviceID, templateID, this)
+                .then(() => {
+                    btn.disabled = false;
+                    btn.innerText = 'Send Message';
+                    alert('Message Sent Successfully! We will contact you soon.');
+                    document.getElementById('contact-form').reset();
+                }, (err) => {
+                    btn.disabled = false;
+                    btn.innerText = 'Send Message';
+                    alert('Failed to send message. Error: ' + JSON.stringify(err));
+                });
+        });
+    </script>
 </body>
 </html>
